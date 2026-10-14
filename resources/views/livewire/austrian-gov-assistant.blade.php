@@ -3,6 +3,7 @@
 @endphp
 
 <div 
+    wire:poll.2s="checkForUpdates"
     class="min-h-screen flex flex-col {{ $highContrast ? 'bg-black text-white' : 'bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100' }} {{ $textSize === 'large' ? 'text-lg' : ($textSize === 'xlarge' ? 'text-xl' : 'text-base') }}"
     x-data="{
         copiedDossier: false,
@@ -182,13 +183,24 @@
                 <button 
                     type="button" 
                     wire:click="startNewConversation"
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-zinc-700 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                    wire:loading.attr="disabled"
+                    wire:target="startNewConversation"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:text-[#C8102E] dark:hover:text-red-400 border border-slate-300 dark:border-zinc-700 hover:border-red-300 dark:hover:border-red-800 rounded-lg bg-white dark:bg-zinc-800 hover:bg-red-50/50 dark:hover:bg-red-950/30 transition-all cursor-pointer shadow-2xs disabled:opacity-50"
                     title="{{ $isGerman ? 'Neues Anliegen starten (bisherige Chats bleiben in der Datenbank gespeichert)' : 'Start new inquiry (existing chats remain saved in database)' }}"
                 >
-                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span class="hidden lg:inline">{{ $isGerman ? 'Neues Anliegen' : 'New Chat' }}</span>
+                    <span wire:loading.remove wire:target="startNewConversation" class="flex items-center gap-1.5">
+                        <svg class="size-3.5 text-[#C8102E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>{{ $isGerman ? 'Neues Anliegen' : 'New Chat' }}</span>
+                    </span>
+                    <span wire:loading.flex wire:target="startNewConversation" class="items-center gap-1.5">
+                        <svg class="animate-spin size-3.5 text-[#C8102E]" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>{{ $isGerman ? 'Wird neu gestartet...' : 'Starting...' }}</span>
+                    </span>
                 </button>
             </div>
         </div>
@@ -330,6 +342,31 @@
             </div>
         @endif
 
+        {{-- Live Officer Joined Notice Banner --}}
+        @if($isOfficerJoined)
+            <div class="p-3 sm:p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100 flex items-center justify-between gap-3 shadow-xs animate-in fade-in duration-300">
+                <div class="flex items-center gap-3">
+                    <span class="size-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm font-bold shrink-0 shadow-2xs">
+                        🏛️
+                    </span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                                {{ $isGerman ? 'Amtliche Sachbearbeitung beigetreten' : 'Civil Servant Connected' }}
+                            </span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-medium mt-0.5">
+                            {{ $isGerman ? 'Beamtin/Beamter ' . ($officerJoinedName ?: 'Amtliche Sachbearbeitung') . ' betreut Ihr Anliegen nun persönlich.' : 'Civil servant ' . ($officerJoinedName ?: 'Official Officer') . ' has joined and is assisting you personally.' }}
+                        </p>
+                    </div>
+                </div>
+                <span class="hidden md:inline-flex px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200">
+                    {{ $isGerman ? 'Live-Kanal aktiv' : 'Live Channel Active' }}
+                </span>
+            </div>
+        @endif
+
         {{-- Conversational Stream Area --}}
         <div 
             class="flex-1 flex flex-col gap-4 overflow-y-auto"
@@ -348,6 +385,20 @@
                             <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ $isGerman ? 'System-Hinweis' : 'System Notice' }}</span>
                             <span>&bull;</span>
                             <span>{{ $msg['timestamp'] }}</span>
+                        @elseif(($msg['workflow'] ?? null) === 'officer_joined' || str_contains($msg['content'], 'ist dem Gespräch beigetreten') || str_contains($msg['content'], 'has joined the conversation'))
+                            <div class="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
+                                <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span>{{ $isGerman ? 'Menschliche Sachbearbeitung beigetreten' : 'Civil Servant Joined' }}</span>
+                            </div>
+                            <span>&bull;</span>
+                            <span>{{ $msg['timestamp'] }}</span>
+                        @elseif(str_contains($msg['content'], 'Offizielle Mitteilung der Sachbearbeitung'))
+                            <div class="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
+                                <span class="size-2 rounded-full bg-emerald-600"></span>
+                                <span>{{ $isGerman ? 'Offizielle Sachbearbeiter-Antwort' : 'Civil Servant Message' }}</span>
+                            </div>
+                            <span>&bull;</span>
+                            <span>{{ $msg['timestamp'] }}</span>
                         @else
                             <div class="flex items-center gap-1.5 font-semibold text-[#C8102E] dark:text-red-400">
                                 <span class="size-2 rounded-full bg-[#C8102E]"></span>
@@ -359,7 +410,7 @@
                     </div>
 
                     {{-- Message Bubble --}}
-                    <div class="max-w-3xl rounded-2xl p-4 sm:p-5 shadow-xs transition-all relative group {{ $msg['role'] === 'user' ? 'bg-[#C8102E] text-white rounded-tr-none' : ($msg['role'] === 'system' ? 'bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-200' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200 rounded-tl-none') }}">
+                    <div class="max-w-3xl rounded-2xl p-4 sm:p-5 shadow-xs transition-all relative group {{ $msg['role'] === 'user' ? 'bg-[#C8102E] text-white rounded-tr-none' : ($msg['role'] === 'system' ? 'bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-200' : ((($msg['workflow'] ?? null) === 'officer_joined' || str_contains($msg['content'], 'ist dem Gespräch beigetreten')) ? 'bg-emerald-50/90 dark:bg-emerald-950/50 border-2 border-emerald-400 dark:border-emerald-700 text-emerald-950 dark:text-emerald-100 rounded-tl-none' : (str_contains($msg['content'], 'Offizielle Mitteilung der Sachbearbeitung') ? 'bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-slate-800 dark:text-zinc-200 rounded-tl-none' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200 rounded-tl-none'))) }}">
                         @php
                             $nextSteps = [];
                         @endphp
@@ -372,6 +423,24 @@
                         @elseif($msg['role'] === 'system')
                             <div class="prose prose-sm text-blue-900 dark:text-blue-200 max-w-none leading-relaxed">
                                 {!! \Illuminate\Support\Str::markdown($msg['content']) !!}
+                            </div>
+                        @elseif(($msg['workflow'] ?? null) === 'officer_joined' || str_contains($msg['content'], 'ist dem Gespräch beigetreten') || str_contains($msg['content'], 'has joined the conversation'))
+                            <div class="flex items-start gap-3.5">
+                                <div class="size-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-2xs">
+                                    🏛️
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                                        <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span>{{ $isGerman ? 'Amtlicher Beitritt vermerkt' : 'Official Join Recorded' }}</span>
+                                    </div>
+                                    <div class="text-xs sm:text-sm font-semibold leading-relaxed">
+                                        {!! \Illuminate\Support\Str::markdown($msg['content']) !!}
+                                    </div>
+                                    <p class="text-[11px] text-emerald-700 dark:text-emerald-400">
+                                        {{ $isGerman ? 'Die Beamtin / der Beamte liest Ihre Nachrichten direkt mit und kann Ihnen antworten.' : 'The officer is actively viewing this case and can reply to your messages.' }}
+                                    </p>
+                                </div>
                             </div>
                         @else
                             @php

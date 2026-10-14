@@ -1,36 +1,28 @@
-<!DOCTYPE html>
-<html lang="de" class="h-full">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Offizielles Beamtinnen- und Beamtenportal der Republik Österreich zur Bearbeitung eskalierter Bürger-Fälle.">
-    <meta name="theme-color" content="#C8102E">
-
-    <title>Beamtinnen- & Beamten-Portal - Bundesservice Österreich 2030</title>
-
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-
-    @fonts
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @fluxAppearance
-</head>
-<body class="min-h-full font-sans antialiased bg-slate-100 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 selection:bg-[#C8102E] selection:text-white">
-
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col" wire:poll.3s>
     {{-- Official Federal Government Top Bar --}}
-    <div class="bg-[#C8102E] text-white py-1 px-4 text-xs font-semibold tracking-wider flex items-center justify-between border-b border-red-800 shadow-xs">
+    <div class="bg-[#C8102E] text-white py-1.5 px-4 text-xs font-semibold tracking-wider flex flex-wrap items-center justify-between gap-2 border-b border-red-800 shadow-xs">
         <div class="flex items-center gap-2">
             <span class="inline-block size-2 rounded-full bg-white"></span>
             <span>REPUBLIK ÖSTERREICH • INTERNES BEAMTEN-PORTAL (VERTRAULICH / AMTLICH)</span>
         </div>
         <div class="flex items-center gap-3">
-            <span>Bürgerservice 2030</span>
-            <span class="opacity-80">|</span>
+            @auth
+                <span class="opacity-95 hidden sm:inline">👤 {{ auth()->user()->name }} ({{ auth()->user()->email }})</span>
+                <span class="opacity-60 hidden sm:inline">|</span>
+            @endauth
             <a href="{{ route('home') }}" class="hover:underline font-bold flex items-center gap-1 text-white">
                 <span>&larr;</span>
                 <span>Zurück zur Bürger-Assistenz</span>
             </a>
+            @auth
+                <span class="opacity-60">|</span>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="hover:underline font-bold text-white cursor-pointer bg-red-800/80 hover:bg-red-900 px-2.5 py-0.5 rounded text-[11px] border border-red-700 transition-colors shadow-2xs">
+                        Abmelden
+                    </button>
+                </form>
+            @endauth
         </div>
     </div>
 
@@ -199,8 +191,24 @@
                             </div>
 
                             @if($case->assigned_officer)
-                                <div class="mt-1.5 text-[11px] text-slate-600 dark:text-zinc-400 font-medium">
-                                    👤 Zugewiesen: {{ $case->assigned_officer }}
+                                <div class="mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-[11px] text-slate-600 dark:text-zinc-400 font-medium">
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="size-2 rounded-full bg-emerald-500"></span>
+                                        <span>Betreut von: <strong>{{ $case->assigned_officer }}</strong></span>
+                                    </span>
+                                </div>
+                            @else
+                                <div class="mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-[11px]">
+                                    <span class="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1.5">
+                                        <span class="size-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                        <span>Wartet auf Sachbearbeiter</span>
+                                    </span>
+                                    <span 
+                                        wire:click.stop="joinConversation({{ $case->id }})"
+                                        class="px-2 py-0.5 rounded bg-[#C8102E] hover:bg-red-700 text-white font-bold text-[10px] cursor-pointer shadow-2xs transition-colors"
+                                    >
+                                        + Beitreten
+                                    </span>
                                 </div>
                             @endif
                         </button>
@@ -236,8 +244,25 @@
                                 </p>
                             </div>
 
-                            {{-- Status Control Buttons --}}
+                            {{-- Action Buttons: Join, Status, Resolve --}}
                             <div class="flex items-center gap-2">
+                                @if($this->isOfficerJoined($selectedConversation))
+                                    <div class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5">
+                                        <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span>Beigetreten ({{ $selectedConversation->assigned_officer }})</span>
+                                    </div>
+                                @else
+                                    <button 
+                                        type="button" 
+                                        wire:click="joinConversation"
+                                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#C8102E] hover:bg-red-700 text-white transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                                        title="Dem Fall beitreten und Bürgerin/Bürger über den Beitritt informieren"
+                                    >
+                                        <span>👥</span>
+                                        <span>Gespräch beitreten</span>
+                                    </button>
+                                @endif
+
                                 <button 
                                     type="button" 
                                     wire:click="updateStatus('in_review')"
@@ -389,7 +414,3 @@
         </div>
     </main>
 </div>
-
-@fluxScripts
-</body>
-</html>

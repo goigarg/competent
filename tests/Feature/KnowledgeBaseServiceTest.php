@@ -48,3 +48,43 @@ test('knowledge base provides accurate fallback response with legal fees', funct
         ->and($residenceFallback['content'])->toContain('gebührenfrei')
         ->and($residenceFallback['content'])->toContain('Unterkunftgeber');
 });
+
+test('knowledge base correctly detects all 10 austrian administrative domains', function () {
+    $service = new KnowledgeBaseService;
+
+    expect($service->detectDomain('Wie mache ich den Steuerausgleich in FinanzOnline?'))->toBe('tax')
+        ->and($service->detectDomain('Ich brauche ein Foto für meine e-card bei der ÖGK'))->toBe('health')
+        ->and($service->detectDomain('Wie schreibe ich meinen Führerschein und mein Auto um?'))->toBe('driving_vehicle')
+        ->and($service->detectDomain('Wie beantrage ich die Rot-Weiß-Rot – Karte als Fachkraft?'))->toBe('work_permit')
+        ->and($service->detectDomain('I want to apply for a student residence permit'))->toBe('permit')
+        ->and($service->detectDomain('Wann bekomme ich die Familienbeihilfe und Kinderbetreuungsgeld?'))->toBe('family')
+        ->and($service->detectDomain('Wie melde ich mich beim AMS arbeitslos?'))->toBe('employment')
+        ->and($service->detectDomain('Voraussetzungen für die österreichische Staatsbürgerschaft'))->toBe('citizenship');
+});
+
+test('knowledge base provides structured guidance with checklist and next steps for expanded domains', function () {
+    $service = new KnowledgeBaseService;
+
+    // Tax domain
+    $taxFallback = $service->getFallbackResponse('Steuerausgleich und Familienbonus', 'de');
+    expect($taxFallback['topic'])->toBe('tax')
+        ->and($taxFallback['content'])->toContain('Arbeitnehmerveranlagung')
+        ->and($taxFallback['content'])->toContain('Familienbonus Plus')
+        ->and($taxFallback['content'])->toContain('5 Jahre rückwirkend')
+        ->and($taxFallback['checklist'])->not->toBeEmpty();
+
+    // Health domain
+    $healthFallback = $service->getFallbackResponse('e-card photo requirement and student insurance', 'en');
+    expect($healthFallback['topic'])->toBe('health')
+        ->and($healthFallback['content'])->toContain('e-card')
+        ->and($healthFallback['content'])->toContain('Student Self-Insurance')
+        ->and($healthFallback['checklist'])->not->toBeEmpty();
+
+    // Driving domain
+    $drivingFallback = $service->getFallbackResponse('ausländischen Führerschein umschreiben und Pickerl', 'de');
+    expect($drivingFallback['topic'])->toBe('driving_vehicle')
+        ->and($drivingFallback['content'])->toContain('Führerschein')
+        ->and($drivingFallback['content'])->toContain('6 Monate')
+        ->and($drivingFallback['content'])->toContain('Pickerl')
+        ->and($drivingFallback['checklist'])->not->toBeEmpty();
+});

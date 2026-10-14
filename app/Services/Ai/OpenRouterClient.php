@@ -63,113 +63,104 @@ class OpenRouterClient implements AiAssistantInterface
             ];
         }
 
-        $model = $options['model'] ?? $this->model;
+        $primaryModel = $options['model'] ?? $this->model;
+        $fallbackModels = (array) config('openrouter.fallback_models', []);
+        $candidateModels = array_values(array_unique(array_filter([$primaryModel, ...$fallbackModels])));
+
         $temperature = $options['temperature'] ?? 0.3;
         $maxTokens = $options['max_tokens'] ?? 1500;
+        $lastError = 'Unbekannter API-Fehler';
 
-        try {
-            $response = Http::withHeaders($this->getHeaders())
-                ->timeout($this->timeout)
-                ->post("{$this->baseUrl}/chat/completions", [
-                    'model' => $model,
-                    'messages' => $messages,
-                    'temperature' => $temperature,
-                    'max_tokens' => $maxTokens,
+        foreach ($candidateModels as $model) {
+            try {
+                $response = Http::withHeaders($this->getHeaders())
+                    ->timeout($this->timeout)
+                    ->post("{$this->baseUrl}/chat/completions", [
+                        'model' => $model,
+                        'messages' => $messages,
+                        'temperature' => $temperature,
+                        'max_tokens' => $maxTokens,
+                    ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    if (! empty($data['error'])) {
+                        $errMsg = is_array($data['error']) ? ($data['error']['message'] ?? json_encode($data['error'])) : $data['error'];
+                        Log::warning("OpenRouter returned error in 200 payload for model {$model}", ['error' => $errMsg]);
+                        $lastError = "API-Meldung: {$errMsg}";
+
+                        continue;
+                    }
+
+                    $message = $data['choices'][0]['message'] ?? [];
+                    $content = $message['content'] ?? '';
+
+                    // If content is empty, check reasoning fields which DeepSeek models often output
+                    if (trim((string) $content) === '' && ! empty($message['reasoning_content'])) {
+                        $content = $message['reasoning_content'];
+                    }
+                    if (trim((string) $content) === '' && ! empty($message['reasoning'])) {
+                        $content = $message['reasoning'];
+                    }
+
+                    $content = trim((string) $content);
+
+                    if ($content === '') {
+                        Log::warning("OpenRouter returned 200 but message content was empty for model {$model}", ['payload' => $data]);
+                        $lastError = 'Antwort des KI-Modells war leer.';
+
+                        continue;
+                    }
+
+                    $usage = $data['usage'] ?? [];
+
+                    return [
+                        'success' => true,
+                        'content' => $content,
+                        'model' => $model,
+                        'error' => null,
+                        'fallback' => false,
+                        'usage' => [
+                            'prompt_tokens' => $usage['prompt_tokens'] ?? 0,
+                            'completion_tokens' => $usage['completion_tokens'] ?? 0,
+                            'total_tokens' => $usage['total_tokens'] ?? 0,
+                        ],
+                    ];
+                }
+
+                $statusCode = $response->status();
+                $errorBody = $response->json('error.message') ?? $response->body();
+
+                Log::warning("OpenRouter API request failed for model {$model}", [
+                    'status' => $statusCode,
+                    'error' => $errorBody,
                 ]);
 
-            if ($response->successful()) {
-                $data = $response->json();
+                $lastError = match ($statusCode) {
+                    401 => 'Ungültiger oder abgelaufener OpenRouter API-Schlüssel.',
+                    429 => 'Das Abfragelimit für den KI-Dienst wurde vorübergehend erreicht (Rate Limit).',
+                    503, 502 => 'Der OpenRouter-Dienst oder das KI-Modell ist zurzeit nicht erreichbar.',
+                    default => "API-Fehler ({$statusCode}): {$errorBody}",
+                };
 
-                if (! empty($data['error'])) {
-                    $errMsg = is_array($data['error']) ? ($data['error']['message'] ?? json_encode($data['error'])) : $data['error'];
-                    Log::warning('OpenRouter returned error in 200 payload', ['error' => $errMsg]);
-
-                    return [
-                        'success' => false,
-                        'content' => '',
-                        'model' => $model,
-                        'error' => "API-Meldung: {$errMsg}",
-                        'fallback' => true,
-                    ];
+                // If invalid API key, no need to retry other models
+                if ($statusCode === 401) {
+                    break;
                 }
-
-                $message = $data['choices'][0]['message'] ?? [];
-                $content = $message['content'] ?? '';
-
-                // If content is empty, check reasoning fields which DeepSeek models often output
-                if (trim((string) $content) === '' && ! empty($message['reasoning_content'])) {
-                    $content = $message['reasoning_content'];
-                }
-                if (trim((string) $content) === '' && ! empty($message['reasoning'])) {
-                    $content = $message['reasoning'];
-                }
-
-                $content = trim((string) $content);
-
-                if ($content === '') {
-                    Log::warning('OpenRouter returned 200 but message content was empty', ['payload' => $data]);
-
-                    return [
-                        'success' => false,
-                        'content' => '',
-                        'model' => $model,
-                        'error' => 'Antwort des KI-Modells war leer.',
-                        'fallback' => true,
-                    ];
-                }
-
-                $usage = $data['usage'] ?? [];
-
-                return [
-                    'success' => true,
-                    'content' => $content,
-                    'model' => $model,
-                    'error' => null,
-                    'fallback' => false,
-                    'usage' => [
-                        'prompt_tokens' => $usage['prompt_tokens'] ?? 0,
-                        'completion_tokens' => $usage['completion_tokens'] ?? 0,
-                        'total_tokens' => $usage['total_tokens'] ?? 0,
-                    ],
-                ];
+            } catch (Throwable $e) {
+                Log::error("OpenRouter Exception for model {$model}: ".$e->getMessage());
+                $lastError = 'Verbindungsfehler: '.$e->getMessage();
             }
-
-            $statusCode = $response->status();
-            $errorBody = $response->json('error.message') ?? $response->body();
-
-            Log::warning('OpenRouter API request failed', [
-                'status' => $statusCode,
-                'error' => $errorBody,
-                'model' => $model,
-            ]);
-
-            $friendlyError = match ($statusCode) {
-                401 => 'Ungültiger oder abgelaufener OpenRouter API-Schlüssel.',
-                429 => 'Das Abfragelimit für den KI-Dienst wurde vorübergehend erreicht (Rate Limit).',
-                503, 502 => 'Der OpenRouter-Dienst oder das KI-Modell ist zurzeit nicht erreichbar.',
-                default => "API-Fehler ({$statusCode}): {$errorBody}",
-            };
-
-            return [
-                'success' => false,
-                'content' => '',
-                'model' => $model,
-                'error' => $friendlyError,
-                'fallback' => true,
-            ];
-        } catch (Throwable $e) {
-            Log::error('OpenRouter Exception: '.$e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return [
-                'success' => false,
-                'content' => '',
-                'model' => $model,
-                'error' => 'Verbindungsfehler oder Zeitüberschreitung: '.$e->getMessage(),
-                'fallback' => true,
-            ];
         }
+
+        return [
+            'success' => false,
+            'content' => '',
+            'model' => $primaryModel,
+            'error' => $lastError,
+            'fallback' => true,
+        ];
     }
 
     /**

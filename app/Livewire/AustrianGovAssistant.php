@@ -4,8 +4,10 @@ namespace App\Livewire;
 
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
+use App\Models\KnowledgeNugget;
 use App\Services\Ai\Contracts\AiAssistantInterface;
 use App\Services\AustrianGov\KnowledgeBaseService;
+use App\Services\AustrianGov\KnowledgeDistiller;
 use App\Services\AustrianGov\Workflows\PassportWorkflow;
 use App\Services\AustrianGov\Workflows\ResidenceWorkflow;
 use Illuminate\Contracts\View\View;
@@ -42,6 +44,10 @@ class AustrianGovAssistant extends Component
     public bool $isLoading = false;
 
     public ?string $piiWarning = null;
+
+    public bool $isOfficerJoined = false;
+
+    public ?string $officerJoinedName = null;
 
     public ?string $activeWorkflow = null; // 'passport', 'residence', or null
 
@@ -114,6 +120,7 @@ class AustrianGovAssistant extends Component
             if (! $conversation) {
                 $conversation = Conversation::with('messages')
                     ->where('session_id', session()->getId())
+                    ->where('status', 'active')
                     ->latest('updated_at')
                     ->first();
             }
@@ -133,12 +140,24 @@ class AustrianGovAssistant extends Component
                     }
                 }
 
+                if (! empty($conversation->assigned_officer)) {
+                    $this->isOfficerJoined = true;
+                    $this->officerJoinedName = $conversation->assigned_officer;
+                }
+
                 if ($conversation->messages->isNotEmpty()) {
                     $lastUserText = null;
                     $repairedMessages = [];
 
                     foreach ($conversation->messages as $m) {
                         $content = (string) $m->content;
+                        if ($m->workflow === 'officer_joined' || str_contains($content, 'ist dem Gespräch beigetreten') || str_contains($content, 'has joined the conversation')) {
+                            $this->isOfficerJoined = true;
+                            if (! empty($conversation->assigned_officer)) {
+                                $this->officerJoinedName = $conversation->assigned_officer;
+                            }
+                        }
+
                         if ($m->role === 'user') {
                             $lastUserText = $content;
                             $repairedMessages[] = [
@@ -197,8 +216,18 @@ class AustrianGovAssistant extends Component
 
     public function startNewConversation(): void
     {
-        session()->forget('austrian_gov_conversation_id');
-        $this->conversationId = null;
+        if ($this->conversationId) {
+            try {
+                // If previous conversation was not escalated to a human officer, mark it completed
+                Conversation::where('id', $this->conversationId)
+                    ->where('is_escalated', false)
+                    ->update(['status' => 'completed']);
+            } catch (\Throwable) {
+            }
+        }
+
+        $this->isOfficerJoined = false;
+        $this->officerJoinedName = null;
         $this->activeWorkflow = null;
         $this->passportState = [
             'step' => 1,
@@ -217,8 +246,30 @@ class AustrianGovAssistant extends Component
             'channel' => 'id_austria',
             'checked_items' => [],
         ];
+        $this->inputMessage = '';
+        $this->messages = [];
+        $this->showDossierModal = false;
+        $this->dossierContent = '';
+        $this->escalationSuccess = false;
 
-        $this->loadOrCreateConversation();
+        try {
+            $conversation = Conversation::create([
+                'session_id' => session()->getId(),
+                'locale' => $this->locale,
+                'status' => 'active',
+            ]);
+
+            $this->conversationId = $conversation->id;
+            session(['austrian_gov_conversation_id' => $conversation->id]);
+        } catch (\Throwable) {
+            $this->conversationId = null;
+        }
+
+        $this->initWelcomeMessage();
+        if (! empty($this->messages[0])) {
+            $this->persistMessage($this->messages[0]);
+        }
+        $this->updateEscalatedCount();
     }
 
     public function persistMessage(array $msgData): void
@@ -731,6 +782,22 @@ class AustrianGovAssistant extends Component
             $systemPrompt .= "\n\nZUSATZ-ANWEISUNG: Formuliere in 'Leichter Sprache' (A2-Niveau), kurze Hauptsätze, keine Fremdwörter, maximale Barrierefreiheit!";
         }
 
+        // 1. Retrieve matching factual knowledge nuggets from database
+        $nuggets = KnowledgeNugget::findRelevantNuggets($userPrompt, 2);
+        if ($nuggets->isNotEmpty()) {
+            $factsList = [];
+            foreach ($nuggets as $nugget) {
+                $factsList[] = "### [BEHÖRDLICHE FAKTEN: {$nugget->title}]\n{$nugget->factual_context}";
+            }
+            $dbGrounding = implode("\n\n", $factsList);
+
+            if ($this->locale === 'de') {
+                $systemPrompt .= "\n\nRELEVANTE RECHTLICHE FAKTEN AUS DER BUNDES-DATENBANK:\n{$dbGrounding}\n\nWICHTIGE ANWEISUNG ZUR PERSONALISIERUNG:\nNutze diese Fakten als rechtliche Richtschnur. Gehe dabei ZWINGEND spezifisch auf die persönliche Situation, das Alter, die Staatsbürgerschaft und bereits genannte Details des Bürgers aus dem bisherigen Gesprächsverlauf ein (keine unpersönlichen Pauschalantworten)!";
+            } else {
+                $systemPrompt .= "\n\nRELEVANT STATUTORY FACTS RETRIEVED FROM DATABASE:\n{$dbGrounding}\n\nIMPORTANT PERSONALIZATION INSTRUCTION:\nUse these verified facts as your legal baseline. You MUST tailor your response specifically to this citizen's unique situation, age, nationality, and details already established in the conversation history above (avoid generic cookie-cutter answers)!";
+            }
+        }
+
         $apiMessages = [
             ['role' => 'system', 'content' => $systemPrompt],
         ];
@@ -756,16 +823,7 @@ class AustrianGovAssistant extends Component
         $hasValidContent = $response['success'] && ! empty(trim((string) ($response['content'] ?? '')));
 
         if ($hasValidContent) {
-            $topic = $this->activeWorkflow;
-            if (! $topic) {
-                $lowerPrompt = mb_strtolower($userPrompt);
-                if (str_contains($lowerPrompt, 'student') || str_contains($lowerPrompt, 'permit') || str_contains($lowerPrompt, 'aufenthalt') || str_contains($lowerPrompt, 'nag')) {
-                    $topic = 'permit';
-                } else {
-                    $topic = 'general';
-                }
-            }
-
+            $topic = $this->activeWorkflow ?? $kbService->detectDomain($userPrompt);
             $sources = $kbService->getOfficialSources($topic, $this->locale);
 
             $this->addMessage([
@@ -777,6 +835,12 @@ class AustrianGovAssistant extends Component
                 'workflow' => $this->activeWorkflow,
                 'is_fallback' => false,
             ]);
+
+            // Asynchronously / safely attempt knowledge distillation for novel interactions
+            try {
+                app(KnowledgeDistiller::class)->learnFromInteraction($userPrompt, $response['content'], $this->locale);
+            } catch (\Throwable) {
+            }
         } else {
             // Graceful Knowledge Base Fallback
             $fallback = $kbService->getFallbackResponse($userPrompt, $this->locale);
@@ -867,6 +931,59 @@ class AustrianGovAssistant extends Component
         }
 
         return $model;
+    }
+
+    public function checkForUpdates(): void
+    {
+        if (! $this->conversationId || $this->isLoading) {
+            return;
+        }
+
+        try {
+            $conv = Conversation::with(['messages'])->find($this->conversationId);
+            if (! $conv) {
+                return;
+            }
+
+            if (! empty($conv->assigned_officer)) {
+                $this->isOfficerJoined = true;
+                $this->officerJoinedName = $conv->assigned_officer;
+            }
+
+            $existingIds = array_column($this->messages, 'id');
+            $hasNew = false;
+
+            foreach ($conv->messages as $m) {
+                $id = $m->uuid ?? (string) $m->id;
+                if (! in_array($id, $existingIds, true)) {
+                    $hasNew = true;
+                    $content = (string) $m->content;
+
+                    $this->messages[] = [
+                        'id' => $id,
+                        'role' => $m->role,
+                        'content' => $content,
+                        'timestamp' => $m->created_at?->format('H:i') ?? now()->format('H:i'),
+                        'sources' => $m->sources ?? [],
+                        'workflow' => $m->workflow,
+                        'is_fallback' => (bool) $m->is_fallback,
+                    ];
+
+                    if ($m->workflow === 'officer_joined' || str_contains($content, 'ist dem Gespräch beigetreten') || str_contains($content, 'has joined the conversation')) {
+                        $this->isOfficerJoined = true;
+                        if (! empty($conv->assigned_officer)) {
+                            $this->officerJoinedName = $conv->assigned_officer;
+                        }
+                    }
+                }
+            }
+
+            if ($hasNew) {
+                $this->updateEscalatedCount();
+            }
+        } catch (\Throwable) {
+            // Memory or testing fallback
+        }
     }
 
     public function render(): View
