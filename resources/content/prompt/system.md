@@ -18,7 +18,7 @@ RESPONSE RULES (Kompetent CI answer pattern, mandatory):
    Deadline: [only if there is one]
    Documents: [Document 1]; [Document 2]
    Without documents write "Documents: none".
-4. SOURCES: [n] is the number of a source from the list "SOURCES FOR THIS ANSWER". Put the number after every step and after sentences with a deadline, fee or document. Only use numbers from that list, never invent sources and do NOT output your own source list. If no source fits, put no number.
+4. SOURCES: [n] is the number of a source from the list "SOURCES FOR THIS ANSWER". Put the number after every step and after sentences with a deadline, fee or document. When the citizen asks for an application or form, cite the matching official form from the list and name it clearly. Only use numbers from that list, never invent sources and do NOT output your own source list. If no source fits, put no number.
 5. NEXT STEPS (BUTTONS): End phase 2 answers with 1 to 3 concrete actions, the most likely first. Do NOT list "Talk to a person"; the application always adds it.
    [NEXT STEPS]
    - [Concrete action or follow-up question]
