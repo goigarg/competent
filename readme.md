@@ -42,7 +42,7 @@ graph TD
     A["Colloquial Citizen Input<br/><i>'I lost my passport and need to move next week'</i>"] --> B["Privacy & Intent Filter<br/>SVNr Redacted · Domains Detected"]
     B --> C["Phase 1: Confirmation Chip<br/><i>'Habe ich Ihr Anliegen richtig verstanden?'</i>"]
     C --> D["Phase 2: CI Plain-Language Answer<br/>Where · Deadline · Documents · Citations [1][2]"]
-    D --> E["Interactive Service Workflows<br/>Urgency/Fee Calculator · Dynamic Form Resolver"]
+    D --> E["Step-by-Step Guidance<br/>Statutory Deadlines · Dynamic Form Resolver"]
     E --> F["Human Handover Trigger<br/>Structured Case Dossier Created"]
     F --> G["Staff Portal /portal<br/>Caseworker claims & joins live chat"]
 ```
@@ -70,21 +70,17 @@ Kompetent does not guess:
 ### 2. Privacy Firewall (PII Redaction)
 Under Austrian data protection principles, Social Insurance Numbers (*Sozialversicherungsnummer - SVNr*, 10 digits) are automatically detected and redacted with a privacy banner before reaching any external LLM service.
 
-### 3. Three Concrete Interactive Workflows
+### 3. Universal Public Service Assistance (Hundreds of Citizen Services)
+Kompetent is a **universal administrative assistant** covering the entire spectrum of Austrian public administration rather than a single niche:
+- **Passports & Identity**: Renewal procedures, biometric photo standards, loss/theft reporting (*Verlustanzeige*), and express delivery options.
+- **Residence & Relocation**: Statutory 3-day registration deadline (§ 1 Meldegesetz), rental vs. home owner requirements (*Unterkunftgeber* confirmation), and ID Austria digital registration.
+- **Immigration & Work Permits**: Red-White-Red Card (*Rot-Weiß-Rot – Karte*), EU Blue Card, student permits, points evaluations, and employer declarations.
+- **Taxes & Finance**: Employee tax assessment (*Arbeitnehmerveranlagung* / Form L1 & L1k), Family Bonus Plus, and commuter deductions (*Pendlerpauschale*).
+- **Family & Children**: Family allowance (*Familienbeihilfe* / Beih 100), childcare benefits (*Kinderbetreuungsgeld*), and marriage procedures.
+- **Health & Social Care**: E-card with photo obligations, health fund self-insurance (*ÖGK Selbstversicherung*), and prescription fee waivers.
+- **Mobility & Driving**: Foreign driver's license conversion, vehicle roadworthiness inspection (*§ 57a Pickerl*), and motor vehicle registration.
 
-#### A. Passport Renewal & Issuance (`PassportWorkflow`)
-- **Scenarios**: Expiring, expired >5 years, lost/stolen (includes mandatory *Verlustanzeige* guidance), first-time child passport.
-- **Dynamic Fee & Delivery Matrix**: Standard (€75.90, ~5 days), Expresspass (€100.00, 2-3 days), Ein-Tages-Expresspass (€220.00).
-- **Interactive Checklists**: Photo biometric criteria (35×45mm), proof of citizenship, birth certificate.
-
-#### B. Residence Registration (`ResidenceWorkflow`)
-- **Deadline Monitor**: Live calculation of the strict **3-day statutory deadline** (§ 1 Abs. 1 Meldegesetz) with dynamic compliance warnings.
-- **Housing Routing**: Rented (*Unterkunftgeber* landlord signature required) vs. Owner (*Grundbuchauszug*).
-- **Digital vs. In-Person**: Direct routing to **ID Austria** (*Digitales Amt*) vs. municipal office booking.
-
-#### C. Immigration & Work Permits (`AdministrativeForm` & Dynamic Form Index)
-- **Red-White-Red Card & EU Blue Card**: Points criteria (shortage trades, university graduates).
-- **Dynamic Form Resolution**: Solves government PDF link rot by dynamically indexing official forms and providing verified direct downloads (e.g. BMI Formular B, *Arbeitgebererklärung* AMS form, *Meldezettel*).
+For any service, the universal engine dynamically determines the statutory baseline, retrieves the relevant official forms, and guides the citizen through required steps.
 
 ### 4. Human Fallback & Staff Portal (`/portal`)
 The assistant never traps the citizen in a dead end:
@@ -182,7 +178,7 @@ Access the assistant at `http://localhost:8000` and the caseworker portal at `ht
 
 ### Walkthrough Highlights
 1. **0:00 – 0:25**: Colloquial citizen query understanding and Phase 1 clarification confirmation.
-2. **0:25 – 0:50**: Guided Residence Registration workflow, 3-day deadline tracker, and direct form downloads.
+2. **0:25 – 0:50**: Universal guidance across services, statutory deadline alerts, and direct form downloads.
 3. **0:50 – 1:15**: Accessibility features (Leichte Sprache, Arabic RTL, High-Contrast mode).
 4. **1:15 – 1:45**: Handover to human caseworker, Case Dossier inspection, and live portal takeover.
 
