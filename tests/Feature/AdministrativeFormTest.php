@@ -20,7 +20,7 @@ test('administrative forms can be retrieved by relevance score', function () {
     $first = $forms->first();
     expect($first)->not->toBeNull()
         ->and($first->form_code)->toBe('NAG-Erstantrag')
-        ->and($first->download_url)->toBe('https://www.bmi.gv.at/312/files/Antrag_Erteilung_Aufenthaltstitel.pdf');
+        ->and($first->download_url)->toBe('https://www.bmi.gv.at/312/60a/files/b/239-2026-antragsformular-b-aufenthaltstitel-drittstaatsangehoerige-de-v20260915-bf.pdf');
 });
 
 test('detects form intent in citizen queries', function () {
@@ -48,7 +48,7 @@ test('citation resolver injects exact official form at the top when user request
 
     $firstSource = $sources[0];
     expect($firstSource->origin)->toBe('form')
-        ->and($firstSource->url)->toBe('https://www.bmi.gv.at/312/files/Antrag_Erteilung_Aufenthaltstitel.pdf')
+        ->and($firstSource->url)->toBe('https://www.bmi.gv.at/312/60a/files/b/239-2026-antragsformular-b-aufenthaltstitel-drittstaatsangehoerige-de-v20260915-bf.pdf')
         ->and($firstSource->number)->toBe(1)
         ->and($firstSource->title)->toContain('Application for a Residence Title');
 });
