@@ -24,7 +24,7 @@
             class="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-slate-800 dark:text-zinc-200 text-xs shadow-2xs space-y-2.5"
         >
             <div class="flex items-center gap-2">
-                <span class="size-6 rounded-md bg-[#C8102E] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                <span class="size-6 rounded-md bg-kp-navy text-white flex items-center justify-center font-bold text-xs shrink-0">
                     🏛️
                 </span>
                 <div>
@@ -51,7 +51,7 @@
             <button 
                 type="button" 
                 @click="fillCredentials('beamter@bka.gv.at', 'Bundeskanzleramt2030!')"
-                class="w-full py-1.5 px-3 rounded-lg bg-[#C8102E] hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+                class="w-full py-1.5 px-3 rounded-lg bg-kp-navy hover:bg-kp-darkblue text-white font-bold text-xs transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
                 <span>🔑</span>
                 <span>Beamten-Zugangsdaten 1-Klick einfügen</span>

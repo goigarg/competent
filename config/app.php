@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Kompetent Brand
+    |--------------------------------------------------------------------------
+    |
+    | Word mark and web address from the Kompetent CI (docs/ci). The CI allows
+    | "Kompetent" or "Competent"; the domain is written without "www" or "https://".
+    |
+    */
+
+    'brand' => env('APP_BRAND', 'Kompetent'),
+
+    'brand_domain' => env('APP_BRAND_DOMAIN', strtolower((string) env('APP_BRAND', 'Kompetent')).'.gv.at'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

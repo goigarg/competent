@@ -68,3 +68,20 @@ test('openrouter client gracefully flags fallback when api returns rate limit er
         ->and($result['fallback'])->toBeTrue()
         ->and($result['error'])->toContain('Abfragelimit');
 });
+
+test('openrouter client falls back to the next configured model', function () {
+    config(['openrouter.fallback_models' => ['backup/model']]);
+
+    Http::fake(function ($request) {
+        return $request['model'] === 'backup/model'
+            ? Http::response(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Antwort vom Ersatzmodell']]]], 200)
+            : Http::response(['error' => ['message' => 'Rate limit exceeded']], 429);
+    });
+
+    $client = new OpenRouterClient(apiKey: 'key', model: 'primary/model');
+    $result = $client->chat([['role' => 'user', 'content' => 'Hallo']]);
+
+    expect($result['success'])->toBeTrue()
+        ->and($result['model'])->toBe('backup/model')
+        ->and($result['content'])->toBe('Antwort vom Ersatzmodell');
+});

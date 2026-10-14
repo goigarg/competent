@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fff;color:#000;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#b92b06;text-decoration:underline}
+a:hover{color:#e1320f}
+*{box-sizing:border-box}
+</style>
+<template id="__bundler_thumbnail" data-bg-color="#e4ebf0"><svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="800" fill="#e4ebf0"></rect><g transform="translate(415 280) scale(0.4)" fill="#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></g></svg></template>
+</helmet>
+
+<section data-screen-label="01 Cover" style="position:relative;min-height:640px;overflow:hidden;background:#fff;border-bottom:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:56px 48px 0">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div style="display:flex;align-items:baseline;gap:0.727em;font-size:28px;letter-spacing:0.06em">
+        <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+        <span style="font-weight:400">{{ brand }}</span>
+      </div>
+      <span style="font-size:20px;color:#b92b06">{{ domain }}</span>
+    </div>
+  </div>
+  <div style="background:#e4ebf0;margin-top:56px;min-height:500px;position:relative">
+    <div style="max-width:1240px;margin:0 auto;padding:72px 48px 120px;position:relative;z-index:1">
+      <div style="font-size:15px;font-weight:500;color:#b92b06;margin-bottom:20px">Corporate Design · Konzept, Oktober 2026</div>
+      <h1 style="margin:0;font-size:clamp(44px,6vw,80px);line-height:1.02;font-weight:700;letter-spacing:-0.02em;max-width:760px;text-wrap:balance">Eine Schnittstelle, die zuständig ist.</h1>
+      <p style="margin:28px 0 0;font-size:20px;line-height:1.5;max-width:560px;font-weight:300">Das Erscheinungsbild für den digitalen Verwaltungsassistenten {{ brand }}. Angelehnt an das Corporate Design des Bundes, gesetzt in Inter.</p>
+    </div>
+    <div style="position:absolute;right:0;bottom:0;width:min(420px,45vw);height:min(420px,45vw)">
+      <div style="position:absolute;right:0;top:0;width:100%;height:33.34%;background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,15.5% 100%)"></div>
+      <div style="position:absolute;right:0;bottom:0;width:100%;height:33.34%;background:#e1320f;clip-path:polygon(31% 0,100% 0,100% 100%,46.6% 100%)"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="02 Leitidee" style="background:#fff">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">01 Leitidee</div>
+    <h2 style="margin:0 0 48px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Aus „Ich bin nicht zuständig“ wird „Kompetent“.</h2>
+    <div style="background:#eff4f7;padding:clamp(40px,7vw,96px) clamp(24px,5vw,72px);min-height:260px;display:flex;align-items:center">
+      <div style="font-size:clamp(34px,5.4vw,72px);line-height:1.15;font-weight:600;letter-spacing:-0.02em;display:flex;flex-wrap:wrap;column-gap:0.28em;row-gap:0.1em;align-items:baseline">
+        <span>Ich bin</span>
+        <span style="position:relative;display:inline-block;color:{{ oldColor }};transition:color 500ms ease">
+          nicht zuständig
+          <span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:{{ strikeW }};background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%);transition:width 650ms cubic-bezier(.6,0,.2,1)"></span>
+        </span>
+        <span style="color:#b92b06;font-weight:700;opacity:{{ newOpacity }};transform:translateY({{ newShift }});transition:opacity 500ms ease,transform 500ms ease;display:inline-block">kompetent.</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px;margin-top:40px">
+      <p style="margin:0;font-size:17px;line-height:1.6">Der Satz, den Bürgerinnen und Bürger am häufigsten hören, wird mit einem Balken aus der Flagge durchgestrichen. Übrig bleibt die Antwort, die {{ brand }} gibt.</p>
+      <p style="margin:0;font-size:17px;line-height:1.6">Die Durchstreichung ist das zentrale Gestaltungsmittel der Marke. Sie verwendet die Flaggenform mit dem Winkel von 25° und kommt in Kampagnen, im Onboarding und in Ladezuständen zum Einsatz.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="03 Logo" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px;display:flex;flex-wrap:wrap;gap:48px">
+    <div style="flex:2 1 560px;min-width:0">
+      <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">02 Logo</div>
+      <h2 style="margin:0 0 48px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Flagge und Wortmarke</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+        <div style="border:1px solid #d9e3e8;padding:56px 40px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:34px;letter-spacing:0.06em">
+            <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+            <span>{{ brand }}</span>
+          </div>
+          <div style="font-size:13px;color:#444">Primärlogo</div>
+        </div>
+        <div style="border:1px solid #d9e3e8;padding:56px 40px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:34px;letter-spacing:0.06em">
+            <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+            <div style="display:flex;flex-direction:column">
+              <span>{{ brand }}</span>
+              <span style="font-size:0.5em;font-weight:300;letter-spacing:0.045em;margin-top:0.5em;line-height:1.3">Digitaler<br>Verwaltungsassistent</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#444">Mit Zusatz in Inter Light</div>
+        </div>
+      </div>
+      <div style="border:1px solid #d9e3e8;padding:40px;margin-top:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;flex-wrap:wrap;border-bottom:1px dashed #9aa7ae;padding-bottom:6px">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:28px;letter-spacing:0.06em">
+            <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+            <span>{{ brand }}</span>
+          </div>
+          <span style="font-size:20px;color:#b92b06">{{ domain }}</span>
+        </div>
+        <div style="font-size:13px;color:#444">Logo mit Webadresse, gemeinsame Grundlinie</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;margin-top:24px">
+        <div style="background:#000;padding:36px 28px;display:flex;align-items:baseline;gap:0.727em;font-size:20px;letter-spacing:0.06em;color:#fff">
+          <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+        </div>
+        <div style="background:#002d66;padding:36px 28px;display:flex;align-items:baseline;gap:0.727em;font-size:20px;letter-spacing:0.06em;color:#fff">
+          <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+        </div>
+        <div style="background:#620d3b;padding:36px 28px;display:flex;align-items:baseline;gap:0.727em;font-size:20px;letter-spacing:0.06em;color:#fff">
+          <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#fff"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+        </div>
+        <div style="background:#e4ebf0;padding:36px 28px;display:flex;align-items:baseline;gap:0.727em;font-size:20px;letter-spacing:0.06em;color:#000">
+          <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#000"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+        </div>
+      </div>
+      <div style="margin-top:48px;border:1px dashed #9aa7ae;padding:48px;display:flex;justify-content:center">
+        <div style="position:relative;padding:44px;outline:1px dashed #b92b06">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:60px;letter-spacing:0.06em">
+            <div style="position:relative;flex:none;height:0.727em;width:1.12em">
+              <svg viewBox="0 0 925 600" style="height:100%;width:100%;fill:#e1320f;display:block"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+              <div style="position:absolute;right:calc(100% + 0.08em);top:0;width:0.727em;height:100%;background:rgba(225,50,15,0.12);border:1px dashed #b92b06"></div>
+              <div style="position:absolute;right:calc(100% + 0.08em);top:-0.42em;width:0.727em;text-align:center;font-size:12px;color:#b92b06;letter-spacing:0">x</div>
+            </div>
+            <span>{{ brand }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside style="flex:1 1 280px;background:#eff4f7;padding:40px 32px;align-self:stretch;font-size:15px;line-height:1.6;display:flex;flex-direction:column;gap:24px">
+      <div><div style="font-weight:600;color:#b92b06">Aufbau</div>Flagge links, Wortmarke in Inter Regular mit Laufweite +60. Flagge und Text stehen auf einer gemeinsamen Grundlinie, die Flaggenhöhe entspricht der Versalhöhe.</div>
+      <div><div style="font-weight:600;color:#b92b06">Flagge</div>Proportion 925 : 600, linke Kante im Winkel von 25° abgeschrägt. Der Zwischenraum bleibt immer frei, nie weiß gefüllt.</div>
+      <div><div style="font-weight:600;color:#b92b06">Schutzzone</div>Eine Flaggenhöhe (x) auf allen Seiten. Alle Abstände im Layout werden in Flaggenhöhen gerechnet.</div>
+      <div><div style="font-weight:600;color:#b92b06">Webadresse</div>{{ domain }} wird ohne „www“ und „https://“ geschrieben, in Textrot, rechts oben auf der Grundlinie des Logos. Schriftgröße wie die Wortmarke oder kleiner.</div>
+      <div><div style="font-weight:600;color:#b92b06">Farbflächen</div>Standard: rote Flagge, schwarzer Text. Auf dunklen Flächen weißer Text mit roter Flagge. Auf Purpur oder Rot einfärbig weiß.</div>
+    </aside>
+  </div>
+</section>
+
+<section data-screen-label="04 Farben" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">03 Farben</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Rot, Schwarz und ruhige Funktionsfarben</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:640px">Werte aus dem Styleguide des Bundes (Stand März 2025). Flaggenrot wird nicht großflächig eingesetzt. Für Text gilt Textrot, das WCAG AA erfüllt.</p>
+    <div style="font-size:14px;font-weight:600;margin-bottom:16px">Primärfarben</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:120px;background:#e1320f"></div><div style="font-size:14px;line-height:1.5"><b>Flaggenrot</b><br>#E1320F · RGB 225/50/15<br>Pantone 485</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:120px;background:#b92b06"></div><div style="font-size:14px;line-height:1.5"><b>Textrot (AA)</b><br>#B92B06 · RGB 185/43/6<br>Pantone 7627</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:120px;background:#000"></div><div style="font-size:14px;line-height:1.5"><b>Schwarz</b><br>#000000<br>Pantone Black</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:120px;background:#fff;border:1px solid #d9e3e8"></div><div style="font-size:14px;line-height:1.5"><b>Weiß</b><br>#FFFFFF</div></div>
+    </div>
+    <div style="font-size:14px;font-weight:600;margin:48px 0 16px">Funktionsfarben</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px">
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#d9e3e8"></div><div style="font-size:13px;line-height:1.5"><b>Blaugrau</b><br>#D9E3E8</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#e4ebf0"></div><div style="font-size:13px;line-height:1.5"><b>Blaugrau 60</b><br>#E4EBF0</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#eff4f7"></div><div style="font-size:13px;line-height:1.5"><b>Blaugrau 30</b><br>#EFF4F7</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#e9e4df"></div><div style="font-size:13px;line-height:1.5"><b>Sandgrau</b><br>#E9E4DF</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#f0ece8"></div><div style="font-size:13px;line-height:1.5"><b>Sandgrau 60</b><br>#F0ECE8</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#f6f4f0"></div><div style="font-size:13px;line-height:1.5"><b>Sandgrau 30</b><br>#F6F4F0</div></div>
+    </div>
+    <div style="font-size:14px;font-weight:600;margin:48px 0 16px">Sekundärfarben für digitale Oberflächen</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px">
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#002d66;color:#fff;font-size:13px;padding:10px">AA</div><div style="font-size:13px;line-height:1.5"><b>Nachtblau</b><br>#002D66</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#003d84;color:#fff;font-size:13px;padding:10px">AA</div><div style="font-size:13px;line-height:1.5"><b>Dunkelblau</b><br>#003D84</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#0063a3;color:#fff;font-size:13px;padding:10px">AA</div><div style="font-size:13px;line-height:1.5"><b>Blau</b><br>#0063A3</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#620d3b;color:#fff;font-size:13px;padding:10px">AA</div><div style="font-size:13px;line-height:1.5"><b>Purpur</b><br>#620D3B</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#236b76;color:#fff;font-size:13px;padding:10px">AA</div><div style="font-size:13px;line-height:1.5"><b>Petrol</b><br>#236B76</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div style="height:88px;background:#38713f;color:#fff;font-size:13px;padding:10px">AA</div><div style="font-size:13px;line-height:1.5"><b>Grün (Status)</b><br>#38713F</div></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="05 Typografie" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px;display:flex;flex-wrap:wrap;gap:48px">
+    <div style="flex:2 1 560px;min-width:0">
+      <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">04 Typografie</div>
+      <h2 style="margin:0 0 40px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Inter in vier Schnitten</h2>
+      <div style="display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:48px">
+        <div style="font-size:clamp(96px,14vw,180px);line-height:0.9;font-weight:400;letter-spacing:-0.03em">Aa</div>
+        <div style="font-size:clamp(96px,14vw,180px);line-height:0.9;font-weight:700;letter-spacing:-0.03em">ßö</div>
+      </div>
+      <div style="display:flex;flex-direction:column;border-top:1px solid #000">
+        <div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:1px solid #d9e3e8;align-items:baseline"><span style="font-size:13px;color:#444">Display · Bold 56/60</span><span style="font-size:clamp(32px,4vw,56px);line-height:1.07;font-weight:700;letter-spacing:-0.02em">Ihr Meldezettel</span></div>
+        <div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:1px solid #d9e3e8;align-items:baseline"><span style="font-size:13px;color:#444">Überschrift · Bold 32/38</span><span style="font-size:32px;line-height:1.2;font-weight:700;letter-spacing:-0.01em">Umzug von Linz nach Graz</span></div>
+        <div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:1px solid #d9e3e8;align-items:baseline"><span style="font-size:13px;color:#444">Untertitel · Light 24/32</span><span style="font-size:24px;line-height:1.35;font-weight:300">Was Sie in den nächsten drei Tagen erledigen</span></div>
+        <div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:1px solid #d9e3e8;align-items:baseline"><span style="font-size:13px;color:#444">Fließtext · Regular 18/28</span><span style="font-size:18px;line-height:1.55">Die Anmeldung ist innerhalb von drei Tagen nach dem Einzug bei der Meldebehörde vorzunehmen.</span></div>
+        <div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:1px solid #d9e3e8;align-items:baseline"><span style="font-size:13px;color:#444">Auszeichnung · Semibold 15</span><span style="font-size:15px;font-weight:600;color:#b92b06">Zuständig: Magistrat Graz</span></div>
+      </div>
+    </div>
+    <aside style="flex:1 1 280px;background:#eff4f7;padding:40px 32px;font-size:15px;line-height:1.6;display:flex;flex-direction:column;gap:24px">
+      <div><div style="font-weight:600;color:#b92b06">Hausschrift</div>Inter (Open Font License) für Logo, Print und alle digitalen Anwendungen. Sie ersetzt die Bundesschriften Europa Austria und Source Sans Pro.</div>
+      <div><div style="font-weight:600;color:#b92b06">Schnitte</div>Light 300 für Zusätze und Untertitel, Regular 400 für Logo und Fließtext, Semibold 600 für Auszeichnungen, Bold 700 für Überschriften.</div>
+      <div><div style="font-weight:600;color:#b92b06">Regeln</div>Groß-Klein-Schreibung, keine Versalien. Hervorhebung über Schnitt, Größe oder Textrot. Österreichisches Deutsch: Jänner, Meldezettel, Magistrat.</div>
+    </aside>
+  </div>
+</section>
+
+<section data-screen-label="06 Gestaltungselemente" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">05 Gestaltungselemente</div>
+    <h2 style="margin:0 0 48px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Flagge, Winkel, Durchstreichung</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="position:relative;aspect-ratio:4/3;background:#fff;border:1px solid #d9e3e8;overflow:hidden">
+          <div style="position:absolute;right:0;bottom:0;width:58%;aspect-ratio:1">
+            <div style="position:absolute;right:0;top:0;width:100%;height:33.34%;background:#e4ebf0;clip-path:polygon(0 0,100% 0,100% 100%,15.5% 100%)"></div>
+            <div style="position:absolute;right:0;bottom:0;width:100%;height:33.34%;background:#e4ebf0;clip-path:polygon(31% 0,100% 0,100% 100%,46.6% 100%)"></div>
+          </div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Angeschnittene Flagge.</b> Auf 1 : 1 beschnitten, immer bündig rechts unten. In Rot, Blaugrau oder Weiß.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="position:relative;aspect-ratio:4/3;background:#eff4f7;overflow:hidden">
+          <div style="position:absolute;inset:0;background:#d9e3e8;clip-path:polygon(0 0,38% 0,80% 100%,0 100%)"></div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Farbwinkel.</b> Flächen mit 25° verlängern die Schräge der Flagge. Wir arbeiten mit Flächen, nicht mit Linien.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="aspect-ratio:4/3;background:#fff;border:1px solid #d9e3e8;display:flex;align-items:center;justify-content:center;padding:24px">
+          <div style="font-size:32px;font-weight:600;line-height:1.3;letter-spacing:-0.01em">
+            <div style="position:relative;display:inline-block;color:#8a959b">Wartezeit<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></div>
+            <div style="color:#b92b06;font-weight:700">Antwort.</div>
+          </div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Durchstreichung.</b> Ein Flaggenbalken streicht das Problem, darunter steht die Lösung. Pro Fläche nur einmal.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="07 UI-Bausteine" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">06 UI-Bausteine</div>
+    <h2 style="margin:0 0 48px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Grundelemente für digitale Produkte</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px">
+      <div style="background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font-size:13px;color:#444;margin-bottom:4px">Buttons</div>
+        <button style="font:inherit;font-size:16px;font-weight:600;background:#002d66;color:#fff;border:0;padding:14px 22px;min-height:48px;cursor:pointer" style-hover="background:#003d84">Antrag vorbereiten</button>
+        <button style="font:inherit;font-size:16px;font-weight:600;background:#fff;color:#002d66;border:2px solid #002d66;padding:12px 20px;min-height:48px;cursor:pointer" style-hover="background:#e4ebf0">Mit einer Person sprechen</button>
+        <button style="font:inherit;font-size:16px;font-weight:600;background:none;color:#b92b06;border:0;padding:12px 0;cursor:pointer;text-decoration:underline;text-underline-offset:4px">Quelle anzeigen</button>
+      </div>
+      <div style="background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;color:#444;margin-bottom:4px">Zuständigkeitskarte</div>
+        <div style="background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#38713f"><span style="width:8px;height:8px;background:#38713f;border-radius:50%"></span>Zuständige Stelle gefunden</div>
+          <div style="font-size:20px;font-weight:700">Magistrat Graz, Meldeservice</div>
+          <div style="font-size:15px;line-height:1.5;color:#222">Frist: 3 Tage nach Einzug<br>Online mit ID Austria möglich</div>
+        </div>
+      </div>
+      <div style="background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;color:#444;margin-bottom:4px">Eingabe und Chips</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:14px;font-weight:500;background:#fff;border:1px solid #9aa7ae;padding:8px 14px">Wohnsitz ummelden</span>
+          <span style="font-size:14px;font-weight:500;background:#fff;border:1px solid #9aa7ae;padding:8px 14px">Reisepass</span>
+          <span style="font-size:14px;font-weight:500;background:#002d66;color:#fff;border:1px solid #002d66;padding:8px 14px">Leichte Sprache</span>
+        </div>
+        <div style="background:#fff;border:2px solid #002d66;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin-top:8px">
+          <span style="font-size:16px;color:#5a666c">Ihr Anliegen in eigenen Worten …</span>
+          <span style="width:36px;height:36px;background:#002d66;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px">→</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="08 Tonalität" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px;display:flex;flex-wrap:wrap;gap:48px">
+    <div style="flex:2 1 560px;min-width:0">
+      <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">07 Tonalität und Sprache</div>
+      <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Klar, zuständig, auf Augenhöhe</h2>
+      <p style="margin:0 0 40px;font-size:17px;line-height:1.6;max-width:640px">{{ brand }} spricht wie eine freundliche, erfahrene Sachbearbeiterin: in der Sie-Form, in kurzen Sätzen und mit einer konkreten nächsten Handlung.</p>
+      <div style="display:flex;flex-direction:column;border-top:1px solid #000">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;padding:24px 0;border-bottom:1px solid #d9e3e8">
+          <div style="font-size:17px;line-height:1.5;color:#5a666c"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Statt</div>„Hierfür bin ich leider nicht zuständig.“</div>
+          <div style="font-size:17px;line-height:1.5"><div style="font-size:13px;font-weight:600;color:#b92b06;margin-bottom:6px">Besser</div>„Dafür ist das Finanzamt Österreich zuständig. Ich habe Ihnen das Formular herausgesucht.“</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;padding:24px 0;border-bottom:1px solid #d9e3e8">
+          <div style="font-size:17px;line-height:1.5;color:#5a666c"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Statt</div>„Gemäß Meldegesetz ist die Anmeldung binnen drei Tagen vorzunehmen.“</div>
+          <div style="font-size:17px;line-height:1.5"><div style="font-size:13px;font-weight:600;color:#b92b06;margin-bottom:6px">Besser</div>„Melden Sie sich innerhalb von 3 Tagen nach dem Einzug an. Das geht auch online.“</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;padding:24px 0;border-bottom:1px solid #d9e3e8">
+          <div style="font-size:17px;line-height:1.5;color:#5a666c"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Statt</div>„Ein Fehler ist aufgetreten.“</div>
+          <div style="font-size:17px;line-height:1.5"><div style="font-size:13px;font-weight:600;color:#b92b06;margin-bottom:6px">Besser</div>„Das hat nicht geklappt. Ihre Angaben sind gespeichert. Versuchen Sie es noch einmal oder sprechen Sie mit einer Person.“</div>
+        </div>
+      </div>
+      <div style="margin-top:40px;background:#f6f4f0;padding:28px 32px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:600;color:#b92b06">Leichte Sprache</div>
+        <div style="font-size:20px;line-height:1.6;max-width:520px">Sie ziehen um?<br>Dann müssen Sie sich neu anmelden.<br>Sie haben dafür 3 Tage Zeit.</div>
+        <div style="font-size:14px;line-height:1.5;color:#333">Ein Satz pro Zeile, eine Aussage pro Satz, Zahlen als Ziffern. Umschaltbar in jeder Antwort.</div>
+      </div>
+    </div>
+    <aside style="flex:1 1 280px;background:#eff4f7;padding:40px 32px;font-size:15px;line-height:1.6;display:flex;flex-direction:column;gap:24px">
+      <div><div style="font-weight:600;color:#b92b06">Grundsätze</div>Sie-Form. Aktiv statt passiv. Zuerst die Antwort, dann die Begründung. Jede Antwort endet mit einem nächsten Schritt.</div>
+      <div><div style="font-weight:600;color:#b92b06">Nie sagen</div>„Nicht zuständig“, „bitte wenden Sie sich an die zuständige Stelle“, „leider“ ohne Alternative.</div>
+      <div><div style="font-weight:600;color:#b92b06">Österreichisches Deutsch</div>Jänner statt Januar, Meldezettel statt Meldebescheinigung, Magistrat statt Bürgeramt, heuer statt dieses Jahr.</div>
+      <div><div style="font-weight:600;color:#b92b06">Mehrsprachig</div>Antworten in der Sprache der Anfrage. Amtliche Begriffe bleiben deutsch und werden erklärt.</div>
+    </aside>
+  </div>
+</section>
+
+<section data-screen-label="09 KI-Kennzeichnung" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">08 KI-Kennzeichnung</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Transparent, was die KI sagt und was geprüft ist</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:680px">Der Bund empfiehlt, den Einsatz von KI klar auszuweisen. {{ brand }} unterscheidet sichtbar zwischen formulierten Antworten und geprüften Angaben aus der Faktendatenbank.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+      <div style="flex:1 1 420px;max-width:560px;background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;font-weight:600;border:1px solid #002d66;color:#002d66;padding:3px 8px;background:#fff">KI-Antwort</span>
+          <span style="font-size:13px;color:#5a666c">① Kennzeichnung</span>
+        </div>
+        <div style="background:#fff;padding:14px 18px;font-size:16px;line-height:1.55">Ihr Reisepass ist abgelaufen. Einen neuen beantragen Sie persönlich bei einer Passbehörde, zum Beispiel beim Magistrat Graz.</div>
+        <div style="background:#fff;border-left:4px solid #38713f;padding:14px 18px;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;color:#fff;background:#38713f;padding:3px 8px">Geprüfte Angabe</span><span style="font-size:13px;color:#5a666c">② aus der Faktendatenbank</span></div>
+          <div style="font-size:15px;line-height:1.5">Mitzubringen: Lichtbild, alter Reisepass, Staatsbürgerschaftsnachweis</div>
+        </div>
+        <div style="font-size:13px;color:#333;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline"><span style="text-decoration:underline;text-underline-offset:3px;color:#b92b06">Quelle: oesterreich.gv.at, Reisepass</span><span style="color:#5a666c">③ Quelle verlinkt</span></div>
+        <div style="background:#002d66;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+          <span style="font-size:15px">Sie möchten lieber mit einer Person sprechen?</span>
+          <span style="font-size:14px;font-weight:600;background:#fff;color:#002d66;padding:8px 12px">Übergeben</span>
+        </div>
+        <div style="font-size:13px;color:#5a666c">④ Übergabe an einen Menschen, jederzeit sichtbar</div>
+      </div>
+      <div style="flex:1 1 320px;display:flex;flex-direction:column;border-top:1px solid #000">
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:16px;line-height:1.55"><b>1 · Jede KI-Antwort ist gekennzeichnet.</b> Das Label „KI-Antwort“ steht über dem Text, nie versteckt im Kleingedruckten.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:16px;line-height:1.55"><b>2 · Fristen, Gebühren und Dokumente kommen nur aus der Faktendatenbank.</b> Sie tragen das grüne Label „Geprüfte Angabe“.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:16px;line-height:1.55"><b>3 · Jede Antwort nennt ihre Quelle.</b> Nur österreichische Behördenquellen, als Link in Textrot.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:16px;line-height:1.55"><b>4 · Der Weg zum Menschen ist immer offen.</b> Bei der Übergabe erscheint, wer übernimmt: „Sie sprechen jetzt mit Sandra M., Meldeservice.“</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:16px;line-height:1.55"><b>5 · Unsicherheit wird ausgesprochen.</b> „Das kann ich nicht sicher beantworten. Ich verbinde Sie mit der zuständigen Stelle.“</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="10 Barrierefreiheit" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">09 Barrierefreiheit</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Für alle nutzbar, mindestens WCAG 2.2 AA</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:680px">Einrichtungen des öffentlichen Dienstes sind zu Barrierefreiheit verpflichtet. Das Kontrastverhältnis von Text zu Hintergrund beträgt mindestens 4,5 : 1.</p>
+    <div style="font-size:14px;font-weight:600;margin-bottom:16px">Geprüfte Kombinationen</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px">
+      <div style="background:#fff;border:1px solid #d9e3e8;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font-size:28px;font-weight:700">Aa</span><span style="font-size:13px;line-height:1.5">Schwarz auf Weiß<br><b>21 : 1</b> · AAA</span></div>
+      <div style="background:#002d66;color:#fff;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font-size:28px;font-weight:700">Aa</span><span style="font-size:13px;line-height:1.5">Weiß auf Nachtblau<br><b>13,4 : 1</b> · AAA</span></div>
+      <div style="background:#fff;border:1px solid #d9e3e8;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font-size:28px;font-weight:700;color:#b92b06">Aa</span><span style="font-size:13px;line-height:1.5">Textrot auf Weiß<br><b>6,2 : 1</b> · AA</span></div>
+      <div style="background:#eff4f7;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font-size:28px;font-weight:700;color:#b92b06">Aa</span><span style="font-size:13px;line-height:1.5">Textrot auf Blaugrau 30<br><b>5,6 : 1</b> · AA</span></div>
+      <div style="background:#fff;border:1px solid #d9e3e8;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font-size:28px;font-weight:700;color:#e1320f">Aa</span><span style="font-size:13px;line-height:1.5">Flaggenrot auf Weiß<br><b>4,5 : 1</b> · nur Flächen und große Schrift</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px">
+      <div style="background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:13px;color:#444">Fokuszustand</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:16px;font-weight:600;background:#002d66;color:#fff;padding:14px 22px;outline:3px solid #002d66;outline-offset:3px">Antrag vorbereiten</span>
+          <span style="font-size:16px;font-weight:600;color:#b92b06;text-decoration:underline;text-underline-offset:4px;outline:3px solid #002d66;outline-offset:3px;background:#fff;padding:2px 4px">Quelle anzeigen</span>
+        </div>
+        <div style="font-size:15px;line-height:1.55">Sichtbarer Rahmen, 3 px in Nachtblau, 3 px Abstand. Nie entfernen.</div>
+      </div>
+      <div style="background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:13px;color:#444">Bedienung</div>
+        <div style="font-size:15px;line-height:1.6">Klickflächen mindestens 44 × 44 px. Vollständig per Tastatur bedienbar. Text bis 200 % vergrößerbar ohne Informationsverlust. Bewegung wird bei „Bewegung reduzieren“ abgeschaltet, die Durchstreichung erscheint dann statisch.</div>
+      </div>
+      <div style="background:#eff4f7;padding:32px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:13px;color:#444">Screenreader</div>
+        <div style="font-size:15px;line-height:1.6">Neue Chat-Nachrichten werden über eine Live-Region angesagt. Das Logo hat den Alternativtext „{{ brand }}“. Bei der Durchstreichung liest der Screenreader nur das Ergebnis: „Ich bin kompetent.“ Labels wie „KI-Antwort“ werden mitgelesen.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="11 Anwendungen" style="background:#e4ebf0">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">10 Anwendungen</div>
+    <h2 style="margin:0 0 48px;font-size:36px;font-weight:700;letter-spacing:-0.01em">KI-Assistent, App, Präsentation</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+      <div style="flex:1 1 420px;max-width:520px;background:#fff;box-shadow:0 1px 2px rgba(0,30,60,.08),0 12px 32px rgba(0,30,60,.08);display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #d9e3e8">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:18px;letter-spacing:0.06em">
+            <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+          </div>
+          <span style="font-size:12px;font-weight:500;color:#444;background:#eff4f7;padding:5px 9px">KI-Assistent</span>
+        </div>
+        <div style="padding:24px 22px;display:flex;flex-direction:column;gap:14px;background:#fff">
+          <div style="align-self:flex-end;max-width:80%;background:#002d66;color:#fff;padding:12px 16px;font-size:15px;line-height:1.5">Ich ziehe nächste Woche von Linz nach Graz. Wer ist für mich zuständig?</div>
+          <div style="align-self:flex-start;max-width:88%;display:flex;flex-direction:column;gap:10px">
+            <div style="background:#eff4f7;padding:12px 16px;font-size:15px;line-height:1.5">Für die Anmeldung in Graz ist das Meldeservice des Magistrats zuständig. Ich habe die nächsten Schritte für Sie vorbereitet.</div>
+            <div style="border:1px solid #d9e3e8;border-left:0;padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:12px;font-weight:600;color:#38713f">Zuständige Stelle</div>
+              <div style="font-size:16px;font-weight:700">Magistrat Graz, Meldeservice</div>
+              <div style="font-size:14px;color:#333">Frist: 3 Tage nach Einzug</div>
+            </div>
+            <div style="font-size:12px;color:#5a666c">Quelle: oesterreich.gv.at · KI-generierte Antwort</div>
+          </div>
+        </div>
+        <div style="padding:14px 22px 22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:500;border:1px solid #9aa7ae;padding:7px 12px">Anmeldung starten</span>
+            <span style="font-size:13px;font-weight:500;border:1px solid #9aa7ae;padding:7px 12px">Mit einer Person sprechen</span>
+          </div>
+          <div style="border:2px solid #002d66;display:flex;align-items:center;justify-content:space-between;padding:10px 12px">
+            <span style="font-size:15px;color:#5a666c">Nachricht schreiben …</span>
+            <span style="width:32px;height:32px;background:#002d66;color:#fff;display:flex;align-items:center;justify-content:center">→</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1 1 300px;display:flex;flex-direction:column;gap:32px;min-width:0">
+        <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+            <div style="width:112px;height:112px;border-radius:26px;background:#fff;box-shadow:0 1px 2px rgba(0,30,60,.1),0 8px 20px rgba(0,30,60,.1);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 925 600" style="width:56px;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+            </div>
+            <span style="font-size:13px">App-Icon hell</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+            <div style="width:112px;height:112px;border-radius:26px;background:#002d66;display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 925 600" style="width:56px;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+            </div>
+            <span style="font-size:13px">App-Icon dunkel</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+            <div style="width:56px;height:56px;border-radius:50%;background:#002d66;display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 925 600" style="width:26px;fill:#fff"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg>
+            </div>
+            <span style="font-size:13px">Chat-Launcher</span>
+          </div>
+        </div>
+
+        <div style="position:relative;aspect-ratio:16/9;background:#fff;overflow:hidden;box-shadow:0 1px 2px rgba(0,30,60,.08),0 12px 32px rgba(0,30,60,.08);container-type:inline-size">
+          <div style="position:absolute;right:5%;top:0;height:16%;display:flex;align-items:center;font-size:1.8cqw;color:#b92b06">{{ domain }}</div>
+          <div style="position:absolute;left:0;right:0;top:0;height:16%;display:flex;align-items:center;padding:0 5%">
+            <div style="display:flex;align-items:baseline;gap:0.727em;font-size:2.6cqw;letter-spacing:0.06em">
+              <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;top:16%;background:#e4ebf0">
+            <div style="position:absolute;inset:0;background:#eff4f7;clip-path:polygon(52% 0,100% 0,100% 100%,74% 100%)"></div>
+            <div style="position:relative;padding:6% 5%;font-size:5.4cqw;line-height:1.1;font-weight:700;letter-spacing:-0.02em">
+              <div style="position:relative;display:inline-block;color:#8a959b;font-weight:600">nicht zuständig<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></div>
+              <div style="color:#000">kompetent.</div>
+              <div style="font-size:2cqw;font-weight:400;margin-top:1.2em;letter-spacing:0">Der digitale Verwaltungsassistent</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:#333;margin-top:-20px">Präsentation 16 : 9, Titelfolie</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="12 Antwortmuster" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">11 Antwortmuster</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Erst verstehen, dann immer gleich antworten</h2>
+    <p style="margin:0 0 40px;font-size:17px;line-height:1.6;max-width:720px">Jedes Gespräch folgt demselben Ablauf, in jedem Kanal. {{ brand }} fragt nach, bis das Anliegen vollständig verstanden ist. Danach kommt die Antwort immer in vier Bausteinen.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0;margin-bottom:48px">
+      <div style="background:#002d66;color:#fff;padding:28px;display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:13px;font-weight:600;opacity:.85">Phase 1</span>
+        <b style="font-size:24px">Verstehen</b>
+        <span style="font-size:15px;line-height:1.55">Anliegen in eigenen Worten aufnehmen, dann immer eine Rückfrage zur Bestätigung: „Habe ich Sie richtig verstanden?“ Erst nach einem Ja geht es weiter.</span>
+      </div>
+      <div style="background:#e4ebf0;padding:28px;display:flex;flex-direction:column;gap:10px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)">
+        <span style="font-size:13px;font-weight:600;color:#b92b06">Phase 2</span>
+        <b style="font-size:24px">Antworten</b>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:15px;line-height:1.55">
+          <b style="color:#002d66">A</b><span>Schritte, die zu tun sind, und wo</span>
+          <b style="color:#002d66">B</b><span>Dokumente für jeden Schritt</span>
+          <b style="color:#002d66">C</b><span>Woher die Information kommt</span>
+          <b style="color:#002d66">D</b><span>Buttons für das, was als Nächstes kommt</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+      <div style="flex:1 1 460px;max-width:620px;background:#fff;box-shadow:0 1px 2px rgba(0,30,60,.08),0 12px 32px rgba(0,30,60,.1);display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #d9e3e8">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <span style="font-size:12px;color:#444">Deutsch</span>
+        </div>
+        <div style="padding:22px 20px;display:flex;flex-direction:column;gap:14px">
+          <div style="align-self:flex-end;max-width:80%;background:#002d66;color:#fff;padding:12px 16px;font-size:15px;line-height:1.55">Ich zieh nach Graz und mein Pass ist auch abgelaufen.</div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="font-size:11px;font-weight:700;color:#fff;background:#002d66;padding:2px 6px;flex:none;margin-top:4px">1</span>
+            <div style="display:flex;flex-direction:column;gap:8px;max-width:88%">
+              <div style="font-size:11px;font-weight:600;color:#002d66">KI-Antwort · Rückfrage</div>
+              <div style="background:#eff4f7;padding:12px 16px;font-size:15px;line-height:1.55">Habe ich Sie richtig verstanden? Sie brauchen:<br>1. die Anmeldung Ihres neuen Hauptwohnsitzes in Graz<br>2. einen neuen Reisepass</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="font-size:14px;font-weight:600;background:#002d66;color:#fff;padding:9px 14px">Ja, genau</span><span style="font-size:14px;font-weight:600;border:1.5px solid #002d66;color:#002d66;padding:8px 13px">Nicht ganz</span></div>
+            </div>
+          </div>
+          <div style="align-self:flex-end;background:#002d66;color:#fff;padding:10px 14px;font-size:15px;line-height:1.55">Ja, genau</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:11px;font-weight:600;color:#002d66">KI-Antwort · 3 Schritte</div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="font-size:11px;font-weight:700;color:#fff;background:#b92b06;padding:2px 6px;flex:none;margin-top:14px">A</span>
+              <div style="flex:1;border:1px solid #d9e3e8;display:flex;flex-direction:column">
+                <div style="padding:14px 16px;border-bottom:1px solid #d9e3e8;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap"><b style="font-size:16px">1 · Hauptwohnsitz anmelden</b><sup style="font-size:11px;font-weight:700;color:#fff;background:#002d66;padding:1px 5px">1</sup></div>
+                  <span style="font-size:14px;color:#333">Wo: Magistrat Graz, Meldeservice oder online mit ID Austria · Frist: 3 Tage nach Einzug</span>
+                  <div style="display:flex;gap:8px;align-items:flex-start;margin-top:4px"><span style="font-size:11px;font-weight:700;color:#fff;background:#b92b06;padding:2px 6px;flex:none">B</span><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:13px;background:#f6f4f0;padding:4px 8px">Meldezettel, unterschrieben von Unterkunftgeber:in</span><span style="font-size:13px;background:#f6f4f0;padding:4px 8px">Lichtbildausweis</span></div></div>
+                </div>
+                <div style="padding:14px 16px;border-bottom:1px solid #d9e3e8;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap"><b style="font-size:16px">2 · Wohnsitz in Linz abmelden</b><sup style="font-size:11px;font-weight:700;color:#fff;background:#002d66;padding:1px 5px">1</sup></div>
+                  <span style="font-size:14px;color:#333">Wo: gleich bei der Anmeldung in Graz möglich</span>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span style="font-size:13px;background:#f6f4f0;padding:4px 8px">Keine weiteren Dokumente</span></div>
+                </div>
+                <div style="padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap"><b style="font-size:16px">3 · Neuen Reisepass beantragen</b><sup style="font-size:11px;font-weight:700;color:#fff;background:#002d66;padding:1px 5px">2</sup></div>
+                  <span style="font-size:14px;color:#333">Wo: Passbehörde, z. B. Magistrat Graz · persönlich, mit Termin</span>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span style="font-size:13px;background:#f6f4f0;padding:4px 8px">Passfoto</span><span style="font-size:13px;background:#f6f4f0;padding:4px 8px">Alter Reisepass</span><span style="font-size:13px;background:#f6f4f0;padding:4px 8px">Staatsbürgerschaftsnachweis</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:baseline;font-size:13px;flex-wrap:wrap">
+              <span style="font-size:11px;font-weight:700;color:#fff;background:#b92b06;padding:2px 6px">C</span>
+              <span><sup style="font-weight:700">1</sup> <span style="color:#b92b06;text-decoration:underline;text-underline-offset:3px">oesterreich.gv.at, Wohnsitz anmelden</span> · <sup style="font-weight:700">2</sup> <span style="color:#b92b06;text-decoration:underline;text-underline-offset:3px">oesterreich.gv.at, Reisepass</span></span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="font-size:11px;font-weight:700;color:#fff;background:#b92b06;padding:2px 6px;flex:none;margin-top:9px">D</span>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span style="font-size:14px;font-weight:600;background:#002d66;color:#fff;padding:9px 14px">Online anmelden</span>
+                <span style="font-size:14px;font-weight:600;border:1.5px solid #002d66;color:#002d66;padding:8px 13px">Passtermin buchen</span>
+                <span style="font-size:14px;font-weight:600;border:1.5px solid #002d66;color:#002d66;padding:8px 13px">Checkliste speichern</span>
+                <span style="font-size:14px;font-weight:600;border:1.5px solid #002d66;color:#002d66;padding:8px 13px">Mit einer Person sprechen</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1 1 300px;display:flex;flex-direction:column;border-top:1px solid #000">
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:15px;line-height:1.55"><b>1 · Rückfrage.</b> Mehrere Anliegen werden einzeln aufgezählt und bestätigt. Bei „Nicht ganz“ fragt {{ brand }} gezielt nach, statt neu zu beginnen.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:15px;line-height:1.55"><b>A · Schritte.</b> Nummeriert und in Reihenfolge. Jeder Schritt sagt, wo er erledigt wird und bis wann.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:15px;line-height:1.55"><b>B · Dokumente.</b> Direkt beim jeweiligen Schritt, als Chips auf Sandgrau. Ohne Dokumente steht ausdrücklich „Keine weiteren Dokumente“.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:15px;line-height:1.55"><b>C · Quellen.</b> Jeder Schritt verweist mit einer Nummer auf seine Quelle. Details siehe Kapitel 16.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:15px;line-height:1.55"><b>D · Nächste Schritte.</b> Höchstens vier Buttons. Der erste ist die wahrscheinlichste Handlung, der letzte immer „Mit einer Person sprechen“.</div>
+        <div style="padding:20px 0;border-bottom:1px solid #d9e3e8;font-size:15px;line-height:1.55"><b>Ohne Bildschirm.</b> Am Telefon und im Messenger in derselben Reihenfolge: Schritte, Dokumente, Quelle, Auswahl per Ziffer oder Sprache.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="13 Kanäle" style="background:#fff">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">12 Kanäle</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Eine Schnittstelle, in jedem Kanal erkennbar</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:680px">{{ brand }} arbeitet dort, wo Menschen fragen: auf der Website, im Messenger, am Telefon und am Terminal im Amt. Das Erscheinungsbild passt sich dem Kanal an, Flagge, Tonalität und Kennzeichnung bleiben gleich.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px">
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:#eff4f7;aspect-ratio:3/4;padding:20px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;position:relative">
+          <div style="position:absolute;top:20px;left:20px;right:20px;height:10px;background:#d9e3e8"></div>
+          <div style="position:absolute;top:40px;left:20px;width:60%;height:10px;background:#d9e3e8"></div>
+          <div style="background:#fff;box-shadow:0 8px 24px rgba(0,30,60,.12);display:flex;flex-direction:column">
+            <div style="display:flex;align-items:baseline;gap:0.727em;font-size:14px;letter-spacing:0.06em;padding:10px 12px;border-bottom:1px solid #d9e3e8">
+              <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span>
+            </div>
+            <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;font-weight:600;color:#002d66">KI-Antwort</div>
+              <div style="background:#eff4f7;padding:8px 10px;font-size:12px;line-height:1.45">Wie kann ich Ihnen helfen?</div>
+            </div>
+          </div>
+          <div style="align-self:flex-end;width:44px;height:44px;border-radius:50%;background:#002d66;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 925 600" style="width:20px;fill:#fff"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg></div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Website-Widget</b><br>Auf {{ domain }} und als Einbettung auf Seiten von Ländern, Städten und Ministerien.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:#f6f4f0;aspect-ratio:3/4;display:flex;flex-direction:column">
+          <div style="background:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e9e4df">
+            <div style="width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid #d9e3e8;display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 925 600" style="width:16px;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg></div>
+            <div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:600">{{ brand }}</span><span style="font-size:11px;color:#5a666c">Verifiziertes Konto · {{ domain }}</span></div>
+          </div>
+          <div style="padding:14px;display:flex;flex-direction:column;gap:8px;flex:1;justify-content:flex-end">
+            <div style="align-self:flex-end;max-width:85%;background:#d9e3e8;padding:8px 10px;font-size:12px;line-height:1.45">Mein Pass ist abgelaufen, was jetzt?</div>
+            <div style="align-self:flex-start;max-width:90%;background:#fff;padding:8px 10px;font-size:12px;line-height:1.45">[KI-Antwort] Einen neuen Reisepass beantragen Sie persönlich bei einer Passbehörde.<br><br>✓ Geprüft: Lichtbild, alter Pass, Staatsbürgerschaftsnachweis<br><br>Antworten Sie mit <b>1</b> für einen Termin oder <b>2</b> für eine Person.</div>
+          </div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Messenger (z. B. WhatsApp)</b><br>Ohne eigene Oberfläche: Kennzeichnung als Text, Auswahl über Ziffern, Flagge als Profilbild.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:#002d66;color:#fff;aspect-ratio:3/4;padding:24px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:14px;letter-spacing:0.06em">
+            <svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }} · Telefon</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;height:56px">
+            <span style="width:4px;height:30%;background:#fff"></span><span style="width:4px;height:60%;background:#fff"></span><span style="width:4px;height:90%;background:#fff"></span><span style="width:4px;height:50%;background:#fff"></span><span style="width:4px;height:75%;background:#fff"></span><span style="width:4px;height:35%;background:#fff"></span><span style="width:4px;height:65%;background:#fff"></span><span style="width:4px;height:100%;background:#fff"></span><span style="width:4px;height:45%;background:#fff"></span><span style="width:4px;height:70%;background:#fff"></span><span style="width:4px;height:25%;background:#fff"></span><span style="width:4px;height:55%;background:#fff"></span>
+          </div>
+          <div style="font-size:14px;line-height:1.5">„Grüß Gott, hier ist {{ brand }}, der digitale Assistent der Verwaltung. Ich bin eine KI. Wenn Sie lieber mit einem Menschen sprechen, sagen Sie einfach ‚Person‘.“</div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Telefon und Sprache</b><br>Für Menschen, die nicht tippen können oder wollen. Die KI stellt sich zu Beginn als KI vor.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:#e9e4df;aspect-ratio:3/4;display:flex;align-items:flex-end;justify-content:center;padding:20px 20px 0">
+          <div style="width:78%;height:92%;background:#000;padding:8px 8px 0;display:flex;flex-direction:column">
+            <div style="background:#fff;flex:1;display:flex;flex-direction:column;padding:12px;gap:10px">
+              <div style="display:flex;align-items:baseline;gap:0.727em;font-size:11px;letter-spacing:0.06em"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+              <div style="font-size:16px;font-weight:700;line-height:1.2">Worum geht es heute?</div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto">
+                <span style="font-size:11px;font-weight:600;background:#002d66;color:#fff;padding:9px">Wohnsitz anmelden</span>
+                <span style="font-size:11px;font-weight:600;border:1px solid #002d66;color:#002d66;padding:8px">Reisepass</span>
+                <span style="font-size:11px;font-weight:600;border:1px solid #002d66;color:#002d66;padding:8px">Sprache: Deutsch</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:15px;line-height:1.55"><b>Terminal im Amt</b><br>Vorsortieren vor dem Schalter: Anliegen klären, Unterlagen prüfen, Wartenummer ausgeben.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:48px;border-top:1px solid #000;padding-top:24px">
+      <div style="font-size:15px;line-height:1.55"><b>Immer gleich</b><br>Flagge als Avatar, Name {{ brand }}, Sie-Form, Kennzeichnung „KI-Antwort“ und „Geprüft“.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Pro Kanal angepasst</b><br>Farben und Komponenten, wo der Kanal sie erlaubt. Sonst Text, Ziffern und Sprache.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Ein Fall, alle Kanäle</b><br>Ein Gespräch, das im Messenger beginnt, kann am Terminal oder am Telefon weitergehen.</div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="14 Übergabe" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">13 Übergabe an Menschen</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Direkt zur richtigen Stelle, ohne von vorne zu beginnen</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:720px">Das Markenversprechen „{{ brand }}“ endet nicht bei der KI. Bei jeder Übergabe geht der Fall mit allen Angaben an die zuständige Stelle. Wer übernimmt, kann sofort weiterarbeiten. Wer fragt, muss nichts wiederholen.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0;border-top:4px solid #002d66">
+      <div style="padding:24px 20px 24px 0;display:flex;flex-direction:column;gap:8px"><span style="font-size:32px;font-weight:700;color:#002d66">1</span><b style="font-size:16px">Anliegen verstehen</b><span style="font-size:14px;line-height:1.55">In eigenen Worten, in jeder Sprache, in jedem Kanal.</span></div>
+      <div style="padding:24px 20px 24px 0;display:flex;flex-direction:column;gap:8px"><span style="font-size:32px;font-weight:700;color:#002d66">2</span><b style="font-size:16px">Zuständigkeit klären</b><span style="font-size:14px;line-height:1.55">{{ brand }} ermittelt Behörde und Abteilung anhand von Wohnort und Anliegen.</span></div>
+      <div style="padding:24px 20px 24px 0;display:flex;flex-direction:column;gap:8px"><span style="font-size:32px;font-weight:700;color:#002d66">3</span><b style="font-size:16px">Fall übergeben</b><span style="font-size:14px;line-height:1.55">Zusammenfassung, Unterlagen, Sprache und Gesprächsverlauf gehen gesammelt mit.</span></div>
+      <div style="padding:24px 20px 24px 0;display:flex;flex-direction:column;gap:8px"><span style="font-size:32px;font-weight:700;color:#002d66">4</span><b style="font-size:16px">Mensch übernimmt</b><span style="font-size:14px;line-height:1.55">Die Sachbearbeiterin sieht sofort, worum es geht und was noch fehlt.</span></div>
+      <div style="padding:24px 20px 24px 0;display:flex;flex-direction:column;gap:8px"><span style="font-size:32px;font-weight:700;color:#b92b06">5</span><b style="font-size:16px">Weiterarbeiten</b><span style="font-size:14px;line-height:1.55">Mit der Fallnummer setzen alle Beteiligten jederzeit fort, auch in einem anderen Kanal.</span></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:40px">
+      <div style="flex:1 1 340px;background:#eff4f7;padding:28px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:13px;color:#444">Sicht der Bürgerin</div>
+        <div style="background:#fff;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;border-radius:50%;background:#d9e3e8;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;flex:none">SM</div>
+            <div style="display:flex;flex-direction:column"><b style="font-size:16px">Sie sprechen jetzt mit Sandra M.</b><span style="font-size:13px;color:#333">Magistrat Graz, Meldeservice</span></div>
+          </div>
+          <div style="font-size:15px;line-height:1.55">Frau M. kennt Ihr Anliegen und Ihre Unterlagen. Sie müssen nichts wiederholen.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-top:1px solid #d9e3e8;padding-top:12px">
+            <span style="font-size:13px;color:#333">Fallnummer <b style="font-variant-numeric:tabular-nums">K-2026-04817</b></span>
+            <span style="font-size:13px;font-weight:600;color:#b92b06;text-decoration:underline;text-underline-offset:3px">Später fortsetzen</span>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1 1 340px;background:#f6f4f0;padding:28px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:13px;color:#444">Sicht der Sachbearbeiterin</div>
+        <div style="background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap"><b style="font-size:16px">Umzug Linz → Graz, Hauptwohnsitz</b><span style="font-size:12px;font-weight:600;background:#002d66;color:#fff;padding:3px 8px">Übergeben von {{ brand }}</span></div>
+          <div style="font-size:14px;line-height:1.6;display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 12px">
+            <span style="color:#5a666c">Person</span><span>Lena K., 27</span>
+            <span style="color:#5a666c">Sprache</span><span>Deutsch</span>
+            <span style="color:#5a666c">Vorhanden</span><span>Meldezettel ausgefüllt, ID Austria</span>
+            <span style="color:#5a666c">Offen</span><span style="color:#b92b06;font-weight:600">Unterschrift Unterkunftgeber</span>
+          </div>
+          <div style="font-size:12px;color:#5a666c;border-top:1px solid #e9e4df;padding-top:10px">Zusammenfassung KI-generiert · Gesprächsverlauf anzeigen</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;background:#e4ebf0;padding:24px 28px;font-size:15px;line-height:1.6;max-width:820px"><b>Gehört das ins CI?</b> Ja, als Servicedesign. Das Corporate Design legt fest, wie die Übergabe aussieht und klingt: Name und Stelle der übernehmenden Person, Fallnummer, der Satz „Sie müssen nichts wiederholen“. Wie die Übergabe technisch funktioniert, wird im Produkt umgesetzt.</div>
+  </div>
+</section>
+
+<section data-screen-label="15 Mehrsprachigkeit" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">14 Mehrsprachigkeit</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Jede Antwort in der Sprache der Frage</h2>
+    <p style="margin:0 0 40px;font-size:17px;line-height:1.6;max-width:680px">{{ brand }} erkennt die Sprache der Anfrage und antwortet darin. Amtliche Begriffe bleiben auf Deutsch und stehen in Klammern, damit Menschen sie am Schalter und auf Formularen wiederfinden.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px">
+      <span style="font-size:15px;font-weight:600;background:#002d66;color:#fff;padding:10px 16px">Deutsch</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px">Leichte Sprache</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px">English</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px">Türkçe</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px">Bosanski / Hrvatski / Srpski</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px">Українська</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px">Română</span>
+      <span style="font-size:15px;font-weight:500;border:1px solid #9aa7ae;padding:10px 16px;font-family:'Noto Sans Arabic','Inter',sans-serif">العربية</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+      <div style="background:#eff4f7;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:600;color:#5a666c">Deutsch</span><span style="font-size:17px;line-height:1.5">Melden Sie sich innerhalb von 3 Tagen nach dem Einzug an (Meldezettel).</span></div>
+      <div style="background:#eff4f7;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:600;color:#5a666c">English</span><span style="font-size:17px;line-height:1.5">Register your address within 3 days of moving in (Meldezettel).</span></div>
+      <div style="background:#eff4f7;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:600;color:#5a666c">Türkçe</span><span style="font-size:17px;line-height:1.5">Taşındıktan sonra 3 gün içinde adresinizi bildirin (Meldezettel).</span></div>
+      <div style="background:#eff4f7;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:600;color:#5a666c">Українська</span><span style="font-size:17px;line-height:1.5">Зареєструйтеся протягом 3 днів після переїзду (Meldezettel).</span></div>
+      <div dir="rtl" style="background:#eff4f7;padding:22px;display:flex;flex-direction:column;gap:8px;font-family:'Noto Sans Arabic','Inter',sans-serif"><span style="font-size:12px;font-weight:600;color:#5a666c">العربية</span><span style="font-size:18px;line-height:1.7">سجّل عنوانك خلال 3 أيام من الانتقال (Meldezettel).</span></div>
+      <div style="background:#eff4f7;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:600;color:#5a666c">Bosanski / Hrvatski / Srpski</span><span style="font-size:17px;line-height:1.5">Prijavite se u roku od 3 dana nakon useljenja (Meldezettel).</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:48px;border-top:1px solid #000;padding-top:24px">
+      <div style="font-size:15px;line-height:1.55"><b>Sprachnamen in der eigenen Sprache</b><br>„Türkçe“, nicht „Türkisch“. Keine Länderflaggen für Sprachen.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Schrift</b><br>Inter für lateinische und kyrillische Schrift, Noto Sans Arabic für Arabisch.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Rechts nach links</b><br>Bei Arabisch spiegelt sich das Layout. Logo und Flagge werden nicht gespiegelt.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Geprüfte Angaben</b><br>Fristen und Gebühren kommen auch in Übersetzungen aus der Faktendatenbank.</div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="16 Systemzustände" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">15 Systemzustände</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Ehrlich sagen, was gerade passiert</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:700px">Jeder Zustand hat eine feste Farbe, einen klaren Satz und einen nächsten Schritt. Wenn {{ brand }} keine geprüfte Quelle findet, sagt der Assistent das und gibt keine geratene Antwort.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+
+      <div style="background:#eff4f7;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#5a666c">Suchen</div>
+        <div style="background:#fff;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px"><div style="display:flex;gap:4px"><span style="width:16px;height:5px;background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,2px 100%)"></span><span style="width:16px;height:5px;background:#d9e3e8"></span><span style="width:16px;height:5px;background:#d9e3e8"></span></div><span style="font-size:15px;font-weight:600">{{ brand }} sucht die zuständige Stelle …</span></div>
+          <div style="font-size:13px;color:#333;line-height:1.5">Geprüft: Wohnort Graz · Anliegen Hauptwohnsitz</div>
+        </div>
+      </div>
+
+      <div style="background:#eff4f7;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#38713f">Zuständige Stelle verifiziert</div>
+        <div style="background:#fff;border-left:4px solid #38713f;padding:16px 18px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:12px;font-weight:600;color:#fff;background:#38713f;padding:3px 8px;align-self:flex-start">Verifiziert</span>
+          <b style="font-size:16px">Magistrat Graz, Meldeservice</b>
+          <span style="font-size:13px;color:#333">Quelle geprüft am 14. Oktober 2026</span>
+        </div>
+      </div>
+
+      <div style="background:#eff4f7;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#895a00">Quelle nicht verifiziert</div>
+        <div style="background:#fff;border-left:4px solid #c57f00;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:12px;font-weight:600;color:#000;background:#fcce8e;padding:3px 8px;align-self:flex-start">Nicht verifiziert</span>
+          <span style="font-size:15px;line-height:1.5">Diese Angabe stammt nicht aus der geprüften Faktendatenbank. Bitte prüfen Sie sie bei der Behörde.</span>
+          <span style="font-size:13px;font-weight:600;color:#b92b06;text-decoration:underline;text-underline-offset:3px">Bei der Behörde nachfragen</span>
+        </div>
+      </div>
+
+      <div style="background:#eff4f7;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#9e0529">Keine vertrauenswürdige Stelle gefunden</div>
+        <div style="background:#fff;border-left:4px solid #9e0529;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+          <b style="font-size:16px">Dazu habe ich keine geprüfte Quelle.</b>
+          <span style="font-size:15px;line-height:1.5">Ich gebe Ihnen keine ungeprüfte Antwort. Eine Person aus dem Bürgerservice hilft Ihnen weiter.</span>
+          <span style="font-size:14px;font-weight:600;background:#002d66;color:#fff;padding:10px 14px;align-self:flex-start">Mit einer Person sprechen</span>
+        </div>
+      </div>
+
+      <div style="background:#eff4f7;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#002d66">Übergabe läuft</div>
+        <div style="background:#fff;border-left:4px solid #002d66;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+          <b style="font-size:16px">Sie sind an Position 2.</b>
+          <span style="font-size:15px;line-height:1.5">Ihr Fall liegt beim Meldeservice Graz. Geschätzte Wartezeit: 4 Minuten. Sie können das Fenster schließen, wir melden uns per SMS.</span>
+          <span style="font-size:13px;color:#333">Fallnummer <b>K-2026-04817</b></span>
+        </div>
+      </div>
+
+      <div style="background:#eff4f7;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#5a666c">Fehler und offline</div>
+        <div style="background:#fff;border-left:4px solid #5a666c;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+          <b style="font-size:16px">Keine Verbindung.</b>
+          <span style="font-size:15px;line-height:1.5">Ihre Angaben sind gespeichert. Sobald Sie wieder online sind, geht es an derselben Stelle weiter.</span>
+          <span style="font-size:13px;font-weight:600;color:#b92b06;text-decoration:underline;text-underline-offset:3px">Erneut versuchen</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:32px;font-size:14px;line-height:1.5">
+      <div style="display:flex;gap:10px;align-items:center"><span style="width:14px;height:14px;background:#38713f;flex:none"></span>Grün · verifiziert</div>
+      <div style="display:flex;gap:10px;align-items:center"><span style="width:14px;height:14px;background:#c57f00;flex:none"></span>Ocker · nicht verifiziert</div>
+      <div style="display:flex;gap:10px;align-items:center"><span style="width:14px;height:14px;background:#9e0529;flex:none"></span>Weinrot · keine Quelle</div>
+      <div style="display:flex;gap:10px;align-items:center"><span style="width:14px;height:14px;background:#002d66;flex:none"></span>Nachtblau · Übergabe</div>
+    </div>
+    <p style="margin:16px 0 0;font-size:14px;line-height:1.55;color:#333;max-width:700px">Farbe ist nie das einzige Signal. Jeder Zustand hat zusätzlich ein Textlabel. Flaggenrot bleibt der Marke vorbehalten und wird nicht für Warnungen verwendet.</p>
+  </div>
+</section>
+
+<section data-screen-label="17 Quellen" style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">16 Quellen nachvollziehen</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Jede Aussage zeigt, woher sie kommt</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:700px">Aussagen tragen Quellennummern. Ein Klick öffnet die Quelle mit Behörde, Stand und Prüfdatum. So kann jede Person die Antwort jederzeit selbst überprüfen.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:stretch">
+      <div style="flex:1 1 380px;background:#eff4f7;padding:28px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#002d66">KI-Antwort</div>
+        <div style="background:#fff;padding:18px 20px;font-size:16px;line-height:1.7">
+          Melden Sie sich innerhalb von 3 Tagen nach dem Einzug an.<sup style="font-size:11px;font-weight:700;color:#fff;background:#002d66;padding:1px 5px;margin-left:3px">1</sup> Das geht persönlich beim Magistrat Graz oder online mit ID Austria.<sup style="font-size:11px;font-weight:700;color:#fff;background:#002d66;padding:1px 5px;margin-left:3px">2</sup> Bei der Anmeldung braucht es die Unterschrift der Unterkunftgeberin oder des Unterkunftgebers.<sup style="font-size:11px;font-weight:700;color:#000;background:#fff;border:1px solid #002d66;padding:0 5px;margin-left:3px">1</sup>
+        </div>
+        <div style="font-size:13px;font-weight:600;color:#b92b06;text-decoration:underline;text-underline-offset:3px">2 Quellen anzeigen</div>
+      </div>
+      <div style="flex:1 1 380px;background:#fff;border:1px solid #d9e3e8;display:flex;flex-direction:column">
+        <div style="padding:16px 20px;border-bottom:1px solid #d9e3e8;display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">Quellen dieser Antwort</b><span style="font-size:20px;line-height:1">×</span></div>
+        <div style="padding:18px 20px;border-bottom:1px solid #d9e3e8;display:flex;gap:14px">
+          <span style="font-size:12px;font-weight:700;color:#fff;background:#002d66;padding:2px 7px;align-self:flex-start">1</span>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.5">
+            <b style="font-size:15px">Meldegesetz 1991, § 3</b>
+            <span>Rechtsinformationssystem des Bundes (RIS)</span>
+            <span style="color:#b92b06;text-decoration:underline;text-underline-offset:3px">ris.bka.gv.at</span>
+            <span style="display:flex;gap:6px;align-items:center;margin-top:4px"><span style="font-size:11px;font-weight:600;color:#fff;background:#38713f;padding:2px 6px">Verifiziert</span><span style="color:#5a666c;font-size:13px">Faktendatenbank · geprüft 14.10.2026</span></span>
+          </div>
+        </div>
+        <div style="padding:18px 20px;display:flex;gap:14px">
+          <span style="font-size:12px;font-weight:700;color:#fff;background:#002d66;padding:2px 7px;align-self:flex-start">2</span>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.5">
+            <b style="font-size:15px">Wohnsitz anmelden</b>
+            <span>oesterreich.gv.at, Bundeskanzleramt</span>
+            <span style="color:#b92b06;text-decoration:underline;text-underline-offset:3px">oesterreich.gv.at</span>
+            <span style="display:flex;gap:6px;align-items:center;margin-top:4px"><span style="font-size:11px;font-weight:600;color:#fff;background:#38713f;padding:2px 6px">Verifiziert</span><span style="color:#5a666c;font-size:13px">Stand der Seite: September 2026</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:40px;border-top:1px solid #000;padding-top:24px">
+      <div style="font-size:15px;line-height:1.55"><b>Nur Behördenquellen</b><br>RIS, oesterreich.gv.at, Seiten von Ministerien, Ländern und Gemeinden.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Stand sichtbar</b><br>Jede Quelle zeigt, wann sie zuletzt geprüft wurde.</div>
+      <div style="font-size:15px;line-height:1.55"><b>Im Messenger</b><br>Quellen als nummerierte Links am Ende der Nachricht: „[1] ris.bka.gv.at“.</div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="18 Plakate" style="background:#e4ebf0">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">17 Plakate</div>
+    <h2 style="margin:0 0 16px;font-size:36px;font-weight:700;letter-spacing:-0.01em">„Nicht zuständig“ war gestern. {{ brand }} ist heute.</h2>
+    <p style="margin:0 0 48px;font-size:17px;line-height:1.6;max-width:700px">Aufbau nach dem Basisinserat des Bundes: Sujet oben, weißer Informationsbereich unten mit Logo, Text und Webadresse. Format A-Reihe hoch.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px">
+
+      <div style="aspect-ratio:1/1.414;background:#fff;position:relative;overflow:hidden;container-type:inline-size;box-shadow:0 12px 32px rgba(0,30,60,.12)">
+        <div style="position:absolute;left:0;right:0;top:0;bottom:22%;background:#eff4f7">
+          <div style="position:absolute;inset:0;background:#d9e3e8;clip-path:polygon(0 0,52% 0,92% 100%,0 100%)"></div>
+          <div style="position:absolute;left:8%;right:8%;bottom:9%;font-size:11.5cqw;line-height:1.05;font-weight:700;letter-spacing:-0.02em">
+            <div>Ich bin</div>
+            <div style="position:relative;display:inline-block;color:#8a959b;font-weight:600">nicht zuständig<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></div>
+            <div style="color:#b92b06">kompetent.</div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:22%;padding:5% 8%;display:flex;gap:6%;align-items:flex-start">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:4cqw;letter-spacing:0.06em;flex:none"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <div style="font-size:2.7cqw;line-height:1.45">Fragen Sie die Verwaltung in Ihren eigenen Worten. Rund um die Uhr, in vielen Sprachen.<br><b>{{ domain }}</b></div>
+        </div>
+      </div>
+
+      <div style="aspect-ratio:1/1.414;background:#fff;position:relative;overflow:hidden;container-type:inline-size;box-shadow:0 12px 32px rgba(0,30,60,.12)">
+        <div style="position:absolute;left:0;right:0;top:0;bottom:22%;background:#002d66;color:#fff">
+          <div style="position:absolute;right:0;bottom:0;width:62%;aspect-ratio:1">
+            <div style="position:absolute;right:0;top:0;width:100%;height:33.34%;background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,15.5% 100%)"></div>
+            <div style="position:absolute;right:0;bottom:0;width:100%;height:33.34%;background:#e1320f;clip-path:polygon(31% 0,100% 0,100% 100%,46.6% 100%)"></div>
+          </div>
+          <div style="position:absolute;left:8%;right:8%;top:10%;font-size:11.5cqw;line-height:1.05;font-weight:700;letter-spacing:-0.02em">
+            <div style="position:relative;display:inline-block;color:#8fa3bd;font-weight:600">Warteschleife<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></div>
+            <div>Weitergeleitet.</div>
+            <div style="font-size:3.6cqw;font-weight:400;line-height:1.4;margin-top:1em;letter-spacing:0;max-width:70%">Direkt zur richtigen Stelle. Ohne alles noch einmal zu erzählen.</div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:22%;padding:5% 8%;display:flex;gap:6%;align-items:flex-start">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:4cqw;letter-spacing:0.06em;flex:none"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <div style="font-size:2.7cqw;line-height:1.45">Wenn ein Mensch übernimmt, liegt Ihr Fall schon auf dem Tisch.<br><b>{{ domain }}</b></div>
+        </div>
+      </div>
+
+      <div style="aspect-ratio:1/1.414;background:#fff;position:relative;overflow:hidden;container-type:inline-size;box-shadow:0 12px 32px rgba(0,30,60,.12)">
+        <div style="position:absolute;left:0;right:0;top:0;bottom:22%;background:#f0ece8">
+          <div style="position:absolute;inset:0;background:#e9e4df;clip-path:polygon(60% 0,100% 0,100% 100%,100% 100%,82% 100%)"></div>
+          <div style="position:absolute;left:8%;right:8%;top:9%;display:flex;flex-direction:column;gap:0.5em;font-size:5.4cqw;line-height:1.2;font-weight:600;color:#5a666c">
+            <span>Ihre Sprache.</span>
+            <span>Your language.</span>
+            <span>Sizin diliniz.</span>
+            <span>Ваша мова.</span>
+            <span dir="rtl" style="font-family:'Noto Sans Arabic','Inter',sans-serif;align-self:flex-start">لغتك.</span>
+          </div>
+          <div style="position:absolute;left:8%;right:8%;bottom:9%;font-size:10cqw;line-height:1.05;font-weight:700;letter-spacing:-0.02em">Ihre Behörde.</div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:22%;padding:5% 8%;display:flex;gap:6%;align-items:flex-start">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:4cqw;letter-spacing:0.06em;flex:none"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <div style="font-size:2.7cqw;line-height:1.45">Antworten in Ihrer Sprache, amtliche Begriffe auf Deutsch dazu.<br><b>{{ domain }}</b></div>
+        </div>
+      </div>
+
+      <div style="aspect-ratio:1/1.414;background:#fff;position:relative;overflow:hidden;container-type:inline-size;box-shadow:0 12px 32px rgba(0,30,60,.12)">
+        <div style="position:absolute;left:0;right:0;top:0;bottom:22%;background:#fff">
+          <div style="position:absolute;left:0;right:0;top:0;height:46%;background:#e9e4df"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;top:46%;background:#e4ebf0"></div>
+          <div style="position:absolute;inset:0;background:#d9e3e8;clip-path:polygon(64% 46%,100% 46%,100% 100%,89.6% 100%)"></div>
+          <div style="position:absolute;left:8%;right:8%;top:9%;font-size:9.6cqw;line-height:1.08;font-weight:700;letter-spacing:-0.02em">
+            <div style="font-size:3.2cqw;font-weight:600;letter-spacing:0;color:#5a666c;margin-bottom:0.8em">Gestern</div>
+            <div style="position:relative;display:inline-block;color:#8a959b;font-weight:600">„Nicht zuständig“<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></div>
+            <div style="color:#5a666c;font-weight:600">war gestern.</div>
+          </div>
+          <div style="position:absolute;left:8%;right:8%;bottom:9%;font-size:11.5cqw;line-height:1.05;font-weight:700;letter-spacing:-0.02em">
+            <div style="font-size:3.2cqw;font-weight:600;letter-spacing:0;color:#b92b06;margin-bottom:0.8em">Heute</div>
+            <div>{{ brand }}</div>
+            <div style="color:#b92b06">ist heute.</div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:22%;padding:5% 8%;display:flex;gap:6%;align-items:flex-start">
+          <div style="display:flex;align-items:baseline;gap:0.727em;font-size:4cqw;letter-spacing:0.06em;flex:none"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <div style="font-size:2.7cqw;line-height:1.45">Der digitale Verwaltungsassistent findet die zuständige Stelle für Sie.<br><b>{{ domain }}</b></div>
+        </div>
+      </div>
+
+      <div style="grid-column:1/-1;background:#002d66;color:#fff;position:relative;overflow:hidden;container-type:inline-size;aspect-ratio:3/1;min-height:220px">
+        <div style="position:absolute;right:0;bottom:0;height:100%;aspect-ratio:1">
+          <div style="position:absolute;right:0;top:0;width:100%;height:33.34%;background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,15.5% 100%)"></div>
+          <div style="position:absolute;right:0;bottom:0;width:100%;height:33.34%;background:#e1320f;clip-path:polygon(31% 0,100% 0,100% 100%,46.6% 100%)"></div>
+        </div>
+        <div style="position:absolute;left:5%;top:12%;display:flex;align-items:baseline;gap:0.727em;font-size:1.8cqw;letter-spacing:0.06em"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+        <div style="position:absolute;left:5%;right:40%;bottom:14%;font-size:4.6cqw;line-height:1.1;font-weight:700;letter-spacing:-0.02em">
+          <div><span style="position:relative;display:inline-block;color:#8fa3bd;font-weight:600">„Nicht zuständig“<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></span> <span style="color:#8fa3bd;font-weight:600">war gestern.</span></div>
+          <div>{{ brand }} ist heute.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="19 Weitere Anwendungen" style="background:#fff">
+  <div style="max-width:1240px;margin:0 auto;padding:96px 48px">
+    <div style="font-size:15px;font-weight:600;color:#b92b06;margin-bottom:12px">18 Weitere Anwendungen</div>
+    <h2 style="margin:0 0 48px;font-size:36px;font-weight:700;letter-spacing:-0.01em">Social Media, Visitenkarte, Signatur, Roll-up</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;align-items:start">
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="aspect-ratio:1;background:#002d66;color:#fff;position:relative;overflow:hidden;container-type:inline-size">
+          <div style="position:absolute;top:7%;left:7%;display:flex;align-items:baseline;gap:0.727em;font-size:4.5cqw;letter-spacing:0.06em"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <div style="position:absolute;left:7%;right:7%;bottom:9%;font-size:10cqw;line-height:1.08;font-weight:700;letter-spacing:-0.02em">
+            <div style="position:relative;display:inline-block;color:#8fa3bd;font-weight:600">Formular-Suche<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.22em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></div>
+            <div>Ein Satz genügt.</div>
+          </div>
+        </div>
+        <span style="font-size:14px">Social Post 1 : 1</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="aspect-ratio:85/55;background:#fff;border:1px solid #d9e3e8;padding:7%;display:flex;flex-direction:column;justify-content:space-between;container-type:inline-size">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div style="display:flex;align-items:baseline;gap:0.727em;font-size:4.6cqw;letter-spacing:0.06em"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+            <span style="font-size:3.6cqw;color:#b92b06">{{ domain }}</span>
+          </div>
+          <div style="font-size:3.6cqw;line-height:1.45;padding-left:calc(4.6cqw * 1.85)">
+            <b>Mag.a Vorname Nachname</b><br>Produktverantwortung<br><br>vorname.nachname@{{ domain }}<br>+43 1 123 45-6789
+          </div>
+        </div>
+        <span style="font-size:14px">Visitenkarte 85 × 55 mm</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:#f6f4f0;padding:24px">
+          <div style="background:#fff;padding:20px;font-size:13px;line-height:1.55">
+            <div style="color:#b92b06;font-weight:600">{{ brand }} · Digitaler Verwaltungsassistent</div>
+            <div style="margin-top:8px"><b>Vorname Nachname</b><br>Produktverantwortung</div>
+            <div style="margin-top:8px">+43 1 123 45-6789<br><span style="text-decoration:underline">vorname.nachname@{{ domain }}</span><br><span style="text-decoration:underline">{{ domain }}</span></div>
+          </div>
+        </div>
+        <span style="font-size:14px">E-Mail-Signatur, Absender in Textrot</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <div style="width:min(180px,100%);aspect-ratio:100/235;background:#fff;border:1px solid #d9e3e8;position:relative;overflow:hidden;container-type:inline-size">
+          <div style="position:absolute;top:0;left:0;right:0;height:14%;padding:12% 10%;display:flex;align-items:baseline;gap:0.727em;font-size:8cqw;letter-spacing:0.06em"><svg viewBox="0 0 925 600" style="height:0.727em;width:1.12em;flex:none;fill:#e1320f"><polygon points="0,0 925,0 925,200 93,200"></polygon><polygon points="187,400 925,400 925,600 280,600"></polygon></svg><span>{{ brand }}</span></div>
+          <div style="position:absolute;top:14%;left:0;right:0;bottom:0;background:#e4ebf0">
+            <div style="padding:14% 10%;font-size:12cqw;line-height:1.1;font-weight:700;letter-spacing:-0.01em">
+              <div style="display:flex;flex-direction:column;align-items:flex-start;color:#8a959b;font-weight:600">
+                <span style="position:relative;display:inline-block">nicht<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.2em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></span>
+                <span style="position:relative;display:inline-block">zuständig<span style="position:absolute;left:-0.08em;top:56%;transform:translateY(-50%);height:0.2em;width:calc(100% + 0.16em);background:#e1320f;clip-path:polygon(0 0,100% 0,100% 100%,0.1em 100%)"></span></span>
+              </div>
+              <div>kompetent.</div>
+              <div style="font-size:6cqw;font-weight:400;color:#b92b06;margin-top:1.2em">{{ domain }}</div>
+            </div>
+            <div style="position:absolute;right:0;bottom:0;width:100%;aspect-ratio:1">
+              <div style="position:absolute;right:0;top:0;width:100%;height:33.34%;background:#fff;clip-path:polygon(0 0,100% 0,100% 100%,15.5% 100%)"></div>
+              <div style="position:absolute;right:0;bottom:0;width:100%;height:33.34%;background:#fff;clip-path:polygon(31% 0,100% 0,100% 100%,46.6% 100%)"></div>
+            </div>
+          </div>
+        </div>
+        <span style="font-size:14px">Roll-up 100 × 235 cm</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#fff;border-top:1px solid #d9e3e8">
+  <div style="max-width:1240px;margin:0 auto;padding:32px 48px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:#444">
+    <span><span style="color:#b92b06">{{ domain }}</span> · Corporate Design, Konzept für den Hackathon „Digital Assistants 2030“</span>
+    <span>Farbwerte: Corporate Design des Bundes, Styleguide März 2025</span>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brand&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Kompetent&quot;,&quot;Competent&quot;],&quot;default&quot;:&quot;Kompetent&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;animate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { step: 3 };
+  componentDidMount() { this.sync(); }
+  componentDidUpdate(p) { if (p.animate !== this.props.animate) this.sync(); }
+  componentWillUnmount() { clearTimeout(this.t); }
+  sync() {
+    clearTimeout(this.t);
+    if (this.props.animate === false) { this.setState({ step: 3 }); return; }
+    const dur = [1800, 800, 400, 3200];
+    const tick = (s) => { this.setState({ step: s }); this.t = setTimeout(() => tick((s + 1) % 4), dur[s]); };
+    tick(0);
+  }
+  renderVals() {
+    const s = this.state.step;
+    return {
+      brand: this.props.brand ?? 'Kompetent',
+      domain: (this.props.brand ?? 'Kompetent').toLowerCase() + '.gv.at',
+      strikeW: s >= 1 ? 'calc(100% + 0.16em)' : '0%',
+      oldColor: s >= 2 ? '#8a959b' : '#000',
+      newOpacity: s >= 2 ? 1 : 0,
+      newShift: s >= 2 ? '0' : '0.25em'
+    };
+  }
+}
+</script>
+</body>
+</html>

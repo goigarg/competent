@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Language;
 use App\Services\Ai\Contracts\AiAssistantInterface;
 use App\Services\AustrianGov\KnowledgeBaseService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AssistantStreamController extends Controller
@@ -23,7 +25,7 @@ class AssistantStreamController extends Controller
             'messages' => ['required', 'array', 'min:1'],
             'messages.*.role' => ['required', 'string', 'in:user,assistant,system'],
             'messages.*.content' => ['required', 'string', 'max:4000'],
-            'locale' => ['nullable', 'string', 'in:de,en'],
+            'locale' => ['nullable', 'string', Rule::enum(Language::class)],
         ]);
 
         $locale = $validated['locale'] ?? 'de';

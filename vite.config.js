@@ -13,8 +13,14 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                // Kompetent CI: Inter (Light 300, Regular 400, Semibold 600, Bold 700), Noto Sans Arabic for Arabic.
+                bunny('Inter', {
+                    weights: [300, 400, 500, 600, 700],
+                    subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
+                }),
+                bunny('Noto Sans Arabic', {
+                    weights: [400, 600],
+                    subsets: ['arabic'],
                 }),
             ],
         }),

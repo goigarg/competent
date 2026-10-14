@@ -2,22 +2,55 @@
 
 namespace App\Livewire;
 
+use App\Enums\Language;
+use App\Livewire\Concerns\AppliesLanguage;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\KnowledgeNugget;
 use App\Services\Ai\Contracts\AiAssistantInterface;
+use App\Services\AustrianGov\IntentMatcher;
 use App\Services\AustrianGov\KnowledgeBaseService;
 use App\Services\AustrianGov\KnowledgeDistiller;
+use App\Services\AustrianGov\MessageParser;
+use App\Services\AustrianGov\OfficerMessages;
 use App\Services\AustrianGov\Workflows\PassportWorkflow;
 use App\Services\AustrianGov\Workflows\ResidenceWorkflow;
+use App\Services\Citations\CitationMarkers;
+use App\Services\Citations\CitedSource;
+use App\Services\Citations\Contracts\CitationResolver;
+use App\Support\Translate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Digitales Österreich 2030 - KI-Bürgerassistenz')]
+/**
+ * @phpstan-type ChatMessage array{
+ *     id: string,
+ *     role: string,
+ *     content: string,
+ *     timestamp: string,
+ *     sources?: array<int, array<string, mixed>>,
+ *     workflow?: ?string,
+ *     is_fallback?: bool,
+ *     checklist?: array<int, string>|null,
+ *     is_human_request?: bool
+ * }
+ * @phpstan-type NewChatMessage array{
+ *     role: string,
+ *     content: string,
+ *     id?: string,
+ *     timestamp?: string,
+ *     sources?: array<int, array<string, mixed>>,
+ *     workflow?: ?string,
+ *     is_fallback?: bool,
+ *     checklist?: array<int, string>|null,
+ *     is_human_request?: bool
+ * }
+ */
 class AustrianGovAssistant extends Component
 {
+    use AppliesLanguage;
+
     public ?int $conversationId = null;
 
     public int $escalatedCasesCount = 0;
@@ -25,17 +58,7 @@ class AustrianGovAssistant extends Component
     public string $locale = 'de';
 
     /**
-     * @var array<int, array{
-     *     id: string,
-     *     role: string,
-     *     content: string,
-     *     timestamp: string,
-     *     sources?: array<int, array{title: string, url: string, description: string, tag: string}>,
-     *     workflow?: ?string,
-     *     is_fallback?: bool,
-     *     checklist?: array<int, string>,
-     *     is_human_request?: bool
-     * }>
+     * @var list<ChatMessage>
      */
     public array $messages = [];
 
@@ -61,14 +84,7 @@ class AustrianGovAssistant extends Component
      *     authority_location: ?string
      * }
      */
-    public array $passportState = [
-        'step' => 1,
-        'scenario' => null,
-        'urgency' => 'standard',
-        'age_group' => 'adult',
-        'checked_items' => [],
-        'authority_location' => null,
-    ];
+    public array $passportState = PassportWorkflow::DEFAULT_STATE;
 
     /**
      * @var array{
@@ -81,15 +97,7 @@ class AustrianGovAssistant extends Component
      *     checked_items: array<string, bool>
      * }
      */
-    public array $residenceState = [
-        'step' => 1,
-        'move_status' => null,
-        'days_since_move' => 0,
-        'residence_type' => 'hauptwohnsitz',
-        'housing_type' => 'rented',
-        'channel' => 'id_austria',
-        'checked_items' => [],
-    ];
+    public array $residenceState = ResidenceWorkflow::DEFAULT_STATE;
 
     public bool $showDossierModal = false;
 
@@ -99,23 +107,21 @@ class AustrianGovAssistant extends Component
 
     public bool $highContrast = false;
 
-    public bool $simpleLanguage = false;
-
     public function mount(KnowledgeBaseService $kbService): void
     {
-        $this->locale = session('locale', 'de');
+        $this->locale = Language::fromLocale(is_string(session('locale')) ? session('locale') : null)->value;
+        $this->applyLanguage();
         $this->loadOrCreateConversation();
+        $this->applyLanguage();
     }
 
-    public function loadOrCreateConversation(): void
+    protected function loadOrCreateConversation(): void
     {
         try {
             $sessionConvId = session('austrian_gov_conversation_id');
-            $conversation = null;
-
-            if ($sessionConvId) {
-                $conversation = Conversation::with('messages')->find($sessionConvId);
-            }
+            $conversation = is_numeric($sessionConvId)
+                ? Conversation::with('messages')->find((int) $sessionConvId)
+                : null;
 
             if (! $conversation) {
                 $conversation = Conversation::with('messages')
@@ -128,16 +134,13 @@ class AustrianGovAssistant extends Component
             if ($conversation) {
                 $this->conversationId = $conversation->id;
                 session(['austrian_gov_conversation_id' => $conversation->id]);
-                $this->locale = $conversation->locale ?? $this->locale;
+                $this->locale = Language::fromLocale($conversation->locale)->value;
+                $this->applyLanguage();
                 $this->activeWorkflow = $conversation->active_workflow;
 
                 if (! empty($conversation->workflow_data)) {
-                    if (isset($conversation->workflow_data['passportState'])) {
-                        $this->passportState = array_merge($this->passportState, $conversation->workflow_data['passportState']);
-                    }
-                    if (isset($conversation->workflow_data['residenceState'])) {
-                        $this->residenceState = array_merge($this->residenceState, $conversation->workflow_data['residenceState']);
-                    }
+                    $this->passportState = PassportWorkflow::normalizeState($conversation->workflow_data['passportState'] ?? []);
+                    $this->residenceState = ResidenceWorkflow::normalizeState($conversation->workflow_data['residenceState'] ?? []);
                 }
 
                 if (! empty($conversation->assigned_officer)) {
@@ -151,7 +154,7 @@ class AustrianGovAssistant extends Component
 
                     foreach ($conversation->messages as $m) {
                         $content = (string) $m->content;
-                        if ($m->workflow === 'officer_joined' || str_contains($content, 'ist dem Gespräch beigetreten') || str_contains($content, 'has joined the conversation')) {
+                        if (OfficerMessages::kind(['workflow' => $m->workflow, 'content' => $content]) === 'joined') {
                             $this->isOfficerJoined = true;
                             if (! empty($conversation->assigned_officer)) {
                                 $this->officerJoinedName = $conversation->assigned_officer;
@@ -160,31 +163,14 @@ class AustrianGovAssistant extends Component
 
                         if ($m->role === 'user') {
                             $lastUserText = $content;
-                            $repairedMessages[] = [
-                                'id' => $m->uuid ?? (string) Str::uuid(),
-                                'role' => $m->role,
-                                'content' => $content,
-                                'timestamp' => $m->created_at?->format('H:i') ?? now()->format('H:i'),
-                                'sources' => $m->sources ?? [],
-                                'workflow' => $m->workflow,
-                                'is_fallback' => (bool) $m->is_fallback,
-                            ];
+                            $repairedMessages[] = $this->messageFromModel($m);
                         } elseif ($m->role === 'assistant') {
                             if (trim($content) === '') {
                                 $fallback = app(KnowledgeBaseService::class)->getFallbackResponse($lastUserText ?? 'general', $this->locale);
-                                $content = $fallback['content'];
-                                $m->update(['content' => $content, 'is_fallback' => true]);
+                                $m->update(['content' => $fallback['content'], 'is_fallback' => true]);
                             }
 
-                            $repairedMessages[] = [
-                                'id' => $m->uuid ?? (string) Str::uuid(),
-                                'role' => $m->role,
-                                'content' => $content,
-                                'timestamp' => $m->created_at?->format('H:i') ?? now()->format('H:i'),
-                                'sources' => $m->sources ?? [],
-                                'workflow' => $m->workflow,
-                                'is_fallback' => (bool) $m->is_fallback,
-                            ];
+                            $repairedMessages[] = $this->messageFromModel($m);
                         }
                     }
 
@@ -229,28 +215,12 @@ class AustrianGovAssistant extends Component
         $this->isOfficerJoined = false;
         $this->officerJoinedName = null;
         $this->activeWorkflow = null;
-        $this->passportState = [
-            'step' => 1,
-            'scenario' => null,
-            'urgency' => 'standard',
-            'age_group' => 'adult',
-            'checked_items' => [],
-            'authority_location' => null,
-        ];
-        $this->residenceState = [
-            'step' => 1,
-            'move_status' => null,
-            'days_since_move' => 0,
-            'residence_type' => 'hauptwohnsitz',
-            'housing_type' => 'rented',
-            'channel' => 'id_austria',
-            'checked_items' => [],
-        ];
+        $this->passportState = PassportWorkflow::DEFAULT_STATE;
+        $this->residenceState = ResidenceWorkflow::DEFAULT_STATE;
         $this->inputMessage = '';
         $this->messages = [];
         $this->showDossierModal = false;
         $this->dossierContent = '';
-        $this->escalationSuccess = false;
 
         try {
             $conversation = Conversation::create([
@@ -272,7 +242,10 @@ class AustrianGovAssistant extends Component
         $this->updateEscalatedCount();
     }
 
-    public function persistMessage(array $msgData): void
+    /**
+     * @param  ChatMessage  $msgData
+     */
+    protected function persistMessage(array $msgData): void
     {
         if (! $this->conversationId) {
             return;
@@ -281,7 +254,7 @@ class AustrianGovAssistant extends Component
         try {
             ConversationMessage::create([
                 'conversation_id' => $this->conversationId,
-                'uuid' => $msgData['id'] ?? (string) Str::uuid(),
+                'uuid' => $msgData['id'],
                 'role' => $msgData['role'],
                 'content' => $msgData['content'],
                 'sources' => $msgData['sources'] ?? null,
@@ -310,22 +283,41 @@ class AustrianGovAssistant extends Component
         }
     }
 
+    /**
+     * @param  NewChatMessage  $msg
+     * @return ChatMessage
+     */
     protected function addMessage(array $msg): array
     {
-        if (empty($msg['id'])) {
-            $msg['id'] = (string) Str::uuid();
-        }
-        if (empty($msg['timestamp'])) {
-            $msg['timestamp'] = now()->format('H:i');
-        }
+        $message = [
+            ...$msg,
+            'id' => empty($msg['id']) ? (string) Str::uuid() : $msg['id'],
+            'timestamp' => empty($msg['timestamp']) ? now()->format('H:i') : $msg['timestamp'],
+        ];
 
-        $this->messages[] = $msg;
-        $this->persistMessage($msg);
+        $this->messages[] = $message;
+        $this->persistMessage($message);
 
-        return $msg;
+        return $message;
     }
 
-    public function markConversationAsEscalated(string $reason): void
+    /**
+     * @return ChatMessage
+     */
+    protected function messageFromModel(ConversationMessage $m): array
+    {
+        return [
+            'id' => $m->uuid ?? (string) $m->id,
+            'role' => $m->role,
+            'content' => $m->content,
+            'timestamp' => $m->created_at?->format('H:i') ?? now()->format('H:i'),
+            'sources' => $m->sources ?? [],
+            'workflow' => $m->workflow,
+            'is_fallback' => $m->is_fallback,
+        ];
+    }
+
+    protected function markConversationAsEscalated(string $reason): void
     {
         if (! $this->conversationId) {
             return;
@@ -350,14 +342,19 @@ class AustrianGovAssistant extends Component
         }
     }
 
-    public function buildEscalationDossier(): string
+    /**
+     * Case summary in the given language (citizen: their language; staff portal: always German).
+     */
+    protected function buildEscalationDossier(?string $locale = null): string
     {
+        $locale ??= $this->locale;
+
         if ($this->activeWorkflow === 'passport') {
-            return (new PassportWorkflow($this->passportState))->generateDossierSummary($this->locale);
+            return (new PassportWorkflow($this->passportState))->generateDossierSummary($locale);
         }
 
         if ($this->activeWorkflow === 'residence') {
-            return (new ResidenceWorkflow($this->residenceState))->generateDossierSummary($this->locale);
+            return (new ResidenceWorkflow($this->residenceState))->generateDossierSummary($locale);
         }
 
         $userMsgs = collect($this->messages)
@@ -365,20 +362,13 @@ class AustrianGovAssistant extends Component
             ->pluck('content')
             ->implode("\n* ");
 
-        return $this->locale === 'de'
-            ? "### Bürger-Dossier (Menschliche Sachbearbeitung angefordert)\n\n"
-              .'* **Datum/Uhrzeit:** '.now()->format('d.m.Y H:i')." Uhr\n"
-              ."* **Status:** Offen für Sachbearbeiter-Prüfung\n"
-              ."* **Sprache:** Deutsch\n\n"
-              ."#### Bürger-Anfragen im Chat:\n* ".($userMsgs ?: 'Allgemeine behördliche Auskunftsanfrage')
-            : "### Citizen Dossier (Escalated to Civil Servant)\n\n"
-              .'* **Date/Time:** '.now()->format('d.m.Y H:i')."\n"
-              ."* **Status:** Pending civil servant review\n"
-              ."* **Language:** English\n\n"
-              ."#### Citizen inquiries in chat:\n* ".($userMsgs ?: 'General public service inquiry');
+        return $this->t('assistant.dossier_general', [
+            'datetime' => now()->format('d.m.Y H:i'),
+            'requests' => $userMsgs ?: $this->t('assistant.dossier_general_empty', [], $locale),
+        ], $locale);
     }
 
-    public function updateEscalatedCount(): void
+    protected function updateEscalatedCount(): void
     {
         try {
             $this->escalatedCasesCount = Conversation::escalated()
@@ -391,28 +381,30 @@ class AustrianGovAssistant extends Component
 
     public function setLocale(string $locale): void
     {
-        if (in_array($locale, ['de', 'en'])) {
-            $this->locale = $locale;
-            session(['locale' => $locale]);
-
-            if ($this->conversationId) {
-                try {
-                    Conversation::where('id', $this->conversationId)->update(['locale' => $locale]);
-                } catch (\Throwable) {
-                }
-            }
-
-            // Add notification message in conversation
-            $isGerman = $locale === 'de';
-            $this->addMessage([
-                'id' => (string) Str::uuid(),
-                'role' => 'system',
-                'content' => $isGerman
-                    ? 'Sprache auf Deutsch umgestellt. Wie kann ich Ihnen bei Ihren Behördenwegen behilflich sein?'
-                    : 'Language switched to English. How can I assist you with Austrian public services today?',
-                'timestamp' => now()->format('H:i'),
-            ]);
+        $language = Language::tryFrom($locale);
+        if ($language === null) {
+            return;
         }
+
+        $this->locale = $language->value;
+        session(['locale' => $language->value]);
+        $this->applyLanguage();
+
+        if ($this->conversationId) {
+            try {
+                Conversation::where('id', $this->conversationId)->update(['locale' => $language->value]);
+            } catch (\Throwable) {
+            }
+        }
+
+        // Add notification message in conversation
+        $this->addMessage([
+            'role' => 'system',
+            'content' => $this->t('chat.language_switched'),
+        ]);
+
+        $title = config('app.brand').' · '.$this->t('chat.digital_administrative_assistant');
+        $this->js('document.documentElement.lang = '.json_encode($language->htmlLang()).'; document.documentElement.dir = '.json_encode($language->dir()).'; document.title = '.json_encode($title).';');
     }
 
     public function setTextSize(string $size): void
@@ -427,22 +419,13 @@ class AustrianGovAssistant extends Component
         $this->highContrast = ! $this->highContrast;
     }
 
-    public function toggleSimpleLanguage(): void
+    protected function initWelcomeMessage(): void
     {
-        $this->simpleLanguage = ! $this->simpleLanguage;
-    }
-
-    public function initWelcomeMessage(): void
-    {
-        $isGerman = $this->locale === 'de';
-
         $this->messages = [
             [
                 'id' => (string) Str::uuid(),
                 'role' => 'assistant',
-                'content' => $isGerman
-                    ? "Grüß Gott! Ich bin Ihre offizielle **KI-Bürgerassistenz der Republik Österreich**.\n\nIch übersetze Amtsdeutsch in einfache, klare Schritte und helfe Ihnen bei amtlichen Erledigungen – ohne langes Suchen. Wählen Sie ein Anliegen oder fragen Sie einfach in Ihren eigenen Worten:"
-                    : "Welcome! I am your official **AI Citizen Assistant for the Republic of Austria**.\n\nI explain Austrian administrative procedures in plain language and guide you through public services step by step. Feel free to choose an option below or ask your question directly:",
+                'content' => $this->withContentFallbackNotice($this->t('assistant.welcome')),
                 'timestamp' => now()->format('H:i'),
                 'sources' => app(KnowledgeBaseService::class)->getOfficialSources('general', $this->locale),
             ],
@@ -462,35 +445,102 @@ class AustrianGovAssistant extends Component
             return;
         }
 
-        $lower = mb_strtolower($action);
-        if (str_contains($lower, 'dossier') || str_contains($lower, 'zusammenfassung herunterladen') || str_contains($lower, 'download dossier')) {
+        $intents = app(IntentMatcher::class);
+
+        if ($intents->wantsDossier($action)) {
             $this->generateDossier();
 
             return;
         }
 
-        if (str_contains($lower, 'mensch') || str_contains($lower, 'human') || str_contains($lower, 'sachbearbeiter') || str_contains($lower, 'hotline')) {
+        if ($intents->wantsHuman($action)) {
             $this->respondWithHumanSupport();
 
             return;
         }
 
-        $this->inputMessage = $action;
-        $this->sendMessage();
+        $this->submitUserText($action, 'followup');
+    }
+
+    /**
+     * "Ja, genau" on a clarification (CI phase 1): answer the confirmed concerns in full.
+     */
+    public function confirmUnderstanding(string $messageId): void
+    {
+        $index = $this->awaitingClarificationIndex($messageId);
+        if ($index === null) {
+            return;
+        }
+
+        $this->addMessage([
+            'role' => 'user',
+            'content' => $this->t('answer.confirm_yes'),
+        ]);
+
+        $this->queryAiModel($this->concernTextFor($index), 'answer');
+    }
+
+    /**
+     * "Nicht ganz" on a clarification: ask one targeted follow-up instead of starting over.
+     */
+    public function rejectUnderstanding(string $messageId): void
+    {
+        $index = $this->awaitingClarificationIndex($messageId);
+        if ($index === null) {
+            return;
+        }
+
+        $this->addMessage([
+            'role' => 'user',
+            'content' => $this->t('answer.confirm_no'),
+        ]);
+
+        $this->queryAiModel($this->concernTextFor($index), 'correct');
+    }
+
+    /**
+     * Index of the given message if it is a clarification that still waits for an answer (the latest message).
+     */
+    protected function awaitingClarificationIndex(string $messageId): ?int
+    {
+        $index = array_key_last($this->messages);
+        $message = $index === null ? null : $this->messages[$index];
+
+        if ($message === null || $message['id'] !== $messageId || $message['role'] !== 'assistant') {
+            return null;
+        }
+
+        return MessageParser::parseWithNextSteps((string) $message['content'], $this->locale)['kind'] === 'clarify' ? $index : null;
+    }
+
+    /**
+     * The citizen's own words plus the confirmed concerns, used for retrieval instead of "Ja, genau".
+     */
+    protected function concernTextFor(int $clarificationIndex): string
+    {
+        $parts = [];
+
+        for ($i = $clarificationIndex - 1; $i >= 0; $i--) {
+            if ($this->messages[$i]['role'] === 'user') {
+                $parts[] = $this->messages[$i]['content'];
+                break;
+            }
+        }
+
+        $parsed = MessageParser::parseWithNextSteps((string) $this->messages[$clarificationIndex]['content'], $this->locale);
+
+        return trim(implode("\n", [...$parts, ...($parsed['clarify']['items'] ?? [])]));
     }
 
     public function startWorkflow(string $name): void
     {
         $this->activeWorkflow = $name;
-        $isGerman = $this->locale === 'de';
 
         if ($name === 'passport') {
             $this->addMessage([
                 'id' => (string) Str::uuid(),
                 'role' => 'assistant',
-                'content' => $isGerman
-                    ? "### Interaktiver Reisepass-Assistent\n\nIch begleite Sie Schritt für Schritt durch die Ausstellung Ihres neuen Reisepasses. Bitte wählen Sie Ihre aktuelle Ausgangssituation:"
-                    : "### Interactive Passport Assistant\n\nI will guide you step by step through your Austrian passport application. Please select your current situation:",
+                'content' => $this->t('assistant.passport_intro'),
                 'timestamp' => now()->format('H:i'),
                 'workflow' => 'passport',
                 'sources' => app(KnowledgeBaseService::class)->getOfficialSources('passport', $this->locale),
@@ -499,9 +549,7 @@ class AustrianGovAssistant extends Component
             $this->addMessage([
                 'id' => (string) Str::uuid(),
                 'role' => 'assistant',
-                'content' => $isGerman
-                    ? "### Interaktiver Wohnsitz-Assistent (Meldewesen)\n\nIn Österreich gilt eine gesetzliche Meldepflicht von 3 Tagen ab Einzug. Wann sind Sie umgezogen bzw. planen Sie den Umzug?"
-                    : "### Interactive Residence Registration Assistant\n\nUnder Austrian law, you must register your address within 3 days of moving in. Have you already moved or are you planning to move?",
+                'content' => $this->t('assistant.residence_intro'),
                 'timestamp' => now()->format('H:i'),
                 'workflow' => 'residence',
                 'sources' => app(KnowledgeBaseService::class)->getOfficialSources('residence', $this->locale),
@@ -522,16 +570,8 @@ class AustrianGovAssistant extends Component
         $wf->setScenario($scenario);
         $this->passportState = $wf->state;
 
-        $isGerman = $this->locale === 'de';
-        $scenarioLabels = [
-            'expiring' => $isGerman ? 'Reisepass läuft bald ab' : 'Passport expiring soon',
-            'expired_recently' => $isGerman ? 'Reisepass kürzlich abgelaufen (< 5 Jahre)' : 'Passport expired recently (< 5 years)',
-            'expired_over_5_years' => $isGerman ? 'Reisepass seit über 5 Jahren abgelaufen' : 'Passport expired > 5 years ago',
-            'lost_stolen' => $isGerman ? 'Reisepass verloren oder gestohlen' : 'Passport lost or stolen',
-            'child' => $isGerman ? 'Reisepass für ein Kind' : 'Passport for a child',
-        ];
-
-        $label = $scenarioLabels[$scenario] ?? $scenario;
+        $scenarioLabels = Translate::map('assistant.passport_scenario', $this->locale);
+        $label = is_string($scenarioLabels[$scenario] ?? null) ? $scenarioLabels[$scenario] : $scenario;
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
@@ -543,9 +583,7 @@ class AustrianGovAssistant extends Component
         $this->addMessage([
             'id' => (string) Str::uuid(),
             'role' => 'assistant',
-            'content' => $isGerman
-                ? "Verstanden: **{$label}**.\n\nWie schnell benötigen Sie das Dokument? Wählen Sie bitte die gewünschte Zustell-Geschwindigkeit:"
-                : "Noted: **{$label}**.\n\nHow quickly do you need your passport? Please choose your delivery speed:",
+            'content' => $this->t('assistant.passport_scenario_ack', ['label' => $label]),
             'timestamp' => now()->format('H:i'),
             'workflow' => 'passport',
             'sources' => app(KnowledgeBaseService::class)->getOfficialSources('passport', $this->locale),
@@ -558,15 +596,12 @@ class AustrianGovAssistant extends Component
         $wf->setUrgency($urgency);
         $this->passportState = $wf->state;
 
-        $fee = $wf->getFeeInfo();
-        $isGerman = $this->locale === 'de';
+        $fee = $wf->getFeeInfo($this->locale);
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
             'role' => 'assistant',
-            'content' => $isGerman
-                ? "### Ihre persönliche Reisepass-Übersicht\n\n* **Offizielle Gebühr:** **{$fee['formatted']}**\n* **Lieferzeit:** {$fee['duration']}\n* **Gültigkeit:** {$fee['validity']}\n\nHier ist Ihre persönliche Dokumenten-Checkliste. Haken Sie die Punkte ab, sobald Sie diese vorbereitet haben:"
-                : "### Your Personalized Passport Overview\n\n* **Official Fee:** **{$fee['formatted']}**\n* **Processing Time:** {$fee['duration']}\n* **Validity:** {$fee['validity']}\n\nHere is your required document checklist. Check off items as you prepare them:",
+            'content' => $this->t('assistant.passport_overview', ['fee' => $fee['formatted'], 'duration' => $fee['duration'], 'validity' => $fee['validity']]),
             'timestamp' => now()->format('H:i'),
             'workflow' => 'passport',
             'sources' => app(KnowledgeBaseService::class)->getOfficialSources('passport', $this->locale),
@@ -589,11 +624,10 @@ class AustrianGovAssistant extends Component
         $this->residenceState = $wf->state;
 
         $deadline = $wf->getDeadlineStatus($this->locale);
-        $isGerman = $this->locale === 'de';
 
         $statusText = $status === 'planning_to_move'
-            ? ($isGerman ? 'Ich plane einen Umzug' : 'I am planning to move')
-            : ($isGerman ? "Ich bin bereits umgezogen ({$days} Tage)" : "I have already moved ({$days} days ago)");
+            ? $this->t('assistant.residence_planning')
+            : $this->t('assistant.residence_moved', ['days' => $days]);
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
@@ -605,9 +639,7 @@ class AustrianGovAssistant extends Component
         $this->addMessage([
             'id' => (string) Str::uuid(),
             'role' => 'assistant',
-            'content' => "ℹ️ **{$deadline['warning']}**\n\n".($isGerman
-                ? 'Handelt es sich bei der neuen Unterkunft um Ihren **Hauptwohnsitz** (Mittelpunkt der Lebensbeziehungen) oder einen **Nebenwohnsitz**?'
-                : 'Is this new address your **Primary Residence** (*Hauptwohnsitz* - center of vital interests) or a **Secondary Residence** (*Nebenwohnsitz*)?'),
+            'content' => "ℹ️ **{$deadline['warning']}**\n\n".$this->t('assistant.residence_type_question'),
             'timestamp' => now()->format('H:i'),
             'workflow' => 'residence',
             'sources' => app(KnowledgeBaseService::class)->getOfficialSources('residence', $this->locale),
@@ -620,10 +652,7 @@ class AustrianGovAssistant extends Component
         $wf->setResidenceType($type);
         $this->residenceState = $wf->state;
 
-        $isGerman = $this->locale === 'de';
-        $label = $type === 'hauptwohnsitz'
-            ? ($isGerman ? 'Hauptwohnsitz' : 'Primary Residence')
-            : ($isGerman ? 'Nebenwohnsitz' : 'Secondary Residence');
+        $label = $this->t($type === 'hauptwohnsitz' ? 'assistant.residence_type_primary' : 'assistant.residence_type_secondary');
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
@@ -635,9 +664,7 @@ class AustrianGovAssistant extends Component
         $this->addMessage([
             'id' => (string) Str::uuid(),
             'role' => 'assistant',
-            'content' => $isGerman
-                ? 'Wohnen Sie in einer **Mietwohnung** oder sind Sie **Eigentümerin / Eigentümer** der Immobilie?'
-                : 'Are you living in a **rented flat** or are you the **property owner**?',
+            'content' => $this->t('assistant.residence_housing_question'),
             'timestamp' => now()->format('H:i'),
             'workflow' => 'residence',
             'sources' => app(KnowledgeBaseService::class)->getOfficialSources('residence', $this->locale),
@@ -650,10 +677,7 @@ class AustrianGovAssistant extends Component
         $wf->setHousingType($housing);
         $this->residenceState = $wf->state;
 
-        $isGerman = $this->locale === 'de';
-        $label = $housing === 'rented'
-            ? ($isGerman ? 'Mietwohnung (Miete)' : 'Rented property')
-            : ($isGerman ? 'Eigentum (Haus/Wohnung)' : 'Property owner');
+        $label = $this->t($housing === 'rented' ? 'assistant.residence_housing_rented' : 'assistant.residence_housing_owner');
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
@@ -662,20 +686,12 @@ class AustrianGovAssistant extends Component
             'timestamp' => now()->format('H:i'),
         ]);
 
-        $hint = $housing === 'rented'
-            ? ($isGerman
-                ? '⚠️ **Wichtig:** Da Sie zur Miete wohnen, muss die Unterkunftgeberin / der Vermieter den Meldezettel im Original oder digital bestätigen.'
-                : '⚠️ **Key Rule:** As a tenant, your landlord/property manager must sign the *Meldezettel* form.')
-            : ($isGerman
-                ? 'Als Eigentümerin/Eigentümer unterschreiben Sie den Meldezettel selbst im Abschnitt Unterkunftgeber.'
-                : 'As property owner, you sign the landlord section yourself.');
+        $hint = $this->t($housing === 'rented' ? 'assistant.residence_hint_rented' : 'assistant.residence_hint_owner');
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
             'role' => 'assistant',
-            'content' => "{$hint}\n\n".($isGerman
-                ? 'Wie möchten Sie die Meldung durchführen? Wählen Sie den gewünschten Kanal:'
-                : 'Which registration method do you prefer?'),
+            'content' => "{$hint}\n\n".$this->t('assistant.residence_channel_question'),
             'timestamp' => now()->format('H:i'),
             'workflow' => 'residence',
             'sources' => app(KnowledgeBaseService::class)->getOfficialSources('residence', $this->locale),
@@ -688,10 +704,7 @@ class AustrianGovAssistant extends Component
         $wf->setChannel($channel);
         $this->residenceState = $wf->state;
 
-        $isGerman = $this->locale === 'de';
-        $label = $channel === 'id_austria'
-            ? ($isGerman ? 'Digital über ID Austria (App Digitales Amt)' : 'Digital via ID Austria')
-            : ($isGerman ? 'Persönlich am Meldeamt / Gemeindeamt' : 'In person at municipal office');
+        $label = $this->t($channel === 'id_austria' ? 'assistant.residence_channel_id_austria' : 'assistant.residence_channel_in_person');
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
@@ -703,9 +716,7 @@ class AustrianGovAssistant extends Component
         $this->addMessage([
             'id' => (string) Str::uuid(),
             'role' => 'assistant',
-            'content' => $isGerman
-                ? "### Checkliste für Ihre Wohnsitzanmeldung\n\n* **Gebühr:** **0,00 €** (Vollständig gebührenfrei!)\n* **Frist:** Binnen 3 Werktagen ab Einzug\n* **Abmeldung alter Wohnsitz:** Erfolgt automatisch bei Neuanmeldung!\n\nHier ist Ihre Checkliste inklusive wichtiger Folge-Erledigungen (KFZ, ORF-Beitrag):"
-                : "### Checklist for your Residence Registration\n\n* **Cost:** **€0.00** (Completely free by law)\n* **Deadline:** Within 3 working days of moving in\n* **Previous address:** Automatically deregistered!\n\nHere is your interactive checklist including mandatory follow-ups:",
+            'content' => $this->t('assistant.residence_checklist_intro'),
             'timestamp' => now()->format('H:i'),
             'workflow' => 'residence',
             'sources' => app(KnowledgeBaseService::class)->getOfficialSources('residence', $this->locale),
@@ -723,7 +734,15 @@ class AustrianGovAssistant extends Component
 
     public function sendMessage(): void
     {
-        $rawText = trim($this->inputMessage);
+        $this->submitUserText($this->inputMessage);
+    }
+
+    /**
+     * @param  string  $phase  answer-pattern phase passed to the model, see KnowledgeBaseService::buildPhaseInstruction()
+     */
+    protected function submitUserText(string $text, string $phase = 'auto'): void
+    {
+        $rawText = trim($text);
         if ($rawText === '') {
             return;
         }
@@ -732,10 +751,8 @@ class AustrianGovAssistant extends Component
 
         // Privacy check: detect Austrian SVNr pattern (4 digits + 6 digits date of birth)
         if (preg_match('/\b(\d{4})\s?(\d{6})\b/', $rawText)) {
-            $this->piiWarning = $this->locale === 'de'
-                ? 'Datenschutz-Hinweis: Ihre Sozialversicherungsnummer wurde aus Sicherheitsgründen automatisch unkenntlich gemacht. Bitte übermitteln Sie keine vertraulichen Identifikationsnummern.'
-                : 'Privacy Notice: Your Austrian Social Security Number was automatically redacted for privacy. Please do not submit confidential identification numbers.';
-            $rawText = (string) preg_replace('/\b(\d{4})\s?(\d{6})\b/', '[SVNr geschwärzt]', $rawText);
+            $this->piiWarning = $this->t('chat.pii_warning');
+            $rawText = (string) preg_replace('/\b(\d{4})\s?(\d{6})\b/', $this->t('chat.svnr_redacted'), $rawText);
         }
 
         // Add user message to conversation
@@ -749,11 +766,11 @@ class AustrianGovAssistant extends Component
         $this->inputMessage = '';
         $this->isLoading = true;
 
-        // Intent detection: check if citizen explicitly requests a human
-        $isGerman = $this->locale === 'de';
-        $lower = mb_strtolower($rawText);
-        if (str_contains($lower, 'mensch') || str_contains($lower, 'berater') || str_contains($lower, 'beamte') || str_contains($lower, 'human') || str_contains($lower, 'telefon')) {
-            $this->respondWithHumanSupport($isGerman ? 'Bürgeranfrage im Chat nach persönlicher Beratung' : 'Citizen requested human caseworker assistance in chat');
+        // Intent detection (all languages): check if citizen explicitly requests a human
+        $intents = app(IntentMatcher::class);
+        if ($intents->wantsHuman($rawText)) {
+            // Escalation reasons are for the (German-speaking) staff portal.
+            $this->respondWithHumanSupport($this->t('assistant.escalation_reason_chat', [], Language::German));
             $this->isLoading = false;
 
             return;
@@ -761,54 +778,58 @@ class AustrianGovAssistant extends Component
 
         // Detect guided workflow triggers
         if ($this->activeWorkflow === null) {
-            if (str_contains($lower, 'pass') || str_contains($lower, 'reisepass') || str_contains($lower, 'passport')) {
-                $this->activeWorkflow = 'passport';
-            } elseif (str_contains($lower, 'umzug') || str_contains($lower, 'umgemeldet') || str_contains($lower, 'wohnsitz') || str_contains($lower, 'meldezettel') || str_contains($lower, 'moving')) {
-                $this->activeWorkflow = 'residence';
-            }
+            $this->activeWorkflow = $intents->workflowFor($rawText);
         }
 
-        $this->queryAiModel($rawText);
+        $this->queryAiModel($rawText, $phase);
     }
 
-    protected function queryAiModel(string $userPrompt): void
+    protected function queryAiModel(string $userPrompt, string $phase = 'auto'): void
     {
         $kbService = app(KnowledgeBaseService::class);
         $aiClient = app(AiAssistantInterface::class);
 
         // Build conversation messages for API
         $systemPrompt = $kbService->buildSystemPrompt($this->locale);
-        if ($this->simpleLanguage) {
-            $systemPrompt .= "\n\nZUSATZ-ANWEISUNG: Formuliere in 'Leichter Sprache' (A2-Niveau), kurze Hauptsätze, keine Fremdwörter, maximale Barrierefreiheit!";
-        }
 
         // 1. Retrieve matching factual knowledge nuggets from database
         $nuggets = KnowledgeNugget::findRelevantNuggets($userPrompt, 2);
+
+        // 2. Numbered sources the answer may cite with [n] (citation module, swappable for a verification backend)
+        $citations = app(CitationResolver::class);
+        $topics = array_values(array_unique(array_filter([$this->activeWorkflow, ...$kbService->detectDomains($userPrompt)])));
+        $sources = $citations->resolve($userPrompt, $topics, $this->locale, $nuggets);
+
         if ($nuggets->isNotEmpty()) {
             $factsList = [];
             foreach ($nuggets as $nugget) {
-                $factsList[] = "### [BEHÖRDLICHE FAKTEN: {$nugget->title}]\n{$nugget->factual_context}";
+                $number = collect($sources)->first(fn (CitedSource $s) => rtrim($s->url, '/') === rtrim((string) $nugget->official_source_url, '/'))?->number;
+                $sourceHint = $number ? " (source [{$number}])" : '';
+                $factsList[] = "### [OFFICIAL FACTS: {$nugget->title}]{$sourceHint}\n{$nugget->factual_context}";
             }
-            $dbGrounding = implode("\n\n", $factsList);
 
-            if ($this->locale === 'de') {
-                $systemPrompt .= "\n\nRELEVANTE RECHTLICHE FAKTEN AUS DER BUNDES-DATENBANK:\n{$dbGrounding}\n\nWICHTIGE ANWEISUNG ZUR PERSONALISIERUNG:\nNutze diese Fakten als rechtliche Richtschnur. Gehe dabei ZWINGEND spezifisch auf die persönliche Situation, das Alter, die Staatsbürgerschaft und bereits genannte Details des Bürgers aus dem bisherigen Gesprächsverlauf ein (keine unpersönlichen Pauschalantworten)!";
-            } else {
-                $systemPrompt .= "\n\nRELEVANT STATUTORY FACTS RETRIEVED FROM DATABASE:\n{$dbGrounding}\n\nIMPORTANT PERSONALIZATION INSTRUCTION:\nUse these verified facts as your legal baseline. You MUST tailor your response specifically to this citizen's unique situation, age, nationality, and details already established in the conversation history above (avoid generic cookie-cutter answers)!";
-            }
+            // One language-neutral instruction; the answer language comes from the system prompt.
+            $systemPrompt .= "\n\nRELEVANT STATUTORY FACTS RETRIEVED FROM DATABASE:\n".implode("\n\n", $factsList)
+                ."\n\nIMPORTANT PERSONALIZATION INSTRUCTION:\nUse these verified facts as your legal baseline. You MUST tailor your response specifically to this citizen's unique situation, age, nationality, and details already established in the conversation history above (avoid generic cookie-cutter answers)!";
         }
+
+        $systemPrompt = trim(implode("\n\n", array_filter([
+            $systemPrompt,
+            $kbService->buildSourcesSection($sources, $this->locale),
+            $kbService->buildPhaseInstruction($phase, $this->locale),
+        ])));
 
         $apiMessages = [
             ['role' => 'system', 'content' => $systemPrompt],
         ];
 
-        // Include recent history for conversational continuity
+        // Include recent history for conversational continuity. Source numbers are per answer, so earlier markers are removed.
         $recent = array_slice($this->messages, -8);
         foreach ($recent as $msg) {
             if (in_array($msg['role'], ['user', 'assistant'])) {
                 $apiMessages[] = [
                     'role' => $msg['role'],
-                    'content' => $msg['content'],
+                    'content' => $msg['role'] === 'assistant' ? CitationMarkers::strip($msg['content']) : $msg['content'],
                 ];
             }
         }
@@ -820,43 +841,51 @@ class AustrianGovAssistant extends Component
 
         $this->isLoading = false;
 
-        $hasValidContent = $response['success'] && ! empty(trim((string) ($response['content'] ?? '')));
+        $hasValidContent = $response['success'] && trim($response['content']) !== '';
 
         if ($hasValidContent) {
-            $topic = $this->activeWorkflow ?? $kbService->detectDomain($userPrompt);
-            $sources = $kbService->getOfficialSources($topic, $this->locale);
+            $content = trim($response['content']);
+            $isClarification = (bool) preg_match(MessageParser::CLARIFY_MARKER, trim(strtok($content, "\n") ?: ''));
+
+            // After "Ja, genau" the answer must not ask again.
+            if ($isClarification && $phase === 'answer') {
+                $content = trim((string) preg_replace('/^.*\n?/u', '', $content, 1));
+                $isClarification = false;
+            }
+
+            $sources = $isClarification ? [] : $citations->finalize($sources, $content);
 
             $this->addMessage([
                 'id' => (string) Str::uuid(),
                 'role' => 'assistant',
-                'content' => $response['content'],
+                'content' => $content,
                 'timestamp' => now()->format('H:i'),
-                'sources' => $sources,
+                'sources' => array_map(fn (CitedSource $s) => $s->toArray(), $sources),
                 'workflow' => $this->activeWorkflow,
                 'is_fallback' => false,
             ]);
 
             // Asynchronously / safely attempt knowledge distillation for novel interactions
-            try {
-                app(KnowledgeDistiller::class)->learnFromInteraction($userPrompt, $response['content'], $this->locale);
-            } catch (\Throwable) {
+            if (! $isClarification) {
+                try {
+                    app(KnowledgeDistiller::class)->learnFromInteraction($userPrompt, CitationMarkers::strip($content), $this->locale);
+                } catch (\Throwable) {
+                }
             }
         } else {
             // Graceful Knowledge Base Fallback
             $fallback = $kbService->getFallbackResponse($userPrompt, $this->locale);
 
-            $notice = $this->locale === 'de'
-                ? "> [!NOTE]\n> **Verifizierter Wissensdatenbank-Modus:** Der Live-KI-Dienst steht gerade unter hoher Last oder ist vorübergehend nicht erreichbar. Sie erhalten geprüfte offizielle Verwaltungsangaben aus der österreichischen Rechtsdatenbank.\n\n"
-                : "> [!NOTE]\n> **Verified Knowledge-Base Mode:** The live AI service is currently unavailable or under heavy load. Below is verified official administrative guidance from Austrian government resources.\n\n";
+            $notice = $this->t('assistant.limited_mode_notice')."\n\n";
 
             $this->addMessage([
                 'id' => (string) Str::uuid(),
                 'role' => 'assistant',
-                'content' => $notice.$fallback['content'],
+                'content' => $this->withContentFallbackNotice($notice.$fallback['content']),
                 'timestamp' => now()->format('H:i'),
                 'sources' => $fallback['sources'],
-                'checklist' => $fallback['checklist'] ?? null,
-                'workflow' => $fallback['topic'] ?? $this->activeWorkflow,
+                'checklist' => $fallback['checklist'],
+                'workflow' => $this->activeWorkflow ?? $fallback['topic'],
                 'is_fallback' => true,
             ]);
         }
@@ -864,13 +893,10 @@ class AustrianGovAssistant extends Component
 
     public function respondWithHumanSupport(?string $reason = null): void
     {
-        $isGerman = $this->locale === 'de';
         $kb = app(KnowledgeBaseService::class);
         $sources = $kb->getOfficialSources('human', $this->locale);
 
-        $content = $isGerman
-            ? "### Persönliche menschliche Unterstützung (Fall an Beamten-Portal übermittelt)\n\nGerne vermittle ich Sie an die offiziellen menschlichen Ansprechpartner der österreichischen Verwaltung. Ihr Fall wurde erfasst und ist nun im **Beamtinnen- & Beamten-Portal** zur Bearbeitung vorgemerkt.\n\n* **Bürgerservice des Bundeskanzleramts:**\n  * 📞 **Telefon:** [+43 1 53115-0](tel:+431531150) (Montag bis Freitag, 08:00 – 16:00 Uhr)\n  * ✉️ **E-Mail:** [buergerservice@bka.gv.at](mailto:buergerservice@bka.gv.at)\n* **ID Austria Support-Hotline:** 📞 [+43 1 71100-805555](tel:+43171100805555)\n* **Vor Ort:** Ihr zuständiges **Gemeindeamt** bzw. in Wien jedes **Magistratische Bezirksamt** (Servicetelefon 1360).\n\n💡 **Tipp:** Klicken Sie unten auf **\"Dossier für Beamtin/Beamten erstellen\"**, um eine druckfertige Zusammenfassung Ihres Falls ohne persönliche Daten herunterzuladen."
-            : "### Official Human Support (Case Escalated to Public Service Desk)\n\nI have connected you with the official human representatives of the Austrian public administration. Your case has been noted in the **Civil Servant Portal** for human review.\n\n* **Federal Chancellery Citizen Service Helpdesk:**\n  * 📞 **Phone:** [+43 1 53115-0](tel:+431531150) (Monday to Friday, 08:00 – 16:00)\n  * ✉️ **Email:** [buergerservice@bka.gv.at](mailto:buergerservice@bka.gv.at)\n* **ID Austria Hotline:** 📞 [+43 1 71100-805555](tel:+43171100805555)\n* **Local Registry Offices:** Municipal town hall (*Gemeindeamt*) or any *Magistratisches Bezirksamt* in Vienna.\n\n💡 **Tip:** Click **\"Generate Civil Servant Dossier\"** below to create a copyable summary of your situation.";
+        $content = $this->withContentFallbackNotice($this->t('assistant.human_support'));
 
         $this->addMessage([
             'id' => (string) Str::uuid(),
@@ -881,27 +907,17 @@ class AustrianGovAssistant extends Component
             'is_human_request' => true,
         ]);
 
-        $this->markConversationAsEscalated($reason ?? ($isGerman ? 'Bürgeranfrage: Persönliche Unterstützung / Beamtentelefon angefordert' : 'Citizen requested human caseworker assistance'));
+        $this->markConversationAsEscalated($reason ?? $this->t('assistant.escalation_reason_default', [], Language::German));
     }
 
     public function generateDossier(): void
     {
-        $isGerman = $this->locale === 'de';
-
-        if ($this->activeWorkflow === 'passport') {
-            $wf = new PassportWorkflow($this->passportState);
-            $this->dossierContent = $wf->generateDossierSummary($this->locale);
-        } elseif ($this->activeWorkflow === 'residence') {
-            $wf = new ResidenceWorkflow($this->residenceState);
-            $this->dossierContent = $wf->generateDossierSummary($this->locale);
-        } else {
-            $this->dossierContent = $this->buildEscalationDossier();
-        }
+        $this->dossierContent = $this->buildEscalationDossier();
 
         if ($this->conversationId) {
             try {
                 Conversation::where('id', $this->conversationId)->update([
-                    'case_dossier' => $this->dossierContent,
+                    'case_dossier' => $this->buildEscalationDossier(Language::German->value),
                 ]);
             } catch (\Throwable) {
             }
@@ -959,17 +975,9 @@ class AustrianGovAssistant extends Component
                     $hasNew = true;
                     $content = (string) $m->content;
 
-                    $this->messages[] = [
-                        'id' => $id,
-                        'role' => $m->role,
-                        'content' => $content,
-                        'timestamp' => $m->created_at?->format('H:i') ?? now()->format('H:i'),
-                        'sources' => $m->sources ?? [],
-                        'workflow' => $m->workflow,
-                        'is_fallback' => (bool) $m->is_fallback,
-                    ];
+                    $this->messages[] = $this->messageFromModel($m);
 
-                    if ($m->workflow === 'officer_joined' || str_contains($content, 'ist dem Gespräch beigetreten') || str_contains($content, 'has joined the conversation')) {
+                    if (OfficerMessages::kind(['workflow' => $m->workflow, 'content' => $content]) === 'joined') {
                         $this->isOfficerJoined = true;
                         if (! empty($conv->assigned_officer)) {
                             $this->officerJoinedName = $conv->assigned_officer;
@@ -986,14 +994,40 @@ class AustrianGovAssistant extends Component
         }
     }
 
+    /**
+     * @param  array<string, string|int|float>  $replace
+     */
+    protected function t(string $key, array $replace = [], Language|string|null $locale = null): string
+    {
+        $locale = $locale instanceof Language ? $locale->value : ($locale ?? $this->locale);
+
+        return Translate::text($key, $replace, $locale);
+    }
+
+    /**
+     * Languages without their own reviewed content get the stored German/English text plus a short notice.
+     */
+    protected function withContentFallbackNotice(string $content): string
+    {
+        $language = $this->language();
+        $servedIn = collect($language->contentChain())->first(fn (Language $l) => Translate::hasOwn('assistant.welcome', $l->value)) ?? Language::German;
+
+        if ($servedIn === $language || $language->isSimple()) {
+            return $content;
+        }
+
+        return '*'.$this->t('chat.content_fallback_notice', ['language' => $servedIn->nativeName()])."*\n\n---\n\n".$content;
+    }
+
     public function render(): View
     {
         $passportWf = new PassportWorkflow($this->passportState);
         $residenceWf = new ResidenceWorkflow($this->residenceState);
 
         return view('livewire.austrian-gov-assistant', [
+            'language' => $this->language(),
             'passportChecklist' => $passportWf->getChecklist($this->locale),
-            'passportFee' => $passportWf->getFeeInfo(),
+            'passportFee' => $passportWf->getFeeInfo($this->locale),
             'residenceChecklist' => $residenceWf->getChecklist($this->locale),
             'residenceDeadline' => $residenceWf->getDeadlineStatus($this->locale),
         ]);

@@ -2,9 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Enums\Language;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
+use App\Services\AustrianGov\OfficerMessages;
+use App\Support\Translate;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -15,6 +19,14 @@ use Livewire\Component;
 class EmployeePortal extends Component
 {
     public ?int $selectedConversationId = null;
+
+    /**
+     * The staff portal is always German, whatever language a citizen chose in the same browser session.
+     */
+    public function boot(): void
+    {
+        App::setLocale(Language::German->value);
+    }
 
     public string $statusFilter = 'all'; // 'all', 'pending_officer', 'in_review', 'resolved'
 
@@ -52,7 +64,7 @@ class EmployeePortal extends Component
 
         if ($conv) {
             $this->officerNoteInput = $conv->officer_notes ?? '';
-            $this->assignedOfficerInput = $conv->assigned_officer ?: (auth()->user()?->name ?? $this->assignedOfficerInput);
+            $this->assignedOfficerInput = $conv->assigned_officer ?: (auth()->user()->name ?? $this->assignedOfficerInput);
 
             // If it's still pending, auto-mark it as in review when an officer inspects it
             if ($conv->status === 'pending_officer') {
@@ -80,18 +92,15 @@ class EmployeePortal extends Component
             $this->assignedOfficerInput = $officerName;
         }
 
-        $isGerman = ($conv->locale ?? 'de') === 'de';
-
-        $joinNoticeContent = $isGerman
-            ? "🏛️ **Amtliche Sachbearbeitung:** Die Beamtin / der Beamte **{$officerName}** ist dem Gespräch beigetreten und unterstützt Sie nun persönlich."
-            : "🏛️ **Official Administration:** Civil servant **{$officerName}** has joined the conversation and is now assisting you personally.";
+        // The citizen reads this notice in the language of their conversation.
+        $joinNoticeContent = Translate::text('chat.officer_joined_notice', ['name' => $officerName], Language::fromLocale($conv->locale)->value);
 
         ConversationMessage::create([
             'conversation_id' => $conv->id,
             'uuid' => (string) Str::uuid(),
             'role' => 'assistant',
             'content' => $joinNoticeContent,
-            'workflow' => 'officer_joined',
+            'workflow' => OfficerMessages::JOINED,
         ]);
 
         $workflowData = $conv->workflow_data ?? [];
@@ -162,7 +171,8 @@ class EmployeePortal extends Component
                 'conversation_id' => $conv->id,
                 'uuid' => (string) Str::uuid(),
                 'role' => 'assistant',
-                'content' => "🏛️ **Offizielle Mitteilung der Sachbearbeitung ({$officerName}):**\n\n{$text}",
+                'content' => Translate::text('chat.officer_message_heading', ['name' => $officerName], Language::fromLocale($conv->locale)->value)."\n\n{$text}",
+                'workflow' => OfficerMessages::MESSAGE,
             ]);
 
             $workflowData = $conv->workflow_data ?? [];

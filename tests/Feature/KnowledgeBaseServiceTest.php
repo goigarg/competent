@@ -5,15 +5,19 @@ use App\Services\AustrianGov\KnowledgeBaseService;
 test('knowledge base service builds grounded system prompt in german and english', function () {
     $service = new KnowledgeBaseService;
 
+    // One base prompt for every language: persona and answer pattern, plus the German fact block with official terms.
     $dePrompt = $service->buildSystemPrompt('de');
-    expect($dePrompt)->toContain('offizielle KI-Bürgerassistenz der Republik Österreich')
+    expect($dePrompt)->toContain('official AI Citizen Assistant of the Republic of Austria')
         ->and($dePrompt)->toContain('Passgesetz 1992')
-        ->and($dePrompt)->toContain('75,90 €');
+        ->and($dePrompt)->toContain('75,90 €')
+        ->and($dePrompt)->toContain('Habe ich Sie richtig verstanden? Sie brauchen:')
+        ->and($dePrompt)->toContain('reply in German (Austrian standard German)');
 
     $enPrompt = $service->buildSystemPrompt('en');
     expect($enPrompt)->toContain('official AI Citizen Assistant of the Republic of Austria')
-        ->and($enPrompt)->toContain('€75.90')
-        ->and($enPrompt)->toContain('Residence Registration Act');
+        ->and($enPrompt)->toContain('Meldegesetz')
+        ->and($enPrompt)->toContain('Did I understand you correctly? You need:')
+        ->and($enPrompt)->toContain('reply in English');
 });
 
 test('knowledge base provides official verified sources for topics', function () {

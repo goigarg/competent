@@ -1,8 +1,6 @@
-@php
-    $isGerman = $locale === 'de';
-@endphp
-
-<div 
+<div
+    lang="{{ $language->htmlLang() }}"
+    dir="{{ $language->dir() }}"
     wire:poll.2s="checkForUpdates"
     class="min-h-screen flex flex-col {{ $highContrast ? 'bg-black text-white' : 'bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100' }} {{ $textSize === 'large' ? 'text-lg' : ($textSize === 'xlarge' ? 'text-xl' : 'text-base') }}"
     x-data="{
@@ -12,7 +10,7 @@
                 window.speechSynthesis.cancel();
                 const cleanText = text.replace(/[#*`_\[\]]/g, '');
                 const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = '{{ $isGerman ? 'de-AT' : 'en-GB' }}';
+                utterance.lang = @js($language->speechLang());
                 window.speechSynthesis.speak(utterance);
             }
         },
@@ -22,42 +20,21 @@
     }"
 >
     {{-- Skip link for keyboard accessibility --}}
-    <a href="#chat-input-area" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:p-3 focus:bg-[#C8102E] focus:text-white focus:rounded-md focus:shadow-lg">
-        {{ $isGerman ? 'Direkt zum Eingabefeld springen' : 'Skip directly to input field' }}
+    <a href="#chat-input-area" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2 focus:z-50 focus:p-3 focus:bg-kp-navy focus:text-white focus:rounded-md focus:shadow-lg">
+        {{ __('chat.skip_directly_input_field') }}
     </a>
 
-    {{-- Official Republic of Austria Top Banner --}}
-    <div class="bg-[#C8102E] text-white py-2 px-4 shadow-sm border-b border-red-800">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm font-medium">
-            <div class="flex items-center gap-2.5">
-                {{-- Austrian Flag Icon --}}
-                <span class="inline-flex flex-col w-5 h-3.5 rounded-[2px] overflow-hidden shadow-xs border border-white/20 shrink-0" aria-hidden="true">
-                    <span class="h-1 bg-[#C8102E] w-full"></span>
-                    <span class="h-1.5 bg-white w-full"></span>
-                    <span class="h-1 bg-[#C8102E] w-full"></span>
-                </span>
-                <span>
-                    <strong>REPUBLIK ÖSTERREICH</strong> &bull; 
-                    <span class="opacity-95">{{ $isGerman ? 'Offizielles Bürgerservice-Portal • Vision 2030' : 'Official Citizen Service Portal • Vision 2030' }}</span>
-                </span>
-            </div>
-
-            <div class="flex items-center gap-4 text-xs">
-                <span class="hidden sm:inline-flex items-center gap-1.5 opacity-90">
-                    <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    {{ $isGerman ? 'Gesicherter Behördenkanal (eIDAS)' : 'Secured Public Channel (eIDAS)' }}
-                </span>
-                <span class="opacity-80">|</span>
-                <a href="https://www.oesterreich.gv.at" target="_blank" rel="noopener noreferrer" class="hover:underline opacity-95">
-                    oesterreich.gv.at &nearr;
-                </a>
-            </div>
+    {{-- Brand bar (Kompetent CI): logo left, web address in text red on the same baseline --}}
+    <div class="{{ $highContrast ? 'bg-black border-zinc-700' : 'bg-white dark:bg-zinc-950 border-kp-bluegrey dark:border-zinc-800' }} border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-baseline justify-between gap-3">
+            <x-kompetent-logo class="text-xl sm:text-2xl" :inverted="$highContrast" />
+            <span class="text-sm sm:text-base text-kp-textred dark:text-kp-bluegrey">{{ config('app.brand_domain') }}</span>
         </div>
     </div>
 
-    {{-- Fixed Top Loading Progress Bar when querying DeepSeek --}}
-    <div wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep" class="fixed top-0 left-0 right-0 z-50 h-1.5 bg-red-100/80 dark:bg-zinc-800 overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-red-600 via-[#C8102E] to-amber-500 rounded-full animate-indeterminate"></div>
+    {{-- Fixed Top Loading Progress Bar when querying the model --}}
+    <div wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding" class="fixed top-0 inset-x-0 z-50 h-1.5 bg-kp-bluegrey-30 dark:bg-zinc-800 overflow-hidden">
+        <div class="h-full bg-kp-navy animate-indeterminate"></div>
     </div>
 
     {{-- Main Navigation & Accessibility Toolbar --}}
@@ -65,49 +42,37 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
             {{-- Brand / Title --}}
             <div class="flex items-center gap-3">
-                <div class="size-10 sm:size-11 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 flex items-center justify-center shrink-0 shadow-inner">
-                    <svg class="size-6 text-[#C8102E]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M12 2L2 7v7c0 5.25 3.75 10.15 10 11.5 6.25-1.35 10-6.25 10-11.5V7L12 2zm0 3.3L19 9v5c0 4.1-2.9 7.9-7 9.1-4.1-1.2-7-5-7-9.1V9l7-3.7zM7 11h10v2H7v-2z"/>
-                    </svg>
-                </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                            Bundesservice AI 2030
+                        <h1 class="text-base sm:text-lg font-light text-kp-black dark:text-white">
+                            {{ __('chat.digital_administrative_assistant') }}
                         </h1>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-[#C8102E] dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800">
-                            {{ $isGerman ? 'KI-Pilot 2030' : 'AI Pilot 2030' }}
+                        {{-- AI disclosure from the first moment (CI chapter 08, AI Act Art. 50) --}}
+                        <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-kp-bluegrey-30 text-kp-black dark:bg-zinc-800 dark:text-zinc-200">
+                            {{ __('chat.ai_assistant') }}
                         </span>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-zinc-400 hidden sm:block">
-                        {{ $isGerman ? 'Verständliche Verwaltung in Alltagssprache • '.$this->getModelDisplayName() : 'Plain language Austrian government services • '.$this->getModelDisplayName() }}
+                    <p class="text-xs text-kp-muted dark:text-zinc-400 hidden sm:block">
+                        {{ __('chat.i_am_ai_i_explain') }}
                     </p>
                 </div>
             </div>
 
             {{-- Controls: Language Switcher, Accessibility & Human Support --}}
             <div class="flex items-center flex-wrap gap-2 sm:gap-3">
-                {{-- Language Switcher (DE / EN) --}}
-                <div class="inline-flex p-0.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-800 text-xs font-semibold" role="group" aria-label="{{ $isGerman ? 'Sprachauswahl' : 'Language Selection' }}">
-                    <button 
-                        type="button" 
-                        wire:click="setLocale('de')"
-                        class="px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 {{ $isGerman ? 'bg-white dark:bg-zinc-700 text-[#C8102E] dark:text-white shadow-xs font-bold' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
-                        aria-pressed="{{ $isGerman ? 'true' : 'false' }}"
+                {{-- Language switcher, generated from App\Enums\Language (CI: native names, no flags) --}}
+                <label class="inline-flex items-center gap-2 text-sm">
+                    <span class="sr-only">{{ __('chat.language_selection') }}</span>
+                    <select
+                        wire:change="setLocale($event.target.value)"
+                        class="min-h-11 border-2 border-kp-navy bg-white px-3 text-sm font-semibold text-kp-navy dark:bg-zinc-900 dark:text-white dark:border-white cursor-pointer"
+                        aria-label="{{ __('chat.language_selection') }}"
                     >
-                        <span>🇦🇹</span>
-                        <span>DE</span>
-                    </button>
-                    <button 
-                        type="button" 
-                        wire:click="setLocale('en')"
-                        class="px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 {{ !$isGerman ? 'bg-white dark:bg-zinc-700 text-[#C8102E] dark:text-white shadow-xs font-bold' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
-                        aria-pressed="{{ !$isGerman ? 'true' : 'false' }}"
-                    >
-                        <span>🇬🇧</span>
-                        <span>EN</span>
-                    </button>
-                </div>
+                        @foreach(\App\Enums\Language::cases() as $option)
+                            <option value="{{ $option->value }}" lang="{{ $option->htmlLang() }}" dir="{{ $option->dir() }}" @selected($option === $language)>{{ $option->nativeName() }}</option>
+                        @endforeach
+                    </select>
+                </label>
 
                 {{-- Accessibility Controls Dropdown / Buttons --}}
                 <div class="flex items-center gap-1 border border-slate-300 dark:border-zinc-700 rounded-lg p-1 bg-white dark:bg-zinc-800">
@@ -116,16 +81,16 @@
                         type="button"
                         wire:click="setTextSize('{{ $textSize === 'normal' ? 'large' : ($textSize === 'large' ? 'xlarge' : 'normal') }}')"
                         class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 text-xs font-bold text-slate-700 dark:text-zinc-300"
-                        title="{{ $isGerman ? 'Schriftgröße anpassen' : 'Adjust Text Size' }}"
-                        aria-label="{{ $isGerman ? 'Schriftgröße anpassen' : 'Adjust Text Size' }}"
+                        title="{{ __('chat.adjust_text_size') }}"
+                        aria-label="{{ __('chat.adjust_text_size') }}"
                     >
-                        <span class="sr-only">{{ $isGerman ? 'Schriftgröße' : 'Text size' }}</span>
+                        <span class="sr-only">{{ __('chat.text_size') }}</span>
                         @if($textSize === 'normal')
                             <span>A</span>
                         @elseif($textSize === 'large')
-                            <span class="text-[#C8102E] font-extrabold">A+</span>
+                            <span class="text-kp-textred font-extrabold">A+</span>
                         @else
-                            <span class="text-[#C8102E] font-black">A++</span>
+                            <span class="text-kp-textred font-black">A++</span>
                         @endif
                     </button>
 
@@ -134,22 +99,12 @@
                         type="button"
                         wire:click="toggleHighContrast"
                         class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 {{ $highContrast ? 'bg-yellow-400 text-black' : '' }}"
-                        title="{{ $isGerman ? 'Hoher Kontrast umschalten' : 'Toggle High Contrast' }}"
-                        aria-label="{{ $isGerman ? 'Hoher Kontrast' : 'High Contrast' }}"
+                        title="{{ __('chat.toggle_high_contrast') }}"
+                        aria-label="{{ __('chat.high_contrast') }}"
                     >
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
-                    </button>
-
-                    {{-- Leichte Sprache Toggle --}}
-                    <button 
-                        type="button"
-                        wire:click="toggleSimpleLanguage"
-                        class="px-2 py-1 rounded-md text-xs font-medium transition-all {{ $simpleLanguage ? 'bg-emerald-600 text-white font-bold' : 'hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300' }}"
-                        title="{{ $isGerman ? 'Leichte Sprache aktivieren' : 'Simple Language Mode' }}"
-                    >
-                        {{ $isGerman ? 'Einfach' : 'Plain' }}
                     </button>
                 </div>
 
@@ -157,25 +112,25 @@
                 <button 
                     type="button" 
                     wire:click="respondWithHumanSupport"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-300 dark:border-red-800 text-[#C8102E] dark:text-red-400 bg-red-50/60 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/60 text-xs font-semibold transition-colors"
+                    class="inline-flex items-center gap-1.5 px-3 min-h-11 border-2 border-kp-navy text-kp-navy bg-white hover:bg-kp-bluegrey-60 dark:bg-zinc-900 dark:text-white dark:border-white text-sm font-semibold transition-colors"
                 >
                     <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                     </svg>
-                    <span>{{ $isGerman ? 'Menschliche Hilfe' : 'Human Support' }}</span>
+                    <span>{{ __('chat.talk_person') }}</span>
                 </button>
 
                 {{-- Civil Servant Employee Portal Link --}}
                 <a 
                     href="{{ route('portal.cases') }}"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50 dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-xs font-semibold transition-colors shadow-2xs"
-                    title="{{ $isGerman ? 'Zum Beamtinnen- & Beamten-Portal für eskalierte Fälle' : 'To Civil Servant Portal for escalated cases' }}"
+                    title="{{ __('chat.civil_servant_portal_escalated_cases') }}"
                 >
                     <span>🏛️</span>
-                    <span class="hidden md:inline">{{ $isGerman ? 'Beamten-Portal' : 'Officer Portal' }}</span>
+                    <span class="hidden md:inline">{{ __('chat.officer_portal') }}</span>
                     @if($escalatedCasesCount > 0)
-                        <span class="size-2 rounded-full bg-red-600 animate-pulse ml-0.5" title="{{ $escalatedCasesCount }} {{ $isGerman ? 'offene Fälle' : 'pending cases' }}"></span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-red-100 dark:bg-red-950 text-[#C8102E] dark:text-red-300 border border-red-200 dark:border-red-900">{{ $escalatedCasesCount }}</span>
+                        <span class="size-2 rounded-full bg-red-600 animate-pulse ms-0.5" title="{{ $escalatedCasesCount }} {{ __('chat.pending_cases') }}"></span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-red-100 dark:bg-red-950 text-kp-textred dark:text-red-300 border border-red-200 dark:border-red-900">{{ $escalatedCasesCount }}</span>
                     @endif
                 </a>
 
@@ -185,21 +140,21 @@
                     wire:click="startNewConversation"
                     wire:loading.attr="disabled"
                     wire:target="startNewConversation"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:text-[#C8102E] dark:hover:text-red-400 border border-slate-300 dark:border-zinc-700 hover:border-red-300 dark:hover:border-red-800 rounded-lg bg-white dark:bg-zinc-800 hover:bg-red-50/50 dark:hover:bg-red-950/30 transition-all cursor-pointer shadow-2xs disabled:opacity-50"
-                    title="{{ $isGerman ? 'Neues Anliegen starten (bisherige Chats bleiben in der Datenbank gespeichert)' : 'Start new inquiry (existing chats remain saved in database)' }}"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:text-kp-textred dark:hover:text-red-400 border border-slate-300 dark:border-zinc-700 hover:border-red-300 dark:hover:border-red-800 rounded-lg bg-white dark:bg-zinc-800 hover:bg-red-50/50 dark:hover:bg-red-950/30 transition-all cursor-pointer shadow-2xs disabled:opacity-50"
+                    title="{{ __('chat.start_new_inquiry_existing_chats') }}"
                 >
                     <span wire:loading.remove wire:target="startNewConversation" class="flex items-center gap-1.5">
-                        <svg class="size-3.5 text-[#C8102E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="size-3.5 text-kp-textred" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span>{{ $isGerman ? 'Neues Anliegen' : 'New Chat' }}</span>
+                        <span>{{ __('chat.new_chat') }}</span>
                     </span>
                     <span wire:loading.flex wire:target="startNewConversation" class="items-center gap-1.5">
-                        <svg class="animate-spin size-3.5 text-[#C8102E]" viewBox="0 0 24 24" fill="none">
+                        <svg class="animate-spin size-3.5 text-kp-textred" viewBox="0 0 24 24" fill="none">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span>{{ $isGerman ? 'Wird neu gestartet...' : 'Starting...' }}</span>
+                        <span>{{ __('chat.starting') }}</span>
                     </span>
                 </button>
             </div>
@@ -209,126 +164,17 @@
     {{-- Main Content Layout --}}
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-        {{-- Quick Service Shortcuts (Workflows & Key Services) --}}
-        <section aria-label="{{ $isGerman ? 'Beliebte Behördendienste' : 'Popular Public Services' }}">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                {{-- Shortcut 1: Passport Renewal --}}
-                <button 
-                    type="button"
-                    wire:click="startWorkflow('passport')"
-                    class="text-left p-4 rounded-xl border {{ $activeWorkflow === 'passport' ? 'border-[#C8102E] ring-2 ring-[#C8102E]/20 bg-red-50/40 dark:bg-red-950/20' : 'border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-300 dark:hover:border-red-800' }} shadow-xs transition-all group flex flex-col justify-between"
-                >
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="size-9 rounded-lg bg-red-100 dark:bg-red-950/60 text-[#C8102E] flex items-center justify-center shrink-0">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                        </div>
-                        <span class="text-[11px] font-semibold text-[#C8102E] uppercase tracking-wider bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded">
-                            {{ $isGerman ? 'Geführt' : 'Guided' }}
-                        </span>
-                    </div>
-                    <div class="mt-3">
-                        <h2 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#C8102E] transition-colors">
-                            {{ $isGerman ? 'Reisepass erneuern' : 'Passport Renewal' }}
-                        </h2>
-                        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                            {{ $isGerman ? 'Gebühren (€75,90), Express-Optionen & Checkliste' : 'Fees (€75.90), express options & checklist' }}
-                        </p>
-                    </div>
-                </button>
-
-                {{-- Shortcut 2: Change of Residence --}}
-                <button 
-                    type="button"
-                    wire:click="startWorkflow('residence')"
-                    class="text-left p-4 rounded-xl border {{ $activeWorkflow === 'residence' ? 'border-[#C8102E] ring-2 ring-[#C8102E]/20 bg-red-50/40 dark:bg-red-950/20' : 'border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-300 dark:hover:border-red-800' }} shadow-xs transition-all group flex flex-col justify-between"
-                >
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="size-9 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                        </div>
-                        <span class="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded">
-                            {{ $isGerman ? '3-Tage-Frist' : '3-Day Limit' }}
-                        </span>
-                    </div>
-                    <div class="mt-3">
-                        <h2 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#C8102E] transition-colors">
-                            {{ $isGerman ? 'Wohnsitz ummelden' : 'Change of Residence' }}
-                        </h2>
-                        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                            {{ $isGerman ? 'Meldezettel, Vermieter-Unterschrift & ID Austria' : 'Meldezettel, landlord signature & online' }}
-                        </p>
-                    </div>
-                </button>
-
-                {{-- Shortcut 3: ID Austria Info --}}
-                <button 
-                    type="button"
-                    wire:click="selectSuggestedQuestion('{{ $isGerman ? 'Wie richte ich die ID Austria ein und was brauche ich dafür?' : 'How do I set up ID Austria and what are the requirements?' }}')"
-                    class="text-left p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-300 dark:hover:border-red-800 shadow-xs transition-all group flex flex-col justify-between"
-                >
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="size-9 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-[11px] font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">
-                            {{ $isGerman ? 'Digital' : 'Digital' }}
-                        </span>
-                    </div>
-                    <div class="mt-3">
-                        <h2 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#C8102E] transition-colors">
-                            {{ $isGerman ? 'ID Austria einrichten' : 'Set Up ID Austria' }}
-                        </h2>
-                        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                            {{ $isGerman ? 'Digitaler Ausweis & Vollfunktion aktivieren' : 'Digital ID & activation prerequisites' }}
-                        </p>
-                    </div>
-                </button>
-
-                {{-- Shortcut 4: Generate Civil Servant Dossier --}}
-                <button 
-                    type="button"
-                    wire:click="generateDossier"
-                    class="text-left p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-300 dark:hover:border-red-800 shadow-xs transition-all group flex flex-col justify-between"
-                >
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="size-9 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">
-                            {{ $isGerman ? 'Export' : 'Export' }}
-                        </span>
-                    </div>
-                    <div class="mt-3">
-                        <h2 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#C8102E] transition-colors">
-                            {{ $isGerman ? 'Behörden-Dossier' : 'Case Dossier' }}
-                        </h2>
-                        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                            {{ $isGerman ? 'Zusammenfassung für den Termin generieren' : 'Generate briefing for civil servant appointment' }}
-                        </p>
-                    </div>
-                </button>
-            </div>
-        </section>
-
         {{-- Interactive Active Workflow Banner --}}
         @if($activeWorkflow)
             <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/80 dark:bg-red-950/30 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <span class="size-3 rounded-full bg-[#C8102E] animate-ping"></span>
+                    <span class="size-3 rounded-full bg-kp-navy animate-ping"></span>
                     <div>
-                        <span class="text-xs font-semibold text-[#C8102E] uppercase tracking-wider">
-                            {{ $isGerman ? 'Aktiver geführter Prozess' : 'Active Guided Workflow' }}
+                        <span class="text-xs font-semibold text-kp-textred">
+                            {{ __('chat.active_guided_workflow') }}
                         </span>
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">
-                            {{ $activeWorkflow === 'passport' ? ($isGerman ? 'Reisepass-Verfahren' : 'Passport Issuance Workflow') : ($isGerman ? 'Wohnsitz-Meldewesen' : 'Residence Registration Workflow') }}
+                            {{ $activeWorkflow === 'passport' ? (__('chat.passport_issuance_workflow')) : (__('chat.residence_registration_workflow')) }}
                         </h3>
                     </div>
                 </div>
@@ -337,7 +183,7 @@
                     wire:click="resetWorkflow"
                     class="text-xs font-semibold text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white underline underline-offset-2"
                 >
-                    {{ $isGerman ? 'Workflow beenden' : 'Exit Workflow' }}
+                    {{ __('chat.exit_workflow') }}
                 </button>
             </div>
         @endif
@@ -352,17 +198,17 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                                {{ $isGerman ? 'Amtliche Sachbearbeitung beigetreten' : 'Civil Servant Connected' }}
+                            <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                                {{ __('chat.civil_servant_connected') }}
                             </span>
                         </div>
                         <p class="text-xs sm:text-sm font-medium mt-0.5">
-                            {{ $isGerman ? 'Beamtin/Beamter ' . ($officerJoinedName ?: 'Amtliche Sachbearbeitung') . ' betreut Ihr Anliegen nun persönlich.' : 'Civil servant ' . ($officerJoinedName ?: 'Official Officer') . ' has joined and is assisting you personally.' }}
+                            {{ __('chat.officer_now_handles_case', ['name' => $officerJoinedName ?: __('chat.official_caseworker')]) }}
                         </p>
                     </div>
                 </div>
                 <span class="hidden md:inline-flex px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200">
-                    {{ $isGerman ? 'Live-Kanal aktiv' : 'Live Channel Active' }}
+                    {{ __('chat.live_channel_active') }}
                 </span>
             </div>
         @endif
@@ -372,37 +218,47 @@
             class="flex-1 flex flex-col gap-4 overflow-y-auto"
             aria-live="polite"
             role="region"
-            aria-label="{{ $isGerman ? 'Gesprächsverlauf' : 'Conversation Stream' }}"
+            aria-label="{{ __('chat.conversation_stream') }}"
         >
             @foreach($messages as $msg)
-                <div class="flex flex-col gap-2 {{ $msg['role'] === 'user' ? 'items-end' : 'items-start' }}">
+                @php
+                    $officerKind = \App\Services\AustrianGov\OfficerMessages::kind($msg);
+                    $isOfficerMessage = $officerKind !== null;
+                    // CI answer pattern: clarification or A steps · B documents · C sources · D next steps
+                    $view = $msg['role'] === 'assistant' && ! $isOfficerMessage
+                        ? \App\Services\AustrianGov\AnswerPresenter::present($msg, $locale, $loop->last)
+                        : null;
+                @endphp
+                <div wire:key="msg-{{ $msg['id'] }}" class="flex flex-col gap-2 {{ $msg['role'] === 'user' ? 'items-end' : 'items-start' }}">
                     <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400 px-1">
                         @if($msg['role'] === 'user')
-                            <span>{{ $isGerman ? 'Bürgerin / Bürger' : 'Citizen' }}</span>
+                            <span>{{ __('chat.citizen') }}</span>
                             <span>&bull;</span>
                             <span>{{ $msg['timestamp'] }}</span>
                         @elseif($msg['role'] === 'system')
-                            <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ $isGerman ? 'System-Hinweis' : 'System Notice' }}</span>
+                            <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ __('chat.system_notice') }}</span>
                             <span>&bull;</span>
                             <span>{{ $msg['timestamp'] }}</span>
-                        @elseif(($msg['workflow'] ?? null) === 'officer_joined' || str_contains($msg['content'], 'ist dem Gespräch beigetreten') || str_contains($msg['content'], 'has joined the conversation'))
+                        @elseif($officerKind === 'joined')
                             <div class="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
                                 <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>{{ $isGerman ? 'Menschliche Sachbearbeitung beigetreten' : 'Civil Servant Joined' }}</span>
+                                <span>{{ __('chat.civil_servant_joined') }}</span>
                             </div>
                             <span>&bull;</span>
                             <span>{{ $msg['timestamp'] }}</span>
-                        @elseif(str_contains($msg['content'], 'Offizielle Mitteilung der Sachbearbeitung'))
+                        @elseif($officerKind === 'message')
                             <div class="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
                                 <span class="size-2 rounded-full bg-emerald-600"></span>
-                                <span>{{ $isGerman ? 'Offizielle Sachbearbeiter-Antwort' : 'Civil Servant Message' }}</span>
+                                <span>{{ __('chat.civil_servant_message') }}</span>
                             </div>
                             <span>&bull;</span>
                             <span>{{ $msg['timestamp'] }}</span>
                         @else
-                            <div class="flex items-center gap-1.5 font-semibold text-[#C8102E] dark:text-red-400">
-                                <span class="size-2 rounded-full bg-[#C8102E]"></span>
-                                <span>{{ $isGerman ? 'Offizielle Bürgerassistenz (Österreich 2030)' : 'Official Citizen Assistant (Austria 2030)' }}</span>
+                            {{-- Every AI answer is labelled above the text, never hidden in small print (CI chapter 08) --}}
+                            <div class="flex items-center gap-2">
+                                <x-kompetent-flag class="h-2.5 w-[1rem] flex-none fill-kp-flag" />
+                                <span class="font-normal tracking-[0.06em] text-kp-black dark:text-white">{{ config('app.brand') }}</span>
+                                <span class="px-2 py-0.5 text-xs font-semibold border border-kp-navy text-kp-navy bg-white dark:bg-zinc-900 dark:text-white dark:border-white">{{ $view['label'] ?? (__('chat.ai_answer')) }}</span>
                             </div>
                             <span>&bull;</span>
                             <span>{{ $msg['timestamp'] }}</span>
@@ -410,116 +266,50 @@
                     </div>
 
                     {{-- Message Bubble --}}
-                    <div class="max-w-3xl rounded-2xl p-4 sm:p-5 shadow-xs transition-all relative group {{ $msg['role'] === 'user' ? 'bg-[#C8102E] text-white rounded-tr-none' : ($msg['role'] === 'system' ? 'bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-200' : ((($msg['workflow'] ?? null) === 'officer_joined' || str_contains($msg['content'], 'ist dem Gespräch beigetreten')) ? 'bg-emerald-50/90 dark:bg-emerald-950/50 border-2 border-emerald-400 dark:border-emerald-700 text-emerald-950 dark:text-emerald-100 rounded-tl-none' : (str_contains($msg['content'], 'Offizielle Mitteilung der Sachbearbeitung') ? 'bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-slate-800 dark:text-zinc-200 rounded-tl-none' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200 rounded-tl-none'))) }}">
+                    <div class="max-w-3xl rounded-2xl p-4 sm:p-5 shadow-xs transition-all relative group {{ $msg['role'] === 'user' ? 'bg-kp-navy text-white rounded-se-none' : ($msg['role'] === 'system' ? 'bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-200' : ($officerKind === 'joined' ? 'bg-emerald-50/90 dark:bg-emerald-950/50 border-2 border-emerald-400 dark:border-emerald-700 text-emerald-950 dark:text-emerald-100 rounded-ss-none' : ($officerKind === 'message' ? 'bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-slate-800 dark:text-zinc-200 rounded-ss-none' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200 rounded-ss-none'))) }}">
                         @php
                             $nextSteps = [];
                         @endphp
 
                         {{-- Message Content with Card-based Steps & Checklists --}}
                         @if($msg['role'] === 'user')
-                            <div class="prose prose-sm text-white max-w-none leading-relaxed prose-p:my-1 prose-headings:text-white prose-strong:text-white prose-a:text-white underline">
-                                {!! \Illuminate\Support\Str::markdown($msg['content']) !!}
+                            <div dir="auto" class="prose prose-sm text-white max-w-none leading-relaxed prose-p:my-1 prose-headings:text-white prose-strong:text-white prose-a:text-white prose-a:underline">
+                                {!! \App\Services\AustrianGov\MessageParser::markdown($msg['content']) !!}
                             </div>
                         @elseif($msg['role'] === 'system')
-                            <div class="prose prose-sm text-blue-900 dark:text-blue-200 max-w-none leading-relaxed">
-                                {!! \Illuminate\Support\Str::markdown($msg['content']) !!}
+                            <div dir="auto" class="prose prose-sm text-blue-900 dark:text-blue-200 max-w-none leading-relaxed">
+                                {!! \App\Services\AustrianGov\MessageParser::markdown($msg['content']) !!}
                             </div>
-                        @elseif(($msg['workflow'] ?? null) === 'officer_joined' || str_contains($msg['content'], 'ist dem Gespräch beigetreten') || str_contains($msg['content'], 'has joined the conversation'))
+                        @elseif($officerKind === 'joined')
                             <div class="flex items-start gap-3.5">
                                 <div class="size-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-2xs">
                                     🏛️
                                 </div>
                                 <div class="space-y-1">
-                                    <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                                    <div class="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
                                         <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        <span>{{ $isGerman ? 'Amtlicher Beitritt vermerkt' : 'Official Join Recorded' }}</span>
+                                        <span>{{ __('chat.official_join_recorded') }}</span>
                                     </div>
                                     <div class="text-xs sm:text-sm font-semibold leading-relaxed">
-                                        {!! \Illuminate\Support\Str::markdown($msg['content']) !!}
+                                        {!! \App\Services\AustrianGov\MessageParser::markdown($msg['content']) !!}
                                     </div>
                                     <p class="text-[11px] text-emerald-700 dark:text-emerald-400">
-                                        {{ $isGerman ? 'Die Beamtin / der Beamte liest Ihre Nachrichten direkt mit und kann Ihnen antworten.' : 'The officer is actively viewing this case and can reply to your messages.' }}
+                                        {{ __('chat.officer_actively_viewing_this_case') }}
                                     </p>
                                 </div>
                             </div>
+                        @elseif($view && $view['kind'] === 'clarify')
+                            <x-answer.clarify :clarify="$view['clarify']" :message-id="$msg['id']" :awaiting="$view['awaiting_confirmation']" />
                         @else
-                            @php
-                                $parsedData = \App\Services\AustrianGov\MessageParser::parseWithNextSteps($msg['content'], $locale);
-                                $parsedBlocks = $parsedData['blocks'];
-                                $nextSteps = $parsedData['next_steps'] ?? [];
-                            @endphp
-
                             <div class="space-y-3">
-                                @forelse($parsedBlocks as $block)
+                                @forelse($view['blocks'] ?? [] as $block)
                                     @if($block['type'] === 'prose')
-                                        <div class="prose prose-sm dark:prose-invert max-w-none leading-relaxed prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:mt-3 prose-headings:mb-1.5 prose-p:my-1.5 prose-ul:my-2 prose-li:my-0.5">
+                                        <div dir="auto" class="prose prose-sm dark:prose-invert max-w-none leading-relaxed prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:mt-3 prose-headings:mb-1.5 prose-p:my-1.5 prose-ul:my-2 prose-li:my-0.5">
                                             {!! $block['html'] !!}
                                         </div>
 
                                     @elseif($block['type'] === 'steps')
-                                        <div class="my-3 space-y-2.5">
-                                            @if(!empty($block['heading']))
-                                                <div class="flex items-center gap-2 pt-1 pb-0.5">
-                                                    <span class="size-6 rounded-md bg-[#C8102E] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                                                        &rarr;
-                                                    </span>
-                                                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                                                        {{ $block['heading'] }}
-                                                    </h4>
-                                                    <span class="text-[11px] font-semibold text-[#C8102E] bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-900/60 ml-auto">
-                                                        {{ count($block['items']) }} {{ $isGerman ? 'Schritte' : 'Steps' }}
-                                                    </span>
-                                                </div>
-                                            @endif
-
-                                            <div class="grid grid-cols-1 gap-2.5">
-                                                @foreach($block['items'] as $step)
-                                                    <div 
-                                                        x-data="{ done: false }" 
-                                                        class="p-3.5 rounded-xl border transition-all flex items-start gap-3.5 shadow-2xs"
-                                                        :class="done ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : 'bg-slate-50 dark:bg-zinc-800/70 border-slate-200 dark:border-zinc-700 hover:border-red-300 dark:hover:border-red-800 hover:shadow-xs'"
-                                                    >
-                                                        <div 
-                                                            @click="done = !done"
-                                                            class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer transition-colors shadow-2xs"
-                                                            :class="done ? 'bg-emerald-600 text-white' : 'bg-[#C8102E] text-white'"
-                                                            title="{{ $isGerman ? 'Klicken zum Abhaken' : 'Click to complete' }}"
-                                                        >
-                                                            <span x-show="!done">{{ $step['number'] }}</span>
-                                                            <span x-show="done">&check;</span>
-                                                        </div>
-
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-center justify-between gap-2">
-                                                                <h5 
-                                                                    class="text-xs sm:text-sm font-bold tracking-tight"
-                                                                    :class="done ? 'line-through text-slate-500 dark:text-zinc-400' : 'text-slate-900 dark:text-white'"
-                                                                >
-                                                                    {{ $step['title'] }}
-                                                                </h5>
-                                                                <button 
-                                                                    type="button" 
-                                                                    @click="done = !done" 
-                                                                    class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded transition-colors shrink-0"
-                                                                    :class="done ? 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900 dark:text-emerald-200' : 'text-slate-500 hover:text-[#C8102E] bg-white dark:bg-zinc-700 border border-slate-200 dark:border-zinc-600'"
-                                                                >
-                                                                    <span x-show="!done">{{ $isGerman ? 'Erledigen' : 'Mark done' }}</span>
-                                                                    <span x-show="done">{{ $isGerman ? 'Erledigt' : 'Done' }}</span>
-                                                                </button>
-                                                            </div>
-                                                            @if(!empty($step['detail']))
-                                                                <p 
-                                                                    class="text-xs text-slate-600 dark:text-zinc-300 mt-1 leading-relaxed"
-                                                                    :class="done ? 'opacity-70' : ''"
-                                                                >
-                                                                    {{ $step['detail'] }}
-                                                                </p>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
+                                        <x-answer.steps :block="$block" :message-id="$msg['id']" :sources="$view['sources']" />
 
                                     @elseif($block['type'] === 'checklist')
                                         <div class="my-3 space-y-2">
@@ -528,11 +318,11 @@
                                                     <span class="size-6 rounded-md bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
                                                         &check;
                                                     </span>
-                                                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                                                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                                                         {{ $block['heading'] }}
                                                     </h4>
-                                                    <span class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 ml-auto">
-                                                        {{ count($block['items']) }} {{ $isGerman ? 'Punkte' : 'Items' }}
+                                                    <span class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 ms-auto">
+                                                        {{ count($block['items']) }} {{ __('chat.items') }}
                                                     </span>
                                                 </div>
                                             @endif
@@ -572,12 +362,12 @@
                                     @endif
                                 @empty
                                     @if(trim($msg['content']) !== '')
-                                        <div class="prose prose-sm dark:prose-invert max-w-none leading-relaxed">
-                                            {!! \Illuminate\Support\Str::markdown($msg['content']) !!}
+                                        <div dir="auto" class="prose prose-sm dark:prose-invert max-w-none leading-relaxed">
+                                            {!! \App\Services\AustrianGov\MessageParser::markdown(\App\Services\AustrianGov\AnswerPresenter::plainText($msg['content'])) !!}
                                         </div>
                                     @else
-                                        <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-200 text-xs sm:text-sm flex items-center justify-between gap-3">
-                                            <span>{{ $isGerman ? 'Die Antwort konnte nicht geladen werden.' : 'The response could not be loaded.' }}</span>
+                                        <div class="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-200 text-xs sm:text-sm flex items-center justify-between gap-3">
+                                            <span>{{ __('chat.response_could_not_loaded') }}</span>
                                         </div>
                                     @endif
                                 @endforelse
@@ -586,37 +376,15 @@
 
                         {{-- Fallback Mode Badge if triggered --}}
                         @if(!empty($msg['is_fallback']))
-                            <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-zinc-800 flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400 font-semibold">
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>{{ $isGerman ? 'Antwort aus der offiziellen Bundes-Wissensdatenbank (Offline-Fallback)' : 'Verified guidance from Austrian Government Knowledge Base (Offline Fallback)' }}</span>
+                            {{-- CI system state "not verified": ochre, always with a text label --}}
+                            <div class="mt-3 border-s-4 border-kp-unverified bg-white dark:bg-zinc-900 px-4 py-3 flex flex-col gap-1.5 text-sm">
+                                <span class="self-start px-2 py-0.5 text-xs font-semibold text-kp-black bg-kp-unverified-tint">{{ __('chat.not_verified') }}</span>
+                                <span class="text-kp-black dark:text-zinc-200">{{ __('chat.this_information_does_not_come') }}</span>
                             </div>
                         @endif
 
-                        {{-- Official Source Citations --}}
-                        @if(!empty($msg['sources']))
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-zinc-800">
-                                <span class="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block mb-1.5">
-                                    {{ $isGerman ? 'Geprüfte offizielle Quellen der Republik Österreich:' : 'Verified Official Sources (Republic of Austria):' }}
-                                </span>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach($msg['sources'] as $src)
-                                        <a 
-                                            href="{{ $src['url'] }}" 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 transition-colors"
-                                            title="{{ $src['description'] }}"
-                                        >
-                                            <span class="size-1.5 rounded-full bg-[#C8102E]"></span>
-                                            <span class="font-medium">{{ $src['title'] }}</span>
-                                            <span class="text-[10px] text-slate-500 dark:text-zinc-400 opacity-80">({{ $src['tag'] }})</span>
-                                            <span class="text-[10px]">&nearr;</span>
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
+                        @if($view && $view['kind'] === 'answer')
+                            <x-answer.sources :cited="$view['cited_sources']" :further="$view['further_sources']" :message-id="$msg['id']" />
                         @endif
 
                         {{-- Interactive Workflow Step Elements for Passport --}}
@@ -626,20 +394,20 @@
                                 @if($passportState['step'] === 1)
                                     <div class="space-y-2">
                                         <label class="text-xs font-bold text-slate-700 dark:text-zinc-300 block">
-                                            {{ $isGerman ? 'Schritt 1 von 3: Welcher Fall trifft zu?' : 'Step 1 of 3: What is your situation?' }}
+                                            {{ __('chat.step_1_3_what_situation') }}
                                         </label>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <button type="button" wire:click="setPassportScenario('expiring')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                🛂 {{ $isGerman ? 'Reisepass läuft bald ab' : 'Passport expiring soon' }}
+                                            <button type="button" wire:click="setPassportScenario('expiring')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                🛂 {{ __('chat.passport_expiring_soon') }}
                                             </button>
-                                            <button type="button" wire:click="setPassportScenario('expired_recently')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                ⏱️ {{ $isGerman ? 'Kürzlich abgelaufen (< 5 Jahre)' : 'Expired recently (< 5 years)' }}
+                                            <button type="button" wire:click="setPassportScenario('expired_recently')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                ⏱️ {{ __('chat.expired_recently_5_years') }}
                                             </button>
-                                            <button type="button" wire:click="setPassportScenario('lost_stolen')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                ⚠️ {{ $isGerman ? 'Verloren oder gestohlen' : 'Lost or stolen' }}
+                                            <button type="button" wire:click="setPassportScenario('lost_stolen')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                ⚠️ {{ __('chat.lost_stolen') }}
                                             </button>
-                                            <button type="button" wire:click="setPassportScenario('child')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                👶 {{ $isGerman ? 'Reisepass für ein Kind' : 'Passport for a child' }}
+                                            <button type="button" wire:click="setPassportScenario('child')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                👶 {{ __('chat.passport_child') }}
                                             </button>
                                         </div>
                                     </div>
@@ -649,19 +417,19 @@
                                 @if($passportState['step'] === 2)
                                     <div class="space-y-2">
                                         <label class="text-xs font-bold text-slate-700 dark:text-zinc-300 block">
-                                            {{ $isGerman ? 'Schritt 2 von 3: Gewünschte Zustell-Geschwindigkeit' : 'Step 2 of 3: Desired Delivery Speed' }}
+                                            {{ __('chat.step_2_3_desired_delivery') }}
                                         </label>
                                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                            <button type="button" wire:click="setPassportUrgency('standard')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? 'Standard' : 'Standard' }} (75,90 €)</div>
+                                            <button type="button" wire:click="setPassportUrgency('standard')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.standard') }} (75,90 €)</div>
                                                 <div class="text-[11px] text-slate-500">ca. 5 Werktage</div>
                                             </button>
-                                            <button type="button" wire:click="setPassportUrgency('express')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? 'Express' : 'Express' }} (100,00 €)</div>
+                                            <button type="button" wire:click="setPassportUrgency('express')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.express') }} (100,00 €)</div>
                                                 <div class="text-[11px] text-slate-500">2–3 Werktage</div>
                                             </button>
-                                            <button type="button" wire:click="setPassportUrgency('one_day')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? '1-Tag Express' : '1-Day Express' }} (220,00 €)</div>
+                                            <button type="button" wire:click="setPassportUrgency('one_day')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.1_day_express') }} (220,00 €)</div>
                                                 <div class="text-[11px] text-slate-500">Nächster Werktag</div>
                                             </button>
                                         </div>
@@ -672,10 +440,10 @@
                                 @if($passportState['step'] >= 3)
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
-                                            <label class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                                                {{ $isGerman ? 'Ihre interaktive Dokumenten-Checkliste:' : 'Your Interactive Document Checklist:' }}
+                                            <label class="text-xs font-bold text-slate-900 dark:text-white">
+                                                {{ __('chat.interactive_document_checklist') }}
                                             </label>
-                                            <span class="text-xs font-bold text-[#C8102E]">
+                                            <span class="text-xs font-bold text-kp-textred">
                                                 {{ $passportFee['formatted'] }}
                                             </span>
                                         </div>
@@ -686,7 +454,7 @@
                                                         type="checkbox" 
                                                         wire:click="togglePassportItem('{{ $item['id'] }}')"
                                                         {{ $item['checked'] ? 'checked' : '' }}
-                                                        class="mt-1 size-4 rounded text-[#C8102E] focus:ring-[#C8102E]"
+                                                        class="mt-1 size-4 rounded text-kp-textred focus:ring-kp-navy"
                                                     >
                                                     <div class="text-xs">
                                                         <span class="font-semibold block {{ $item['checked'] ? 'line-through opacity-70' : 'text-slate-900 dark:text-white' }}">
@@ -702,14 +470,14 @@
 
                                         <div class="mt-3 pt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 dark:border-zinc-700">
                                             <span class="text-xs text-slate-500">
-                                                {{ $isGerman ? 'Zuständig: Jedes Magistratische Bezirksamt oder Bezirkshauptmannschaft' : 'Authority: Any Austrian passport office or district commission' }}
+                                                {{ __('chat.authority_any_austrian_passport_office') }}
                                             </span>
                                             <button 
                                                 type="button" 
                                                 wire:click="generateDossier"
-                                                class="px-3 py-1.5 rounded-lg bg-[#C8102E] text-white text-xs font-bold shadow-xs hover:bg-red-700 transition-colors"
+                                                class="px-3 py-1.5 rounded-lg bg-kp-navy text-white text-xs font-bold shadow-xs hover:bg-red-700 transition-colors"
                                             >
-                                                {{ $isGerman ? 'Termin-Dossier erstellen' : 'Generate Appointment Dossier' }}
+                                                {{ __('chat.generate_appointment_dossier') }}
                                             </button>
                                         </div>
                                     </div>
@@ -724,17 +492,17 @@
                                 @if($residenceState['step'] === 1)
                                     <div class="space-y-2">
                                         <label class="text-xs font-bold text-slate-700 dark:text-zinc-300 block">
-                                            {{ $isGerman ? 'Schritt 1 von 4: Zeitlicher Status Ihres Umzugs' : 'Step 1 of 4: Timeline of your relocation' }}
+                                            {{ __('chat.step_1_4_timeline_relocation') }}
                                         </label>
                                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                            <button type="button" wire:click="setResidenceMoveStatus('already_moved', 1)" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                ⏱️ {{ $isGerman ? 'Vor 1–3 Tagen eingezogen (In der Frist)' : 'Moved 1-3 days ago (On time)' }}
+                                            <button type="button" wire:click="setResidenceMoveStatus('already_moved', 1)" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                ⏱️ {{ __('chat.moved_1_3_days_ago') }}
                                             </button>
-                                            <button type="button" wire:click="setResidenceMoveStatus('already_moved', 7)" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                ⚠️ {{ $isGerman ? 'Vor mehr als 3 Tagen (Frist überschritten)' : 'Moved > 3 days ago (Overdue)' }}
+                                            <button type="button" wire:click="setResidenceMoveStatus('already_moved', 7)" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                ⚠️ {{ __('chat.moved_3_days_ago_overdue') }}
                                             </button>
-                                            <button type="button" wire:click="setResidenceMoveStatus('planning_to_move', 0)" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs font-semibold">
-                                                📦 {{ $isGerman ? 'Ich plane den Umzug erst' : 'Planning future move' }}
+                                            <button type="button" wire:click="setResidenceMoveStatus('planning_to_move', 0)" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs font-semibold">
+                                                📦 {{ __('chat.planning_future_move') }}
                                             </button>
                                         </div>
                                     </div>
@@ -744,16 +512,16 @@
                                 @if($residenceState['step'] === 2)
                                     <div class="space-y-2">
                                         <label class="text-xs font-bold text-slate-700 dark:text-zinc-300 block">
-                                            {{ $isGerman ? 'Schritt 2 von 4: Art des Wohnsitzes' : 'Step 2 of 4: Residence Category' }}
+                                            {{ __('chat.step_2_4_residence_category') }}
                                         </label>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <button type="button" wire:click="setResidenceType('hauptwohnsitz')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? 'Hauptwohnsitz' : 'Primary Residence' }}</div>
-                                                <div class="text-[11px] text-slate-500">{{ $isGerman ? 'Mittelpunkt Ihrer Lebensbeziehungen (Familie/Arbeit)' : 'Center of vital personal and professional interests' }}</div>
+                                            <button type="button" wire:click="setResidenceType('hauptwohnsitz')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.primary_residence') }}</div>
+                                                <div class="text-[11px] text-slate-500">{{ __('chat.center_vital_personal_professional_interests') }}</div>
                                             </button>
-                                            <button type="button" wire:click="setResidenceType('nebenwohnsitz')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? 'Nebenwohnsitz' : 'Secondary Residence' }}</div>
-                                                <div class="text-[11px] text-slate-500">{{ $isGerman ? 'Zweitwohnung, Wochenendhaus oder Studentenzimmer' : 'Second home, student accommodation' }}</div>
+                                            <button type="button" wire:click="setResidenceType('nebenwohnsitz')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.secondary_residence') }}</div>
+                                                <div class="text-[11px] text-slate-500">{{ __('chat.second_home_student_accommodation') }}</div>
                                             </button>
                                         </div>
                                     </div>
@@ -763,16 +531,16 @@
                                 @if($residenceState['step'] === 3)
                                     <div class="space-y-2">
                                         <label class="text-xs font-bold text-slate-700 dark:text-zinc-300 block">
-                                            {{ $isGerman ? 'Schritt 3 von 4: Wohnverhältnis' : 'Step 3 of 4: Housing Type' }}
+                                            {{ __('chat.step_3_4_housing_type') }}
                                         </label>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <button type="button" wire:click="setResidenceHousing('rented')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? 'Miete' : 'Rented' }}</div>
-                                                <div class="text-[11px] text-amber-600 dark:text-amber-400 font-medium">{{ $isGerman ? 'Vermieter-Unterschrift zwingend erforderlich!' : 'Landlord signature legally mandatory' }}</div>
+                                            <button type="button" wire:click="setResidenceHousing('rented')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.rented') }}</div>
+                                                <div class="text-[11px] text-amber-600 dark:text-amber-400 font-medium">{{ __('chat.landlord_signature_legally_mandatory') }}</div>
                                             </button>
-                                            <button type="button" wire:click="setResidenceHousing('owner')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">{{ $isGerman ? 'Eigentum' : 'Owner-occupied' }}</div>
-                                                <div class="text-[11px] text-slate-500">{{ $isGerman ? 'Sie unterschreiben selbst als Unterkunftgeber' : 'You sign yourself as accommodation provider' }}</div>
+                                            <button type="button" wire:click="setResidenceHousing('owner')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">{{ __('chat.owner_occupied') }}</div>
+                                                <div class="text-[11px] text-slate-500">{{ __('chat.you_sign_yourself_as_accommodation') }}</div>
                                             </button>
                                         </div>
                                     </div>
@@ -782,16 +550,16 @@
                                 @if($residenceState['step'] === 4)
                                     <div class="space-y-2">
                                         <label class="text-xs font-bold text-slate-700 dark:text-zinc-300 block">
-                                            {{ $isGerman ? 'Schritt 4 von 4: Wie möchten Sie sich melden?' : 'Step 4 of 4: How would you like to register?' }}
+                                            {{ __('chat.step_4_4_how_would') }}
                                         </label>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <button type="button" wire:click="setResidenceChannel('id_austria')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">📱 {{ $isGerman ? 'Online mit ID Austria' : 'Online via ID Austria' }}</div>
-                                                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">{{ $isGerman ? '100% digital ohne Wartezeit' : '100% digital without appointment' }}</div>
+                                            <button type="button" wire:click="setResidenceChannel('id_austria')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">📱 {{ __('chat.online_id_austria') }}</div>
+                                                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">{{ __('chat.100_digital_without_appointment') }}</div>
                                             </button>
-                                            <button type="button" wire:click="setResidenceChannel('in_person')" class="p-2.5 text-left rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-[#C8102E] text-xs">
-                                                <div class="font-bold text-slate-900 dark:text-white">🏛️ {{ $isGerman ? 'Vor Ort am Meldeamt' : 'In person at Meldeamt' }}</div>
-                                                <div class="text-[11px] text-slate-500">{{ $isGerman ? 'Gemeindeamt oder Bezirksamt in Wien' : 'Municipal registry or district commission' }}</div>
+                                            <button type="button" wire:click="setResidenceChannel('in_person')" class="p-2.5 text-start rounded-lg border border-slate-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:border-kp-navy text-xs">
+                                                <div class="font-bold text-slate-900 dark:text-white">🏛️ {{ __('chat.person_meldeamt') }}</div>
+                                                <div class="text-[11px] text-slate-500">{{ __('chat.municipal_registry_district_commission') }}</div>
                                             </button>
                                         </div>
                                     </div>
@@ -801,11 +569,11 @@
                                 @if($residenceState['step'] >= 5)
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
-                                            <label class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                                                {{ $isGerman ? 'Ihre Wohnsitz-Checkliste & Folgepflichten:' : 'Your Residence Checklist & Obligations:' }}
+                                            <label class="text-xs font-bold text-slate-900 dark:text-white">
+                                                {{ __('chat.residence_checklist_obligations') }}
                                             </label>
                                             <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                                {{ $isGerman ? '0,00 € (Gebührenfrei)' : '€0.00 (Free)' }}
+                                                {{ __('chat.0_00_free') }}
                                             </span>
                                         </div>
                                         <div class="space-y-2">
@@ -815,7 +583,7 @@
                                                         type="checkbox" 
                                                         wire:click="toggleResidenceItem('{{ $item['id'] }}')"
                                                         {{ $item['checked'] ? 'checked' : '' }}
-                                                        class="mt-1 size-4 rounded text-[#C8102E] focus:ring-[#C8102E]"
+                                                        class="mt-1 size-4 rounded text-kp-textred focus:ring-kp-navy"
                                                     >
                                                     <div class="text-xs">
                                                         <span class="font-semibold block {{ $item['checked'] ? 'line-through opacity-70' : 'text-slate-900 dark:text-white' }}">
@@ -831,14 +599,14 @@
 
                                         <div class="mt-3 pt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 dark:border-zinc-700">
                                             <span class="text-xs text-slate-500">
-                                                {{ $isGerman ? 'Meldestellen: Jedes Gemeindeamt bzw. Wiener Bezirksamt' : 'Registration: Any town hall or Vienna district authority' }}
+                                                {{ __('chat.registration_any_town_hall_vienna') }}
                                             </span>
                                             <button 
                                                 type="button" 
                                                 wire:click="generateDossier"
-                                                class="px-3 py-1.5 rounded-lg bg-[#C8102E] text-white text-xs font-bold shadow-xs hover:bg-red-700 transition-colors"
+                                                class="px-3 py-1.5 rounded-lg bg-kp-navy text-white text-xs font-bold shadow-xs hover:bg-red-700 transition-colors"
                                             >
-                                                {{ $isGerman ? 'Melde-Dossier erstellen' : 'Generate Registration Dossier' }}
+                                                {{ __('chat.generate_registration_dossier') }}
                                             </button>
                                         </div>
                                     </div>
@@ -846,30 +614,9 @@
                             </div>
                         @endif
 
-                        {{-- Interactive Next Steps & Follow-Up Action Buttons --}}
-                        @if($msg['role'] === 'assistant' && !empty($nextSteps))
-                            <div class="mt-4 pt-3.5 border-t border-slate-100 dark:border-zinc-800">
-                                <div class="flex items-center gap-1.5 mb-2.5">
-                                    <span class="flex size-5 items-center justify-center rounded-md bg-red-100 dark:bg-red-950/70 text-[#C8102E] dark:text-red-400 text-xs font-bold shrink-0">
-                                        💡
-                                    </span>
-                                    <span class="text-xs font-bold text-slate-800 dark:text-zinc-200 uppercase tracking-wide">
-                                        {{ $isGerman ? 'Empfohlene nächste Schritte & Folgefragen:' : 'Recommended next steps & questions:' }}
-                                    </span>
-                                </div>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach($nextSteps as $step)
-                                        <button 
-                                            type="button" 
-                                            wire:click="selectNextStep(@js($step))"
-                                            class="group inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-red-50/80 dark:bg-red-950/40 hover:bg-[#C8102E] text-slate-800 dark:text-zinc-200 hover:text-white border border-red-200/80 dark:border-red-900/50 hover:border-[#C8102E] transition-all shadow-2xs hover:shadow-xs text-left active:scale-[0.98] cursor-pointer"
-                                        >
-                                            <span class="group-hover:translate-x-0.5 transition-transform">{{ $step }}</span>
-                                            <span class="text-red-500 dark:text-red-400 group-hover:text-white transition-colors font-bold">&rarr;</span>
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
+                        {{-- CI answer block D; "Mit einer Person sprechen" is always the last option --}}
+                        @if($view && $view['kind'] === 'answer')
+                            <x-answer.next-steps :steps="$view['next_steps']" />
                         @endif
 
                         {{-- Action Toolbar for Assistant Messages (Listen, Copy) --}}
@@ -877,26 +624,26 @@
                             <div class="mt-3 pt-2 flex items-center justify-end gap-2 text-xs text-slate-400 dark:text-zinc-500 opacity-90 group-hover:opacity-100 transition-opacity">
                                 <button 
                                     type="button"
-                                    @click="speak(@js($msg['content']))"
+                                    @click="speak(@js($view['plain_text'] ?? $msg['content']))"
                                     class="inline-flex items-center gap-1 hover:text-slate-700 dark:hover:text-zinc-300 p-1 rounded"
-                                    title="{{ $isGerman ? 'Vorlesen' : 'Read aloud' }}"
+                                    title="{{ __('chat.read_aloud') }}"
                                 >
                                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                                     </svg>
-                                    <span>{{ $isGerman ? 'Vorlesen' : 'Listen' }}</span>
+                                    <span>{{ __('chat.listen') }}</span>
                                 </button>
                                 <span>&bull;</span>
                                 <button 
                                     type="button"
-                                    @click="copyText(@js($msg['content']))"
+                                    @click="copyText(@js($view['plain_text'] ?? $msg['content']))"
                                     class="inline-flex items-center gap-1 hover:text-slate-700 dark:hover:text-zinc-300 p-1 rounded"
-                                    title="{{ $isGerman ? 'Text kopieren' : 'Copy text' }}"
+                                    title="{{ __('chat.copy_text') }}"
                                 >
                                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
-                                    <span>{{ $isGerman ? 'Kopieren' : 'Copy' }}</span>
+                                    <span>{{ __('chat.copy') }}</span>
                                 </button>
                             </div>
                         @endif
@@ -905,30 +652,30 @@
             @endforeach
 
             {{-- Real-time Loading Card with Animated Loading Bar when waiting for DeepSeek --}}
-            <div wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep" class="flex items-start gap-2.5 my-2">
-                <div class="size-8 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center text-[#C8102E] shrink-0 font-bold text-xs shadow-xs">
+            <div wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding" class="flex items-start gap-2.5 my-2">
+                <div class="size-8 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center text-kp-textred shrink-0 font-bold text-xs shadow-xs">
                     ÖS
                 </div>
-                <div class="p-4 sm:p-5 rounded-2xl rounded-tl-none bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm max-w-xl w-full flex flex-col gap-3">
+                <div class="p-4 sm:p-5 rounded-2xl rounded-ss-none bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm max-w-xl w-full flex flex-col gap-3">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
-                            <span class="size-2 rounded-full bg-[#C8102E] animate-ping"></span>
+                            <span class="size-2 rounded-full bg-kp-navy animate-ping"></span>
                             <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                                {{ $isGerman ? 'Offizielle Assistenz antwortet...' : 'Official Assistant is formulating response...' }}
+                                {{ __('chat.official_assistant_formulating_response') }}
                             </span>
                         </div>
-                        <span class="text-[10px] font-semibold text-[#C8102E] uppercase tracking-wider bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-900/60">
+                        <span class="text-[10px] font-semibold text-kp-textred bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-900/60">
                             {{ $this->getModelDisplayName() }}
                         </span>
                     </div>
 
                     {{-- Real Animated Indeterminate Loading Bar --}}
                     <div class="w-full h-2 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden relative">
-                        <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-red-600 via-[#C8102E] to-amber-500 rounded-full animate-indeterminate h-full"></div>
+                        <div class="absolute inset-y-0 start-0 bg-kp-navy animate-indeterminate h-full"></div>
                     </div>
 
                     <p class="text-xs text-slate-500 dark:text-zinc-400 leading-snug">
-                        {{ $isGerman ? 'Geprüfte Rechtsvorschriften (Passgesetz, Meldegesetz) werden analysiert und in verständliche Karten übersetzt...' : 'Analyzing Austrian public service regulations and formatting plain-language cards...' }}
+                        {{ __('chat.analyzing_austrian_public_service_regulations') }}
                     </p>
 
                     {{-- Placeholder skeleton steps --}}
@@ -952,64 +699,29 @@
 
         {{-- Input and Suggestions Area --}}
         <div id="chat-input-area" class="sticky bottom-0 z-20 pt-2 pb-4 bg-gradient-to-t from-slate-50 dark:from-zinc-950 via-slate-50/90 dark:via-zinc-950/90 to-transparent">
-            {{-- Suggested Questions Chips --}}
-            <div class="flex items-center gap-2 overflow-x-auto pb-2.5 text-xs no-scrollbar" role="region" aria-label="{{ $isGerman ? 'Beispielfragen' : 'Suggested questions' }}">
-                <span class="text-slate-400 dark:text-zinc-500 text-[11px] font-semibold uppercase tracking-wider shrink-0">
-                    {{ $isGerman ? 'Vorschläge:' : 'Suggestions:' }}
-                </span>
-                <button 
-                    type="button"
-                    wire:click="selectSuggestedQuestion('{{ $isGerman ? 'Ich bin umgezogen. Muss ich das irgendwo melden?' : 'I moved to a new flat. Do I need to register this somewhere?' }}')"
-                    class="px-3 py-1.5 rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-[#C8102E] text-slate-700 dark:text-zinc-300 whitespace-nowrap shadow-2xs hover:shadow-xs transition-all"
-                >
-                    🏠 {{ $isGerman ? 'Ich bin umgezogen. Was tun?' : 'I moved. What to do?' }}
-                </button>
-                <button 
-                    type="button"
-                    wire:click="selectSuggestedQuestion('{{ $isGerman ? 'Mein Reisepass läuft bald ab. Welche Unterlagen brauche ich?' : 'My passport expires soon. What documents do I need?' }}')"
-                    class="px-3 py-1.5 rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-[#C8102E] text-slate-700 dark:text-zinc-300 whitespace-nowrap shadow-2xs hover:shadow-xs transition-all"
-                >
-                    🛂 {{ $isGerman ? 'Reisepass läuft ab – Unterlagen?' : 'Passport expires soon – documents?' }}
-                </button>
-                <button 
-                    type="button"
-                    wire:click="selectSuggestedQuestion('{{ $isGerman ? 'Ich habe einen unverständlichen Behördenbrief erhalten. Können Sie mir helfen?' : 'I received a confusing government letter. Can you explain it?' }}')"
-                    class="px-3 py-1.5 rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-[#C8102E] text-slate-700 dark:text-zinc-300 whitespace-nowrap shadow-2xs hover:shadow-xs transition-all"
-                >
-                    ✉️ {{ $isGerman ? 'Unverständlichen Behördenbrief erklären' : 'Explain confusing government letter' }}
-                </button>
-                <button 
-                    type="button"
-                    wire:click="respondWithHumanSupport"
-                    class="px-3 py-1.5 rounded-full bg-white dark:bg-zinc-900 border border-red-200 dark:border-red-900/60 hover:border-[#C8102E] text-[#C8102E] dark:text-red-400 whitespace-nowrap shadow-2xs hover:shadow-xs transition-all font-semibold"
-                >
-                    👤 {{ $isGerman ? 'Persönlicher Beamtentelefon-Kontakt' : 'Direct civil servant phone contact' }}
-                </button>
-            </div>
-
             {{-- Loading Progress Bar right above Input Box --}}
-            <div wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep" class="w-full flex-col gap-1.5 mb-2 px-1">
-                <div class="flex items-center justify-between text-xs font-semibold text-[#C8102E]">
+            <div wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding" class="w-full flex-col gap-1.5 mb-2 px-1">
+                <div class="flex items-center justify-between text-xs font-semibold text-kp-textred">
                     <span class="flex items-center gap-2">
-                        <svg class="animate-spin size-3.5 text-[#C8102E]" viewBox="0 0 24 24" fill="none">
+                        <svg class="animate-spin size-3.5 text-kp-textred" viewBox="0 0 24 24" fill="none">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span>{{ $isGerman ? 'Antwort wird von '.$this->getModelDisplayName().' generiert...' : 'Generating response via '.$this->getModelDisplayName().'...' }}</span>
+                        <span>{{ __('chat.generating_response_via', ['model' => $this->getModelDisplayName()]) }}</span>
                     </span>
-                    <span class="text-[11px] text-slate-400 font-mono">{{ $isGerman ? 'Bitte kurz warten...' : 'Please wait...' }}</span>
+                    <span class="text-[11px] text-slate-400 font-mono">{{ __('chat.please_wait') }}</span>
                 </div>
                 <div class="w-full h-1.5 bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden relative">
-                    <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-red-600 via-[#C8102E] to-amber-500 rounded-full animate-indeterminate h-full"></div>
+                    <div class="absolute inset-y-0 start-0 bg-kp-navy animate-indeterminate h-full"></div>
                 </div>
             </div>
 
             {{-- Main Input Box Form --}}
-            <form wire:submit.prevent="sendMessage" class="relative rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-300 dark:border-zinc-700 focus-within:border-[#C8102E] dark:focus-within:border-[#C8102E] shadow-sm transition-all">
+            <form wire:submit.prevent="sendMessage" class="relative rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-300 dark:border-zinc-700 focus-within:border-kp-navy dark:focus-within:border-kp-navy shadow-sm transition-all">
                 <div class="p-2 sm:p-3 flex items-end gap-2">
                     <textarea 
                         wire:model="inputMessage"
-                        placeholder="{{ $isGerman ? 'Fragen Sie in Ihren Worten (z. B. Reisepass verlängern, Meldezettel, ID Austria)...' : 'Ask in natural language (e.g. passport renewal, change of address, ID Austria)...' }}"
+                        placeholder="{{ __('chat.ask_natural_language_e_g') }}"
                         rows="2"
                         class="w-full bg-transparent resize-none border-0 focus:ring-0 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 py-1 px-2"
                         @keydown.enter.prevent="if(!$event.shiftKey) { $wire.sendMessage(); }"
@@ -1017,19 +729,19 @@
 
                     <button 
                         type="submit" 
-                        class="px-4 py-2.5 rounded-xl bg-[#C8102E] hover:bg-red-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shrink-0 transition-colors shadow-xs disabled:opacity-50"
+                        class="px-4 py-2.5 rounded-xl bg-kp-navy hover:bg-red-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shrink-0 transition-colors shadow-xs disabled:opacity-50"
                         wire:loading.attr="disabled"
-                        wire:target="sendMessage, selectSuggestedQuestion, selectNextStep"
+                        wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding"
                     >
-                        <span wire:loading.remove wire:target="sendMessage, selectSuggestedQuestion, selectNextStep">{{ $isGerman ? 'Absenden' : 'Send' }}</span>
-                        <span wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep" class="items-center gap-1.5">
+                        <span wire:loading.remove wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding">{{ __('chat.send') }}</span>
+                        <span wire:loading.flex wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding" class="items-center gap-1.5">
                             <svg class="animate-spin size-3.5 text-white" viewBox="0 0 24 24" fill="none">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            <span>{{ $isGerman ? 'Wird geladen...' : 'Loading...' }}</span>
+                            <span>{{ __('chat.loading') }}</span>
                         </span>
-                        <svg wire:loading.remove wire:target="sendMessage, selectSuggestedQuestion, selectNextStep" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg wire:loading.remove wire:target="sendMessage, selectSuggestedQuestion, selectNextStep, confirmUnderstanding, rejectUnderstanding" class="size-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </button>
@@ -1041,10 +753,10 @@
                         <svg class="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>{{ $isGerman ? 'Automatischer Schutz persönlicher Daten (SVNr-Filter) • SSL-Verschlüsselung' : 'Automatic personal data redaction (SSN filter) • SSL Encrypted' }}</span>
+                        <span>{{ __('chat.automatic_personal_data_redaction_ssn') }}</span>
                     </div>
                     <span>
-                        {{ $isGerman ? 'Modell: '.$this->getModelDisplayName().' über OpenRouter' : 'Model: '.$this->getModelDisplayName().' via OpenRouter' }}
+                        {{ __('chat.model_via_openrouter', ['model' => $this->getModelDisplayName()]) }}
                     </span>
                 </div>
             </form>
@@ -1057,15 +769,15 @@
             <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl flex flex-col gap-4">
                 <div class="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 pb-3">
                     <div class="flex items-center gap-2.5">
-                        <div class="size-8 rounded-lg bg-red-100 dark:bg-red-950 text-[#C8102E] flex items-center justify-center font-bold">
+                        <div class="size-8 rounded-lg bg-red-100 dark:bg-red-950 text-kp-textred flex items-center justify-center font-bold">
                             📋
                         </div>
                         <div>
                             <h2 class="text-base font-bold text-slate-900 dark:text-white">
-                                {{ $isGerman ? 'Bürger-Dossier für Beamtin / Beamten' : 'Citizen Case Dossier for Civil Servant' }}
+                                {{ __('chat.citizen_case_dossier_civil_servant') }}
                             </h2>
                             <p class="text-xs text-slate-500">
-                                {{ $isGerman ? 'Zur Vorlage am Amt oder zur telefonischen Vorbereitung' : 'For municipal appointment or telephone assistance' }}
+                                {{ __('chat.municipal_appointment_telephone_assistance') }}
                             </p>
                         </div>
                     </div>
@@ -1084,7 +796,7 @@
                 {{-- Action Buttons --}}
                 <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
                     <span class="text-xs text-slate-500 dark:text-zinc-400">
-                        {{ $isGerman ? 'Keine sensiblen Daten enthalten • Datenschutzkonform' : 'Zero sensitive personal data included • GDPR compliant' }}
+                        {{ __('chat.zero_sensitive_personal_data_included') }}
                     </span>
                     <div class="flex items-center gap-2">
                         <button 
@@ -1092,15 +804,15 @@
                             @click="copyText(@js($dossierContent)); copiedDossier = true; setTimeout(() => copiedDossier = false, 2500);"
                             class="px-4 py-2 rounded-lg border border-slate-300 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs font-bold transition-colors"
                         >
-                            <span x-show="!copiedDossier">{{ $isGerman ? 'Dossier kopieren' : 'Copy Dossier' }}</span>
-                            <span x-show="copiedDossier" class="text-emerald-600 font-bold">{{ $isGerman ? 'Kopiert!' : 'Copied!' }}</span>
+                            <span x-show="!copiedDossier">{{ __('chat.copy_dossier') }}</span>
+                            <span x-show="copiedDossier" class="text-emerald-600 font-bold">{{ __('chat.copied') }}</span>
                         </button>
                         <button 
                             type="button"
                             @click="window.print()"
-                            class="px-4 py-2 rounded-lg bg-[#C8102E] hover:bg-red-700 text-white text-xs font-bold transition-colors shadow-xs"
+                            class="px-4 py-2 rounded-lg bg-kp-navy hover:bg-red-700 text-white text-xs font-bold transition-colors shadow-xs"
                         >
-                            {{ $isGerman ? 'Drucken / PDF' : 'Print / PDF' }}
+                            {{ __('chat.print_pdf') }}
                         </button>
                     </div>
                 </div>

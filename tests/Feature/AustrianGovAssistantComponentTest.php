@@ -4,11 +4,14 @@ use App\Livewire\AustrianGovAssistant;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 
-test('home page renders austrian government ai assistant', function () {
+test('home page renders the kompetent assistant with ci branding and ai disclosure', function () {
     $this->get(route('home'))
         ->assertOk()
-        ->assertSee('Bundesservice AI 2030')
-        ->assertSee('REPUBLIK ÖSTERREICH');
+        ->assertSee(config('app.brand'))
+        ->assertSee(config('app.brand_domain'))
+        ->assertSee('KI-Assistent')
+        ->assertSee('KI-Antwort')
+        ->assertSee('Mit einer Person sprechen');
 });
 
 test('assistant component initializes with welcome message in german', function () {
@@ -124,7 +127,8 @@ test('clicking a next step button sends follow up question to assistant', functi
                         ],
                     ],
                 ],
-            ], 200),
+            ], 200)
+            ->whenEmpty(Http::response(['choices' => [['message' => ['role' => 'assistant', 'content' => '{}']]]], 200)),
     ]);
 
     Livewire::test(AustrianGovAssistant::class)

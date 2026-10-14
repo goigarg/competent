@@ -8,8 +8,119 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Kompetent CI (docs/ci/Kompetent CI (Referenz).dc.html).
+ * Values from the federal corporate design styleguide (March 2025). Do not invent new colours or fonts.
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Primary colours: flag red only for the logo, flag element and large areas; text red for text and links (WCAG AA). */
+    --color-kp-flag: #e1320f;
+    --color-kp-textred: #b92b06;
+    --color-kp-black: #000000;
+    --color-kp-white: #ffffff;
+
+    /* Functional colours */
+    --color-kp-bluegrey: #d9e3e8;
+    --color-kp-bluegrey-60: #e4ebf0;
+    --color-kp-bluegrey-30: #eff4f7;
+    --color-kp-sand: #e9e4df;
+    --color-kp-sand-60: #f0ece8;
+    --color-kp-sand-30: #f6f4f0;
+    --color-kp-muted: #5a666c;
+    --color-kp-line: #9aa7ae;
+
+    /* Secondary colours for digital interfaces (all AA on white) */
+    --color-kp-navy: #002d66;
+    --color-kp-darkblue: #003d84;
+    --color-kp-blue: #0063a3;
+    --color-kp-purple: #620d3b;
+    --color-kp-petrol: #236b76;
+
+    /* System states: colour is never the only signal, every state also has a text label. */
+    --color-kp-verified: #38713f;
+    --color-kp-unverified: #c57f00;
+    --color-kp-unverified-text: #895a00;
+    --color-kp-unverified-tint: #fcce8e;
+    --color-kp-nosource: #9e0529;
+    --color-kp-handover: #002d66;
+
+    /*
+     * Existing Tailwind palettes remapped onto the CI so the current views follow it without a rewrite.
+     * red was the old primary action colour, so it maps to the navy interaction scale (flag red stays reserved for the brand).
+     */
+    --color-red-50: #eff4f7;
+    --color-red-100: #e4ebf0;
+    --color-red-200: #d9e3e8;
+    --color-red-300: #9aa7ae;
+    --color-red-400: #8fa3bd;
+    --color-red-500: #0063a3;
+    --color-red-600: #003d84;
+    --color-red-700: #002d66;
+    --color-red-800: #002d66;
+    --color-red-900: #002d66;
+    --color-red-950: #002d66;
+
+    --color-rose-50: #eff4f7;
+    --color-rose-100: #e4ebf0;
+    --color-rose-600: #9e0529;
+    --color-rose-700: #9e0529;
+
+    --color-slate-50: #eff4f7;
+    --color-slate-100: #e4ebf0;
+    --color-slate-200: #d9e3e8;
+    --color-slate-300: #9aa7ae;
+    --color-slate-400: #8a959b;
+    --color-slate-500: #5a666c;
+    --color-slate-600: #5a666c;
+    --color-slate-700: #000000;
+    --color-slate-800: #000000;
+    --color-slate-900: #000000;
+    --color-slate-950: #000000;
+
+    --color-emerald-50: #eff4f7;
+    --color-emerald-100: #e4ebf0;
+    --color-emerald-200: #d9e3e8;
+    --color-emerald-300: #38713f;
+    --color-emerald-400: #38713f;
+    --color-emerald-500: #38713f;
+    --color-emerald-600: #38713f;
+    --color-emerald-700: #38713f;
+    --color-emerald-800: #38713f;
+    --color-emerald-900: #38713f;
+
+    --color-amber-50: #f6f4f0;
+    --color-amber-100: #fcce8e;
+    --color-amber-200: #fcce8e;
+    --color-amber-300: #c57f00;
+    --color-amber-400: #c57f00;
+    --color-amber-500: #c57f00;
+    --color-amber-600: #895a00;
+    --color-amber-700: #895a00;
+    --color-amber-800: #895a00;
+    --color-amber-900: #895a00;
+
+    --color-blue-50: #eff4f7;
+    --color-blue-100: #e4ebf0;
+    --color-blue-200: #d9e3e8;
+    --color-blue-300: #8fa3bd;
+    --color-blue-400: #8fa3bd;
+    --color-blue-500: #0063a3;
+    --color-blue-600: #0063a3;
+    --color-blue-700: #003d84;
+    --color-blue-800: #002d66;
+    --color-blue-900: #002d66;
+
+    /* The CI works with flat, square surfaces. Pills and dots (rounded-full) stay round. */
+    --radius-xs: 0px;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-3xl: 0px;
+    --radius-4xl: 0px;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -23,8 +134,8 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    --color-accent: var(--color-kp-navy);
+    --color-accent-content: var(--color-kp-navy);
     --color-accent-foreground: var(--color-white);
 }
 
@@ -44,6 +155,37 @@
     ::backdrop,
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
+    }
+
+    a {
+        text-underline-offset: 4px;
+    }
+
+    /* CI focus state: visible 3px navy frame with 3px offset. Never remove. */
+    :focus-visible {
+        outline: 3px solid var(--color-kp-navy);
+        outline-offset: 3px;
+    }
+
+    /* Phone numbers and e-mail addresses stay left-to-right inside right-to-left text. */
+    [dir='rtl'] a[href^='tel:'],
+    [dir='rtl'] a[href^='mailto:'] {
+        direction: ltr;
+        unicode-bidi: isolate;
+    }
+
+    .dark :focus-visible {
+        outline-color: var(--color-white);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 }
 

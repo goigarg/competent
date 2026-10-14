@@ -1,6 +1,6 @@
 <div class="min-h-screen flex flex-col" wire:poll.3s>
     {{-- Official Federal Government Top Bar --}}
-    <div class="bg-[#C8102E] text-white py-1.5 px-4 text-xs font-semibold tracking-wider flex flex-wrap items-center justify-between gap-2 border-b border-red-800 shadow-xs">
+    <div class="bg-kp-navy text-white py-1.5 px-4 text-xs font-semibold tracking-wider flex flex-wrap items-center justify-between gap-2 border-b border-red-800 shadow-xs">
         <div class="flex items-center gap-2">
             <span class="inline-block size-2 rounded-full bg-white"></span>
             <span>REPUBLIK ÖSTERREICH • INTERNES BEAMTEN-PORTAL (VERTRAULICH / AMTLICH)</span>
@@ -31,7 +31,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="size-10 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 flex items-center justify-center shrink-0">
-                    <svg class="size-6 text-[#C8102E]" viewBox="0 0 24 24" fill="currentColor">
+                    <svg class="size-6 text-kp-textred" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2L2 7v7c0 5.25 3.75 10.15 10 11.5 6.25-1.35 10-6.25 10-11.5V7L12 2zm0 3.3L19 9v5c0 4.1-2.9 7.9-7 9.1-4.1-1.2-7-5-7-9.1V9l7-3.7zM7 11h10v2H7v-2z"/>
                     </svg>
                 </div>
@@ -56,8 +56,8 @@
                     <span class="font-bold text-slate-700 dark:text-zinc-300">Gesamt:</span>
                     <span class="font-bold text-slate-900 dark:text-white">{{ $stats['total'] }}</span>
                 </div>
-                <div class="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/60 flex items-center gap-1.5 text-[#C8102E] dark:text-red-300 font-bold">
-                    <span class="size-2 rounded-full bg-[#C8102E] animate-pulse"></span>
+                <div class="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/60 flex items-center gap-1.5 text-kp-textred dark:text-red-300 font-bold">
+                    <span class="size-2 rounded-full bg-kp-navy animate-pulse"></span>
                     <span>Offen:</span>
                     <span>{{ $stats['pending'] }}</span>
                 </div>
@@ -99,7 +99,7 @@
                             type="text" 
                             wire:model.live.debounce.250ms="searchQuery" 
                             placeholder="Suche nach Fall-ID, Bürgeranliegen, Sachbearbeiter..."
-                            class="w-full text-xs rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 px-3 py-2 pl-8 focus:ring-1 focus:ring-[#C8102E] text-slate-900 dark:text-white placeholder:text-slate-400"
+                            class="w-full text-xs rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 px-3 py-2 pl-8 focus:ring-1 focus:ring-kp-navy text-slate-900 dark:text-white placeholder:text-slate-400"
                         >
                         <svg class="size-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -111,28 +111,28 @@
                         <button 
                             type="button" 
                             wire:click="setStatusFilter('all')"
-                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'all' ? 'bg-[#C8102E] text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
+                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'all' ? 'bg-kp-navy text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
                         >
                             Alle ({{ $stats['total'] }})
                         </button>
                         <button 
                             type="button" 
                             wire:click="setStatusFilter('pending_officer')"
-                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'pending_officer' ? 'bg-[#C8102E] text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
+                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'pending_officer' ? 'bg-kp-navy text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
                         >
                             Offen ({{ $stats['pending'] }})
                         </button>
                         <button 
                             type="button" 
                             wire:click="setStatusFilter('in_review')"
-                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'in_review' ? 'bg-[#C8102E] text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
+                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'in_review' ? 'bg-kp-navy text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
                         >
                             In Bearbeitung ({{ $stats['in_review'] }})
                         </button>
                         <button 
                             type="button" 
                             wire:click="setStatusFilter('resolved')"
-                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'resolved' ? 'bg-[#C8102E] text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
+                            class="px-2.5 py-1 rounded-lg font-semibold transition-all {{ $statusFilter === 'resolved' ? 'bg-kp-navy text-white shadow-xs' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900' }}"
                         >
                             Erledigt ({{ $stats['resolved'] }})
                         </button>
@@ -145,7 +145,7 @@
                         <button 
                             type="button" 
                             wire:click="selectConversation({{ $case->id }})"
-                            class="w-full text-left p-4 rounded-2xl border transition-all shadow-2xs hover:shadow-xs relative {{ $selectedConversationId === $case->id ? 'bg-white dark:bg-zinc-900 border-[#C8102E] ring-1 ring-[#C8102E]' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-300' }}"
+                            class="w-full text-left p-4 rounded-2xl border transition-all shadow-2xs hover:shadow-xs relative {{ $selectedConversationId === $case->id ? 'bg-white dark:bg-zinc-900 border-kp-navy ring-1 ring-kp-navy' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-300' }}"
                         >
                             <div class="flex items-center justify-between gap-2 mb-1.5">
                                 <div class="flex items-center gap-1.5">
@@ -159,7 +159,7 @@
 
                                 {{-- Status Badge --}}
                                 @if($case->status === 'pending_officer')
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-[#C8102E] border border-red-200 dark:bg-red-950 dark:border-red-900">
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-kp-textred border border-red-200 dark:bg-red-950 dark:border-red-900">
                                         Offen
                                     </span>
                                 @elseif($case->status === 'in_review')
@@ -180,9 +180,9 @@
                             <div class="mt-2.5 flex items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-zinc-400">
                                 <span class="flex items-center gap-1">
                                     <span>🌐</span>
-                                    <span>{{ strtoupper($case->locale) }}</span>
+                                    <span lang="{{ \App\Enums\Language::fromLocale($case->locale)->htmlLang() }}">{{ \App\Enums\Language::fromLocale($case->locale)->nativeName() }}</span>
                                     @if($case->active_workflow)
-                                        <span class="ml-1 px-1.5 py-0.2 rounded bg-slate-100 dark:bg-zinc-800 text-[10px] font-bold uppercase">
+                                        <span class="ml-1 px-1.5 py-0.2 rounded bg-slate-100 dark:bg-zinc-800 text-[10px] font-bold">
                                             {{ $case->active_workflow }}
                                         </span>
                                     @endif
@@ -205,7 +205,7 @@
                                     </span>
                                     <span 
                                         wire:click.stop="joinConversation({{ $case->id }})"
-                                        class="px-2 py-0.5 rounded bg-[#C8102E] hover:bg-red-700 text-white font-bold text-[10px] cursor-pointer shadow-2xs transition-colors"
+                                        class="px-2 py-0.5 rounded bg-kp-navy hover:bg-red-700 text-white font-bold text-[10px] cursor-pointer shadow-2xs transition-colors"
                                     >
                                         + Beitreten
                                     </span>
@@ -255,7 +255,7 @@
                                     <button 
                                         type="button" 
                                         wire:click="joinConversation"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#C8102E] hover:bg-red-700 text-white transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-kp-navy hover:bg-red-700 text-white transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
                                         title="Dem Fall beitreten und Bürgerin/Bürger über den Beitritt informieren"
                                     >
                                         <span>👥</span>
@@ -291,7 +291,7 @@
                         {{-- Assigned Officer & Notes Form --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                             <div>
-                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                                <label class="text-[11px] font-bold text-slate-500 block mb-1">
                                     Zuständige Beamtin / Beamter
                                 </label>
                                 <input 
@@ -303,7 +303,7 @@
                             </div>
 
                             <div>
-                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                                <label class="text-[11px] font-bold text-slate-500 block mb-1">
                                     Interne Bearbeitungs-Notiz
                                 </label>
                                 <div class="flex gap-2">
@@ -329,10 +329,10 @@
                     @if($selectedConversation->case_dossier)
                         <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-2">
                             <div class="flex items-center gap-2 border-b border-slate-100 dark:border-zinc-800 pb-2">
-                                <span class="size-6 rounded-md bg-[#C8102E] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                <span class="size-6 rounded-md bg-kp-navy text-white flex items-center justify-center text-xs font-bold shrink-0">
                                     📋
                                 </span>
-                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                                     Bürger-Dossier (Automatische AI-Fallzusammenfassung)
                                 </h3>
                             </div>
@@ -349,7 +349,7 @@
                                 <span class="size-6 rounded-md bg-slate-800 text-white flex items-center justify-center text-xs font-bold shrink-0">
                                     💬
                                 </span>
-                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                                     Vollständiges Chat-Protokoll (Bürger & KI)
                                 </h3>
                             </div>
@@ -363,15 +363,15 @@
                             @foreach($selectedConversation->messages as $msg)
                                 <div class="flex flex-col {{ $msg->role === 'user' ? 'items-end' : 'items-start' }}">
                                     <div class="flex items-center gap-1.5 text-[10px] text-slate-400 mb-1 px-1">
-                                        <span class="font-bold uppercase tracking-wider {{ $msg->role === 'user' ? 'text-red-700 dark:text-red-400' : 'text-slate-600 dark:text-zinc-400' }}">
+                                        <span class="font-bold {{ $msg->role === 'user' ? 'text-red-700 dark:text-red-400' : 'text-slate-600 dark:text-zinc-400' }}">
                                             {{ $msg->role === 'user' ? 'Bürgerin / Bürger' : ($msg->role === 'system' ? 'System-Hinweis' : 'KI-Assistenz') }}
                                         </span>
                                         <span>&bull;</span>
                                         <span>{{ $msg->created_at?->format('H:i:s') }}</span>
                                     </div>
 
-                                    <div class="max-w-xl p-3 rounded-xl text-xs shadow-2xs {{ $msg->role === 'user' ? 'bg-[#C8102E] text-white rounded-tr-none' : ($msg->role === 'system' ? 'bg-blue-50 text-blue-900 border border-blue-200' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200 rounded-tl-none') }}">
-                                        {!! \Illuminate\Support\Str::markdown($msg->content) !!}
+                                    <div class="max-w-xl p-3 rounded-xl text-xs shadow-2xs {{ $msg->role === 'user' ? 'bg-kp-navy text-white rounded-tr-none' : ($msg->role === 'system' ? 'bg-blue-50 text-blue-900 border border-blue-200' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200 rounded-tl-none') }}">
+                                        {!! \App\Services\AustrianGov\MessageParser::markdown(\App\Services\AustrianGov\AnswerPresenter::plainText($msg->content)) !!}
                                     </div>
                                 </div>
                             @endforeach
@@ -379,7 +379,7 @@
 
                         {{-- Officer Direct Response Form --}}
                         <div class="pt-2 border-t border-slate-100 dark:border-zinc-800">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                            <label class="text-[11px] font-bold text-slate-500 block mb-1">
                                 ✉️ Amtliche Mitteilung direkt in das Bürger-Gespräch schreiben
                             </label>
                             <div class="flex gap-2">
@@ -392,7 +392,7 @@
                                 <button 
                                     type="button" 
                                     wire:click="sendOfficerMessage"
-                                    class="px-4 py-2 bg-[#C8102E] hover:bg-red-700 text-white rounded-xl text-xs font-bold shrink-0 transition-colors shadow-2xs flex items-center gap-1.5"
+                                    class="px-4 py-2 bg-kp-navy hover:bg-red-700 text-white rounded-xl text-xs font-bold shrink-0 transition-colors shadow-2xs flex items-center gap-1.5"
                                 >
                                     <span>Absenden</span>
                                     <span>&rarr;</span>

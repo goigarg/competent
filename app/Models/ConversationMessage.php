@@ -2,14 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $conversation_id
+ * @property string|null $uuid
+ * @property string $role
+ * @property string $content
+ * @property array<int, array<string, mixed>>|null $sources
+ * @property bool $is_fallback
+ * @property string|null $workflow
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 class ConversationMessage extends Model
 {
-    use HasFactory;
-
     /**
      * @var list<string>
      */

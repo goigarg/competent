@@ -2,8 +2,19 @@
 
 namespace App\Services\AustrianGov\Workflows;
 
+use App\Support\Translate;
+
 class PassportWorkflow
 {
+    public const DEFAULT_STATE = [
+        'step' => 1,
+        'scenario' => null,
+        'urgency' => 'standard',
+        'age_group' => 'adult',
+        'checked_items' => [],
+        'authority_location' => null,
+    ];
+
     /**
      * @param  array{
      *     step: int,
@@ -15,15 +26,43 @@ class PassportWorkflow
      * }  $state
      */
     public function __construct(
-        public array $state = [
-            'step' => 1,
-            'scenario' => null,
-            'urgency' => 'standard',
-            'age_group' => 'adult',
-            'checked_items' => [],
-            'authority_location' => null,
-        ]
+        public array $state = self::DEFAULT_STATE
     ) {}
+
+    /**
+     * Build a complete, well-typed state from stored data (e.g. conversations.workflow_data),
+     * falling back to the defaults for missing or invalid keys.
+     *
+     * @return array{step: int, scenario: ?string, urgency: ?string, age_group: ?string, checked_items: array<string, bool>, authority_location: ?string}
+     */
+    public static function normalizeState(mixed $data): array
+    {
+        $data = is_array($data) ? $data : [];
+        $nullableString = fn (string $key, ?string $default) => array_key_exists($key, $data) && (is_string($data[$key]) || $data[$key] === null) ? $data[$key] : $default;
+
+        return [
+            'step' => is_int($data['step'] ?? null) ? $data['step'] : self::DEFAULT_STATE['step'],
+            'scenario' => $nullableString('scenario', self::DEFAULT_STATE['scenario']),
+            'urgency' => $nullableString('urgency', self::DEFAULT_STATE['urgency']),
+            'age_group' => $nullableString('age_group', self::DEFAULT_STATE['age_group']),
+            'checked_items' => self::normalizeChecked($data['checked_items'] ?? []),
+            'authority_location' => $nullableString('authority_location', self::DEFAULT_STATE['authority_location']),
+        ];
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    public static function normalizeChecked(mixed $items): array
+    {
+        $checked = [];
+
+        foreach (is_array($items) ? $items : [] as $key => $value) {
+            $checked[(string) $key] = (bool) $value;
+        }
+
+        return $checked;
+    }
 
     /**
      * Set the passport situation.
@@ -69,53 +108,32 @@ class PassportWorkflow
      *
      * @return array{amount: float, formatted: string, duration: string, validity: string}
      */
-    public function getFeeInfo(): array
+    public function getFeeInfo(string $locale = 'de'): array
     {
         $age = $this->state['age_group'] ?? 'adult';
         $urgency = $this->state['urgency'] ?? 'standard';
+        $years = match ($age) {
+            'child_small' => 2,
+            'child' => 5,
+            default => 10,
+        };
+        $validity = $this->text('fee.validity', $locale, ['years' => $years]);
 
-        if ($urgency === 'one_day') {
-            return [
-                'amount' => 220.00,
-                'formatted' => '220,00 €',
-                'duration' => 'Zustellung am nächsten Werktag (Ein-Tages-Express)',
-                'validity' => $age === 'child_small' ? '2 Jahre' : ($age === 'child' ? '5 Jahre' : '10 Jahre'),
-            ];
-        }
-
-        if ($urgency === 'express') {
-            return [
-                'amount' => 100.00,
-                'formatted' => '100,00 €',
-                'duration' => 'Zustellung in 2–3 Werktagen (Expresspass)',
-                'validity' => $age === 'child_small' ? '2 Jahre' : ($age === 'child' ? '5 Jahre' : '10 Jahre'),
-            ];
-        }
-
-        // Standard
-        if ($age === 'child_small') {
-            return [
-                'amount' => 0.00,
-                'formatted' => 'Gebührenfrei (Erstausstellung) bzw. 30,00 €',
-                'duration' => 'ca. 5 Werktage (RSb-Brief)',
-                'validity' => '2 Jahre',
-            ];
-        }
-
-        if ($age === 'child') {
-            return [
-                'amount' => 30.00,
-                'formatted' => '30,00 €',
-                'duration' => 'ca. 5 Werktage (RSb-Brief)',
-                'validity' => '5 Jahre',
-            ];
-        }
+        [$amount, $duration] = match (true) {
+            $urgency === 'one_day' => [220.00, 'fee.duration_one_day'],
+            $urgency === 'express' => [100.00, 'fee.duration_express'],
+            $age === 'child_small' => [0.00, 'fee.duration_standard'],
+            $age === 'child' => [30.00, 'fee.duration_standard'],
+            default => [75.90, 'fee.duration_standard'],
+        };
 
         return [
-            'amount' => 75.90,
-            'formatted' => '75,90 €',
-            'duration' => 'ca. 5 Werktage (RSb-Brief)',
-            'validity' => '10 Jahre',
+            'amount' => $amount,
+            'formatted' => $urgency === 'standard' && $age === 'child_small'
+                ? $this->text('fee.free_first_issue', $locale)
+                : $this->formatEuro($amount, $locale),
+            'duration' => $this->text($duration, $locale),
+            'validity' => $validity,
         ];
     }
 
@@ -126,69 +144,25 @@ class PassportWorkflow
      */
     public function getChecklist(string $locale = 'de'): array
     {
-        $isGerman = str_starts_with(strtolower($locale), 'de');
         $scenario = $this->state['scenario'] ?? 'expiring';
-        $checked = $this->state['checked_items'] ?? [];
+        $fee = $this->getFeeInfo($locale);
+
+        $ids = match ($scenario) {
+            'lost_stolen' => ['loss_report', 'other_photo_id'],
+            'expired_over_5_years' => ['certificates'],
+            default => ['old_passport'],
+        };
 
         $items = [];
-
-        if ($scenario === 'lost_stolen') {
+        foreach ([...$ids, 'photo', 'fee', 'appointment'] as $id) {
             $items[] = [
-                'id' => 'loss_report',
-                'text' => $isGerman ? 'Amtliche Verlust- oder Diebstahlsanzeige' : 'Official Loss or Police Theft Report',
-                'detail' => $isGerman ? 'Bei Diebstahl von der Polizei, bei Verlust vom Fundamt bzw. Passbehörde.' : 'From police in case of theft, or municipal lost & found for loss.',
-                'required' => true,
-                'checked' => $checked['loss_report'] ?? false,
-            ];
-            $items[] = [
-                'id' => 'other_photo_id',
-                'text' => $isGerman ? 'Anderer Lichtbildausweis (z. B. Führerschein, Personalausweis)' : 'Alternative Photo ID (e.g., Driving Licence or EU ID Card)',
-                'detail' => $isGerman ? 'Zur eindeutigen Feststellung Ihrer Identität am Schalter.' : 'To verify your identity at the service desk.',
-                'required' => true,
-                'checked' => $checked['other_photo_id'] ?? false,
-            ];
-        } elseif ($scenario === 'expired_over_5_years') {
-            $items[] = [
-                'id' => 'certificates',
-                'text' => $isGerman ? 'Geburtsurkunde & Staatsbürgerschaftsnachweis' : 'Birth Certificate & Citizenship Proof',
-                'detail' => $isGerman ? 'Erforderlich, wenn der Reisepass länger als 5 Jahre abgelaufen ist.' : 'Mandatory when passport has been expired for more than 5 years.',
-                'required' => true,
-                'checked' => $checked['certificates'] ?? false,
-            ];
-        } else {
-            $items[] = [
-                'id' => 'old_passport',
-                'text' => $isGerman ? 'Bisheriger Reisepass (abgelaufen oder noch gültig)' : 'Current or Expired Passport',
-                'detail' => $isGerman ? 'Wird bei Neuausstellung entwertet und kann auf Wunsch behalten werden.' : 'Will be cancelled and handed back to you as a keepsake if desired.',
-                'required' => true,
-                'checked' => $checked['old_passport'] ?? false,
+                'id' => $id,
+                'text' => $this->text("items.{$id}.text", $locale, ['fee' => $fee['formatted']]),
+                'detail' => $this->text("items.{$id}.detail", $locale, ['duration' => $fee['duration']]),
+                'required' => $id !== 'appointment',
+                'checked' => $this->state['checked_items'][$id] ?? false,
             ];
         }
-
-        $items[] = [
-            'id' => 'photo',
-            'text' => $isGerman ? '1 aktuelles biometrisches Passfoto (35 x 45 mm)' : '1 Recent Biometric Passport Photograph (35 x 45 mm)',
-            'detail' => $isGerman ? 'Nicht älter als 6 Monate, neutraler Blick, gleichmäßige Ausleuchtung.' : 'Max 6 months old, neutral expression, high resolution.',
-            'required' => true,
-            'checked' => $checked['photo'] ?? false,
-        ];
-
-        $fee = $this->getFeeInfo();
-        $items[] = [
-            'id' => 'fee',
-            'text' => $isGerman ? "Gebühr {$fee['formatted']} (Bankomat oder bar)" : "Fee {$fee['formatted']} (Debit card or cash)",
-            'detail' => $isGerman ? "Beinhaltet Produktion und RSb-Postzustellung ({$fee['duration']})." : "Includes manufacturing and registered postal delivery ({$fee['duration']}).",
-            'required' => true,
-            'checked' => $checked['fee'] ?? false,
-        ];
-
-        $items[] = [
-            'id' => 'appointment',
-            'text' => $isGerman ? 'Online-Termin bei der Passbehörde reserviert' : 'Booked Online Appointment at Passport Office',
-            'detail' => $isGerman ? 'Sparen Sie Wartezeit – Magistratisches Bezirksamt oder Bezirkshauptmannschaft.' : 'Avoid waiting times at your local district municipal office.',
-            'required' => false,
-            'checked' => $checked['appointment'] ?? false,
-        ];
 
         return $items;
     }
@@ -198,43 +172,40 @@ class PassportWorkflow
      */
     public function generateDossierSummary(string $locale = 'de'): string
     {
-        $isGerman = str_starts_with(strtolower($locale), 'de');
-        $fee = $this->getFeeInfo();
+        $fee = $this->getFeeInfo($locale);
         $checklist = $this->getChecklist($locale);
+        $default = $this->text('dossier.default_value', $locale);
 
-        $completedCount = count(array_filter($checklist, fn ($i) => $i['checked']));
-        $totalCount = count($checklist);
-
-        if ($isGerman) {
-            $out = "=== BÜRGER-DOSSIER: REISEPASS-NEUAUSSTELLUNG 2030 ===\n";
-            $out .= "Anliegen: Neuausstellung / Verlängerung Reisepass\n";
-            $out .= 'Status / Fall: '.($this->state['scenario'] ?? 'Standard')."\n";
-            $out .= 'Dringlichkeit: '.($this->state['urgency'] ?? 'Standard')." ({$fee['duration']})\n";
-            $out .= "Berechnete Gebühr: {$fee['formatted']}\n";
-            $out .= "Dokumenten-Vorbereitung: {$completedCount} von {$totalCount} Punkten erledigt\n\n";
-            $out .= "Erledigte Dokumente:\n";
-            foreach ($checklist as $item) {
-                $mark = $item['checked'] ? '[X]' : '[ ]';
-                $out .= "{$mark} {$item['text']}\n";
-            }
-            $out .= "\nOffizielle Behörde: Jede Passbehörde in Österreich (Magistrat / Bezirkshauptmannschaft)\n";
-
-            return $out;
-        }
-
-        $out = "=== CITIZEN DOSSIER: AUSTRIAN PASSPORT APPLICATION 2030 ===\n";
-        $out .= "Inquiry: Passport Issuance / Renewal\n";
-        $out .= 'Case Scenario: '.($this->state['scenario'] ?? 'Standard')."\n";
-        $out .= 'Urgency: '.($this->state['urgency'] ?? 'Standard')." ({$fee['duration']})\n";
-        $out .= "Calculated Fee: {$fee['formatted']}\n";
-        $out .= "Document Preparation: {$completedCount} of {$totalCount} items prepared\n\n";
-        $out .= "Checklist Status:\n";
+        $out = $this->text('dossier.title', $locale)."\n";
+        $out .= $this->text('dossier.inquiry', $locale)."\n";
+        $out .= $this->text('dossier.scenario', $locale, ['value' => $this->state['scenario'] ?? $default])."\n";
+        $out .= $this->text('dossier.urgency', $locale, ['value' => $this->state['urgency'] ?? $default, 'duration' => $fee['duration']])."\n";
+        $out .= $this->text('dossier.fee', $locale, ['fee' => $fee['formatted']])."\n";
+        $out .= $this->text('dossier.progress', $locale, [
+            'done' => count(array_filter($checklist, fn ($i) => $i['checked'])),
+            'total' => count($checklist),
+        ])."\n\n";
+        $out .= $this->text('dossier.checklist', $locale)."\n";
         foreach ($checklist as $item) {
-            $mark = $item['checked'] ? '[X]' : '[ ]';
-            $out .= "{$mark} {$item['text']}\n";
+            $out .= ($item['checked'] ? '[X]' : '[ ]')." {$item['text']}\n";
         }
-        $out .= "\nOfficial Authority: Any passport office in Austria (Magistrate / District Commission)\n";
+        $out .= "\n".$this->text('dossier.authority', $locale)."\n";
 
         return $out;
+    }
+
+    protected function formatEuro(float $amount, string $locale): string
+    {
+        $number = number_format($amount, 2, $this->text('fee.decimal_separator', $locale), $this->text('fee.thousands_separator', $locale));
+
+        return $this->text('fee.format', $locale, ['amount' => $number]);
+    }
+
+    /**
+     * @param  array<string, string|int|float>  $replace
+     */
+    protected function text(string $key, string $locale, array $replace = []): string
+    {
+        return Translate::text("workflows.passport.{$key}", $replace, $locale);
     }
 }

@@ -181,13 +181,20 @@ class OpenRouterClient implements AiAssistantInterface
         $model = $options['model'] ?? $this->model;
         $url = "{$this->baseUrl}/chat/completions";
 
-        $payload = json_encode([
-            'model' => $model,
-            'messages' => $messages,
-            'temperature' => $options['temperature'] ?? 0.3,
-            'max_tokens' => $options['max_tokens'] ?? 1500,
-            'stream' => true,
-        ]);
+        try {
+            $payload = json_encode([
+                'model' => $model,
+                'messages' => $messages,
+                'temperature' => $options['temperature'] ?? 0.3,
+                'max_tokens' => $options['max_tokens'] ?? 1500,
+                'stream' => true,
+            ], JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            Log::warning('OpenRouter stream payload could not be encoded', ['error' => $e->getMessage()]);
+            $callback('Fehler: Die Anfrage konnte nicht verarbeitet werden.');
+
+            return;
+        }
 
         $headers = [];
         foreach ($this->getHeaders() as $key => $value) {
