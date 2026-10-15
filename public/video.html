@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kompetent · Live Demo Video Walkthrough with Spoken Voiceover</title>
+  <title>Kompetent · Live Demo Video Walkthrough (Public Sector 2030)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -132,6 +132,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     }
 
     .stage-image {
@@ -143,63 +144,12 @@
       object-fit: contain;
       opacity: 0;
       transform: scale(1.0);
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 18s ease-out;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 16s ease-out;
     }
 
     .stage-image.active {
       opacity: 1;
       transform: scale(1.08) translate(-1%, -1%);
-    }
-
-    /* Equalizer Voice Indicator */
-    .voice-eq {
-      position: absolute;
-      top: 20px;
-      right: 24px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 6px 14px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #38BDF8;
-      z-index: 5;
-    }
-
-    .eq-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      height: 14px;
-    }
-
-    .eq-bar {
-      width: 3px;
-      background: #38BDF8;
-      border-radius: 1px;
-      animation: eqBounce 1s infinite ease-in-out;
-    }
-    .eq-bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
-    .eq-bar:nth-child(2) { height: 14px; animation-delay: 0.3s; }
-    .eq-bar:nth-child(3) { height: 9px; animation-delay: 0.2s; }
-    .eq-bar:nth-child(4) { height: 12px; animation-delay: 0.4s; }
-
-    .is-paused .eq-bar {
-      animation: none;
-      height: 4px;
-      background: #64748B;
-    }
-    .is-paused .voice-eq {
-      color: #94A3B8;
-    }
-
-    @keyframes eqBounce {
-      0%, 100% { height: 4px; }
-      50% { height: 14px; }
     }
 
     /* Big Center Play Overlay */
@@ -338,7 +288,7 @@
       height: 100%;
       background: var(--kp-flag);
       width: 0%;
-      transition: width 0.15s linear;
+      transition: width 0.1s linear;
     }
 
     .time-readout {
@@ -346,19 +296,6 @@
       font-family: monospace;
       color: #94A3B8;
       white-space: nowrap;
-    }
-
-    /* Volume */
-    .volume-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .volume-slider {
-      width: 75px;
-      accent-color: var(--kp-flag);
-      cursor: pointer;
     }
 
     /* Scene Thumbnails */
@@ -424,9 +361,6 @@
 </head>
 <body>
 
-  <!-- Audio Element for Real Spoken Voiceover -->
-  <audio id="player-audio" preload="auto"></audio>
-
   <div class="video-card" id="player-card">
     <!-- Header Ribbon -->
     <div class="video-header">
@@ -434,13 +368,13 @@
         <div class="flag-bar">
           <div></div><div></div><div></div>
         </div>
-        <div class="brand-title">Kompetent <span>· Video Walkthrough with Spoken Voiceover</span></div>
+        <div class="brand-title">Kompetent <span>· Video Walkthrough (Public Sector 2030)</span></div>
       </div>
       <div class="header-right">
         <span class="team-badge">Team: Goi Garg · Cajetan Perwein · Jeet Gupta · Reyan Zein</span>
         <div class="lang-switcher">
-          <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN Voice</button>
-          <button class="lang-btn" id="btn-de" onclick="setLanguage('de')">DE Voice</button>
+          <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN Subtitles</button>
+          <button class="lang-btn" id="btn-de" onclick="setLanguage('de')">DE Untertitel</button>
         </div>
       </div>
     </div>
@@ -450,22 +384,11 @@
       <!-- Background Motion Images -->
       <img id="img-0" class="stage-image active" src="screenshots/01-intro-title.png" alt="Intro Title">
       <img id="img-1" class="stage-image" src="screenshots/02-citizen-home.png" alt="Citizen Interface">
-      <img id="img-2" class="stage-image" src="screenshots/03-ai-query-stream.png" alt="AI Query & Streaming">
-      <img id="img-3" class="stage-image" src="screenshots/04-verified-citations.png" alt="Verified Citations & Forms">
+      <img id="img-2" class="stage-image" src="screenshots/03-ai-query-stream.png" alt="AI Query & Answer">
+      <img id="img-3" class="stage-image" src="screenshots/04-verified-citations.png" alt="Verified Citations & BMI Forms">
       <img id="img-4" class="stage-image" src="screenshots/05-caseworker-portal.png" alt="Caseworker Portal">
       <img id="img-5" class="stage-image" src="screenshots/06-roadmap-2030.png" alt="Roadmap 2030">
       <img id="img-6" class="stage-image" src="screenshots/07-live-demo-links.png" alt="Live Demo Links">
-
-      <!-- Voice Activity Indicator -->
-      <div class="voice-eq is-paused" id="voice-eq">
-        <div class="eq-bars">
-          <div class="eq-bar"></div>
-          <div class="eq-bar"></div>
-          <div class="eq-bar"></div>
-          <div class="eq-bar"></div>
-        </div>
-        <span id="voice-label">Spoken Voiceover</span>
-      </div>
 
       <!-- Big Play Button Overlay -->
       <button class="big-play-btn" id="big-play-btn" onclick="event.stopPropagation(); togglePlayPause();">▶</button>
@@ -492,14 +415,9 @@
         </div>
       </div>
 
-      <div class="time-readout" id="time-readout">0:00 / 1:57</div>
+      <div class="time-readout" id="time-readout">0:00 / 1:45</div>
 
-      <div class="volume-group">
-        <button class="btn-secondary" id="btn-mute" onclick="toggleMute()" style="padding: 7px 10px;">🔊</button>
-        <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)">
-      </div>
-
-      <button class="btn-secondary" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button class="btn-secondary" onclick="toggleFullscreen()">⛶ Fullscreen (F)</button>
     </div>
 
     <!-- Thumbnail Scrubber -->
@@ -510,11 +428,9 @@
 
   <!-- Download & Action Links -->
   <div class="links-bar">
-    <a href="audio/full_walkthrough_en.m4a" download>🎧 Download Full English Audio Track</a>
-    <span style="color: #475569;">•</span>
-    <a href="audio/full_walkthrough_de.m4a" download>🎧 Download Full German Audio Track</a>
-    <span style="color: #475569;">•</span>
     <a href="demo-walkthrough.webp" download>🎞️ Download Animated WebP (937 KB)</a>
+    <span style="color: #475569;">•</span>
+    <a href="demo-walkthrough.gif" download>🎞️ Download Animated GIF (1.4 MB)</a>
     <span style="color: #475569;">•</span>
     <a href="https://competent.shiv.ovh" target="_blank">🌐 Live Citizen Chat</a>
     <span style="color: #475569;">•</span>
@@ -528,8 +444,7 @@
       {
         id: 1,
         title: { en: "Introduction & The 2026 Problem", de: "Einleitung & Das Problem 2026" },
-        audio: { en: "audio/scene_01_en.m4a", de: "audio/scene_01_de.m4a" },
-        dur: { en: 27.3, de: 24.9 },
+        duration: 15,
         src: "screenshots/01-intro-title.png",
         text: {
           en: "Austria has world-class public services. But for citizens, navigating them means getting lost in dozens of fragmented portals, complex legalese, and confusing PDF forms. Generic AI tools can't solve this—they hallucinate deadlines and invent legal requirements. Meet Kompetent, Austria's universal, legally grounded AI citizen assistant for 2030, built by Goi Garg, Cajetan Perwein, Jeet Gupta, and Reyan Zein.",
@@ -539,8 +454,7 @@
       {
         id: 2,
         title: { en: "Citizen Interface & Accessibility", de: "Bürgernahe Oberfläche & Barrierefreiheit" },
-        audio: { en: "audio/scene_02_en.m4a", de: "audio/scene_02_de.m4a" },
-        dur: { en: 17.6, de: 14.8 },
+        duration: 14,
         src: "screenshots/02-citizen-home.png",
         text: {
           en: "The interface adheres strictly to the official Kompetent Design Guidelines and WCAG 2.2 AA accessibility standards. From seniors needing 200 percent text zoom and simple language, to international residents communicating in English or Arabic, the service is accessible to everyone.",
@@ -549,9 +463,8 @@
       },
       {
         id: 3,
-        title: { en: "Citizen Inquiry & Streaming Dialog", de: "Bürgerfrage & Streaming-Dialog" },
-        audio: { en: "audio/scene_03_en.m4a", de: "audio/scene_03_de.m4a" },
-        dur: { en: 17.3, de: 15.2 },
+        title: { en: "Citizen Inquiry & Structured Response", de: "Bürgerfrage & Strukturierte Antwort" },
+        duration: 16,
         src: "screenshots/03-ai-query-stream.png",
         text: {
           en: "Here, a citizen asks colloquially: 'Hi, I just relocated to Vienna for a software engineering job. What do I need to register my address and what permit do I need?' Kompetent breaks down complex procedures into plain words, keeping official administrative terms anchored in brackets.",
@@ -561,8 +474,7 @@
       {
         id: 4,
         title: { en: "Zero Hallucination & Verified BMI Forms", de: "Geprüfte Angaben & Offizielle Formulare" },
-        audio: { en: "audio/scene_04_en.m4a", de: "audio/scene_04_de.m4a" },
-        dur: { en: 14.5, de: 12.9 },
+        duration: 16,
         src: "screenshots/04-verified-citations.png",
         text: {
           en: "Every claim is grounded in official law and carries the green 'Geprüfte Angabe' badge. Verified citations link directly to live application forms, like the official BMI Antragsformular B. Zero hallucinations, complete statutory trust.",
@@ -572,8 +484,7 @@
       {
         id: 5,
         title: { en: "Caseworker Handover & Automated Dossier", de: "Beamten-Übergabe & Automatisiertes Dossier" },
-        audio: { en: "audio/scene_05_en.m4a", de: "audio/scene_05_de.m4a" },
-        dur: { en: 18.8, de: 16.5 },
+        duration: 16,
         src: "screenshots/05-caseworker-portal.png",
         text: {
           en: "When cases become complex, Kompetent never leaves citizens stranded. With one click, the citizen requests a human officer. Behind the scenes, the AI compiles a structured Case Dossier, saving civil servants up to 10 minutes of manual data entry per inquiry, with instant live takeover in the caseworker portal.",
@@ -583,8 +494,7 @@
       {
         id: 6,
         title: { en: "Roadmap 2030: WhatsApp & Automated Submission", de: "Roadmap 2030: WhatsApp & ZMR-Einreichung" },
-        audio: { en: "audio/scene_06_en.m4a", de: "audio/scene_06_de.m4a" },
-        dur: { en: 14.5, de: 11.2 },
+        duration: 15,
         src: "screenshots/06-roadmap-2030.png",
         text: {
           en: "Our 2030 roadmap takes this even further: cross-platform access via WhatsApp and Telegram, automated direct form submission to ministry registries like the central residence register, and ID Austria qualified electronic signatures.",
@@ -594,8 +504,7 @@
       {
         id: 7,
         title: { en: "Experience Kompetent Live", de: "Jetzt live testen" },
-        audio: { en: "audio/scene_07_en.m4a", de: "audio/scene_07_de.m4a" },
-        dur: { en: 7.3, de: 9.1 },
+        duration: 13,
         src: "screenshots/07-live-demo-links.png",
         text: {
           en: "Experience public service for the next decade. Test Kompetent live at competent.shiv.ovh. Thank you for your attention.",
@@ -607,9 +516,12 @@
     let currentLanguage = 'en';
     let currentIdx = 0;
     let isPlaying = false;
-    let isMuted = false;
+    let sceneTimer = null;
+    let elapsedInScene = 0;
+    let tickInterval = null;
 
-    const audioEl = document.getElementById('player-audio');
+    const totalDuration = sceneData.reduce((acc, s) => acc + s.duration, 0);
+
     const btnPlayPause = document.getElementById('btn-play-pause');
     const bigPlayBtn = document.getElementById('big-play-btn');
     const trackFill = document.getElementById('track-fill');
@@ -617,15 +529,9 @@
     const scenePill = document.getElementById('scene-pill');
     const sceneTitle = document.getElementById('scene-title');
     const subtitleText = document.getElementById('subtitle-text');
-    const voiceEq = document.getElementById('voice-eq');
-    const voiceLabel = document.getElementById('voice-label');
     const thumbTray = document.getElementById('thumb-tray');
     const btnEn = document.getElementById('btn-en');
     const btnDe = document.getElementById('btn-de');
-
-    function getTotalDuration() {
-      return sceneData.reduce((acc, s) => acc + s.dur[currentLanguage], 0);
-    }
 
     function initThumbnails() {
       thumbTray.innerHTML = sceneData.map((s, idx) => `
@@ -641,28 +547,24 @@
       currentLanguage = lang;
       btnEn.classList.toggle('active', lang === 'en');
       btnDe.classList.toggle('active', lang === 'de');
-      voiceLabel.textContent = lang === 'en' ? 'English Voice (Samantha)' : 'German Voice (Anna)';
-      
-      const wasPlaying = isPlaying;
-      if (isPlaying) audioEl.pause();
-      
       loadScene(currentIdx);
-      if (wasPlaying) {
-        audioEl.play().then(() => {
-          isPlaying = true;
-          updatePlaybackUI(true);
-        }).catch(() => {});
-      }
     }
 
     function loadScene(idx) {
       currentIdx = idx;
+      elapsedInScene = 0;
       const s = sceneData[idx];
 
-      // Update active image
+      // Update active image with Ken Burns reset/restart
       for (let i = 0; i < sceneData.length; i++) {
         const el = document.getElementById(`img-${i}`);
-        if (el) el.classList.toggle('active', i === idx);
+        if (el) {
+          el.classList.remove('active');
+          if (i === idx) {
+            // small delay to re-trigger transition
+            setTimeout(() => el.classList.add('active'), 20);
+          }
+        }
       }
 
       // Update subtitles and headers
@@ -674,74 +576,72 @@
       const thumbs = thumbTray.querySelectorAll('.thumb-item');
       thumbs.forEach((t, i) => t.classList.toggle('active', i === idx));
 
-      // Load audio
-      audioEl.src = s.audio[currentLanguage];
-      audioEl.load();
-      updateTimeDisplay();
+      updateProgress();
     }
 
     function selectScene(idx) {
       loadScene(idx);
       if (isPlaying) {
-        audioEl.play().catch(() => {});
+        startSceneTimer();
       }
     }
 
     function togglePlayPause() {
       if (!isPlaying) {
-        // If at the end, restart from beginning
-        if (currentIdx === sceneData.length - 1 && audioEl.ended) {
+        if (currentIdx === sceneData.length - 1 && elapsedInScene >= sceneData[currentIdx].duration) {
           loadScene(0);
         }
-        audioEl.play().then(() => {
-          isPlaying = true;
-          updatePlaybackUI(true);
-        }).catch(err => {
-          console.warn('Playback error:', err);
-        });
+        isPlaying = true;
+        updatePlaybackUI(true);
+        startSceneTimer();
       } else {
-        audioEl.pause();
         isPlaying = false;
         updatePlaybackUI(false);
+        stopSceneTimer();
       }
     }
 
     function updatePlaybackUI(playing) {
       btnPlayPause.textContent = playing ? '⏸ Pause' : '▶ Play Demo';
       bigPlayBtn.classList.toggle('hidden', playing);
-      voiceEq.classList.toggle('is-paused', !playing);
     }
 
-    // When current scene audio ends, transition to next scene
-    audioEl.onended = () => {
-      if (currentIdx < sceneData.length - 1) {
-        loadScene(currentIdx + 1);
-        audioEl.play().catch(() => {});
-      } else {
-        isPlaying = false;
-        updatePlaybackUI(false);
-      }
-    };
+    function startSceneTimer() {
+      stopSceneTimer();
+      tickInterval = setInterval(() => {
+        elapsedInScene += 0.2;
+        updateProgress();
 
-    // Time update for progress track
-    audioEl.ontimeupdate = () => {
-      updateTimeDisplay();
-    };
+        if (elapsedInScene >= sceneData[currentIdx].duration) {
+          if (currentIdx < sceneData.length - 1) {
+            loadScene(currentIdx + 1);
+          } else {
+            isPlaying = false;
+            updatePlaybackUI(false);
+            stopSceneTimer();
+          }
+        }
+      }, 200);
+    }
 
-    function updateTimeDisplay() {
-      let elapsedPrior = 0;
+    function stopSceneTimer() {
+      if (tickInterval) clearInterval(tickInterval);
+      tickInterval = null;
+    }
+
+    function updateProgress() {
+      let prior = 0;
       for (let i = 0; i < currentIdx; i++) {
-        elapsedPrior += sceneData[i].dur[currentLanguage];
+        prior += sceneData[i].duration;
       }
-      const curTime = elapsedPrior + (audioEl.currentTime || 0);
-      const totalDur = getTotalDuration();
-      const pct = Math.min(100, (curTime / totalDur) * 100);
+      const curTime = prior + elapsedInScene;
+      const pct = Math.min(100, (curTime / totalDuration) * 100);
       trackFill.style.width = `${pct}%`;
 
       const curM = Math.floor(curTime / 60);
       const curS = Math.floor(curTime % 60);
-      const totM = Math.floor(totalDur / 60);
-      const totS = Math.floor(totalDur % 60);
+      const totM = Math.floor(totalDuration / 60);
+      const totS = Math.floor(totalDuration % 60);
       timeReadout.textContent = `${curM}:${curS < 10 ? '0' : ''}${curS} / ${totM}:${totS < 10 ? '0' : ''}${totS}`;
     }
 
@@ -749,34 +649,19 @@
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-      const targetTime = ratio * getTotalDuration();
+      const targetTime = ratio * totalDuration;
 
       let accum = 0;
       for (let i = 0; i < sceneData.length; i++) {
-        const d = sceneData[i].dur[currentLanguage];
+        const d = sceneData[i].duration;
         if (accum + d >= targetTime || i === sceneData.length - 1) {
           loadScene(i);
-          audioEl.currentTime = Math.max(0, targetTime - accum);
-          if (isPlaying) audioEl.play().catch(() => {});
+          elapsedInScene = Math.max(0, targetTime - accum);
+          updateProgress();
+          if (isPlaying) startSceneTimer();
           break;
         }
         accum += d;
-      }
-    }
-
-    function setVolume(val) {
-      audioEl.volume = parseFloat(val);
-      isMuted = (val == 0);
-      document.getElementById('btn-mute').textContent = isMuted ? '🔇' : '🔊';
-    }
-
-    function toggleMute() {
-      isMuted = !isMuted;
-      audioEl.muted = isMuted;
-      document.getElementById('btn-mute').textContent = isMuted ? '🔇' : '🔊';
-      if (!isMuted && audioEl.volume === 0) {
-        audioEl.volume = 0.8;
-        document.getElementById('volume-slider').value = 0.8;
       }
     }
 
@@ -802,8 +687,8 @@
         if (currentIdx > 0) selectScene(currentIdx - 1);
       } else if (e.key.toLowerCase() === 'f') {
         toggleFullscreen();
-      } else if (e.key.toLowerCase() === 'm') {
-        toggleMute();
+      } else if (e.key.toLowerCase() === 'l') {
+        setLanguage(currentLanguage === 'en' ? 'de' : 'en');
       }
     });
 
