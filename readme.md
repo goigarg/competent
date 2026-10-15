@@ -134,6 +134,17 @@ The assistant never traps the citizen in a dead end:
 
 ---
 
+## 🔮 Roadmap & Future Scope: Evolution to 2030
+
+1. **Cross-Platform Omnichannel APIs (WhatsApp, Telegram, Signal)**: Citizens interact directly via everyday messenger apps without app installations or complicated portal logins.
+2. **Automated Form Filling & Submission (Once-Only Principle)**: Conversational data collection automatically fills official forms (e.g., *Meldezettel* address change, *Pendlerpauschale*, RWR Card) and submits directly to ministry registries (BMI/ZMR, FinanzOnline) — eliminating manual PDF work for citizens and data re-entry for caseworkers.
+3. **ID Austria & EUDI-Wallet Deep Integration**: 1-click qualified electronic signatures and Zero-Knowledge Proofs (verify age or municipal residency without exposing full personal identity).
+4. **Proactive Life-Event Services**: Anticipates citizen milestones (e.g., child birth triggers automated family allowance and parental leave workflows; expiring passports notify 6 months in advance with a 1-click appointment booking).
+5. **Voice-First & Accessible Civic Kiosks**: Spoken voice interaction in Austrian dialects for elderly and visually impaired citizens + physical kiosks at city halls, train stations, and post offices.
+6. **Autonomous Caseworker Copilot**: Automated legal compliance checks (§ MeldeG, NAG), attachment OCR verification, and 1-click approval drafts for civil servants.
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites

@@ -113,8 +113,21 @@
 
 ---
 
-### Slide 11: Live Demo & Q&A
+### Slide 11: Roadmap & Future Evolution (Towards 2030)
+- **Slide Title**: Ausblick & Roadmap: Evolution bis 2030
+- **Six Key Strategic Expansions**:
+  1. **Omnichannel Messenger APIs**: Direct access via **WhatsApp, Telegram, Signal**, and Apple Messages — zero app-download friction for citizens.
+  2. **Automated Form Completion & Submission (Once-Only Principle)**: Extracts facts in conversation, pre-fills official forms (e.g., *Meldezettel* residence change, *Pendlerpauschale*, RWR Card), and submits directly via ministry registry APIs (BMI/ZMR, FinanzOnline) — eliminating manual PDF work for citizens and data re-entry for caseworkers.
+  3. **ID Austria & EUDI-Wallet Deep Integration**: 1-click qualified electronic signatures and Zero-Knowledge Proofs (verify age or municipal eligibility without exposing full identity).
+  4. **Proactive Citizen State**: Anticipates life events (e.g., newborn registration triggers family allowance advice; passport renewals notify 6 months prior with 1-click appointments).
+  5. **Voice-First & Accessible Civic Kiosks**: Spoken dialogue in regional dialects for elderly/visually impaired citizens + physical kiosks at city halls, train stations, and post offices.
+  6. **AI Caseworker Copilot**: Automated legal compliance checks (§ MeldeG, NAG), attachment OCR verification, and 1-click approval drafts for civil servants.
+
+---
+
+### Slide 12: Live Demo & Q&A
 - **Slide Title**: Erleben Sie Kompetent live
+- **Team**: Goi Garg · Cajetan Perwein · Jeet Gupta · Reyan Zein
 - **Links**:
   - **Citizen Chat**: [https://competent.shiv.ovh](https://competent.shiv.ovh)
   - **Caseworker Portal**: [https://competent.shiv.ovh/portal](https://competent.shiv.ovh/portal)
