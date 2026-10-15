@@ -6,6 +6,7 @@
 [![Livewire](https://img.shields.io/badge/Livewire-3.x-FB70A9?style=flat-square&logo=livewire)](https://livewire.laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php)](https://php.net)
 [![Accessibility](https://img.shields.io/badge/WCAG-2.2%20AA-002D66?style=flat-square)](docs/ci)
+[![License](https://img.shields.io/badge/License-MIT%20with%20Civic%20Disclaimer-blue?style=flat-square)](LICENSE)
 [![Live Prototype](https://img.shields.io/badge/Live%20Prototype-competent.shiv.ovh-E1320F?style=flat-square)](https://competent.shiv.ovh)
 
 ---
@@ -189,6 +190,16 @@ Access the assistant at `http://localhost:8000` and the caseworker portal at `ht
 
 - **AI Development**: Grounded RAG pipelines, LLM fallback architecture, intent matching, knowledge distillation.
 - **UX/UI Design & Accessibility**: WCAG 2.2 AA compliance, official Austrian CI design tokens, multi-language typography, Leichte Sprache integration.
+
+---
+
+## ⚖️ License & Disclaimer
+
+This project is licensed under the **MIT License with Civic Acceptable Use & Disclaimer** - see the [`LICENSE`](LICENSE) file for details.
+
+- **Free to use & modify**: You are free to use, copy, modify, and distribute this software for administrative, research, and civic applications.
+- **Use at own risk / No warranty**: The software is provided "as is" without warranties of any kind. Authors and contributors disclaim all liability for any damages or legal outcomes.
+- **Anti-misuse clause**: Strictly prohibits impersonation of official government authorities, issuance of counterfeit administrative documents, or generating deceptive determinations without human verification.
 
 ---
 
