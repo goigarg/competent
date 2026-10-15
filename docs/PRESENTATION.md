@@ -2,6 +2,7 @@
 ## Pitch Deck & Presentation Guide
 
 > **Challenge**: Digitale Assistenten: Evolution bis 2030 (Öffentlicher Sektor)  
+> **Team**: Goi Garg, Cajetan Perwein, Jeet Gupta, Reyan Zein  
 > **Live Prototype**: [https://competent.shiv.ovh](https://competent.shiv.ovh)  
 > **Staff Handover Portal**: [https://competent.shiv.ovh/portal](https://competent.shiv.ovh/portal)  
 > **Target Pitch Duration**: 3 – 5 Minutes
