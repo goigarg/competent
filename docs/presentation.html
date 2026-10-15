@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kompetent · Digitaler Bürgerassistent 2030 (Pitch Deck)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --kp-flag: #E1320F;
+      --kp-textred: #B92B06;
+      --kp-navy: #002D66;
+      --kp-darkblue: #001E44;
+      --kp-bluegrey: #E5E9F0;
+      --kp-bluegrey-60: #F0F3F7;
+      --kp-sand: #F7F5F0;
+      --kp-sand-60: #FAF9F6;
+      --kp-verified: #15803d;
+      --kp-black: #0F172A;
+      --kp-muted: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0A0F1D;
+      color: #F8FAFC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Deck Container */
+    #deck {
+      position: relative;
+      width: 92vw;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      background: #FFFFFF;
+      color: var(--kp-black);
+      border-radius: 12px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top CI Ribbon */
+    .ci-header {
+      height: 60px;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--kp-bluegrey);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FFFFFF;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flag-bar {
+      width: 24px;
+      height: 16px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .flag-bar div:nth-child(1), .flag-bar div:nth-child(3) { background: var(--kp-flag); flex: 1; }
+    .flag-bar div:nth-child(2) { background: #FFFFFF; flex: 1; }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      color: var(--kp-navy);
+    }
+
+    .brand-title span {
+      color: var(--kp-textred);
+      font-weight: 400;
+    }
+
+    .meta-tag {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--kp-muted);
+      background: var(--kp-bluegrey-60);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Slide Stage */
+    .slide {
+      flex: 1;
+      padding: 48px 60px;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Typo */
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--kp-navy);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--kp-navy);
+      margin-bottom: 24px;
+    }
+
+    p.lead {
+      font-size: 1.25rem;
+      line-height: 1.5;
+      color: #334155;
+      max-width: 850px;
+      margin-bottom: 32px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--kp-sand-60);
+      border: 1px solid var(--kp-bluegrey);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card.highlight {
+      background: #FFFFFF;
+      border: 2px solid var(--kp-navy);
+      box-shadow: 0 10px 25px -5px rgba(0, 45, 102, 0.1);
+    }
+
+    .card-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--kp-textred);
+    }
+
+    .card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--kp-navy);
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+    /* Stat Callout */
+    .stat-box {
+      background: var(--kp-bluegrey-60);
+      border-left: 4px solid var(--kp-navy);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 16px;
+    }
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--kp-navy);
+      line-height: 1;
+    }
+    .stat-desc {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    /* Pill Badges */
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: #F1F5F9;
+      color: #334155;
+    }
+    .badge.verified {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #BBF7D0;
+    }
+
+    /* Flow Step Visual */
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 18px;
+      background: #FFFFFF;
+      border: 1px solid var(--kp-bluegrey);
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: var(--kp-navy);
+      color: #FFF;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .step-content h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--kp-navy);
+      margin-bottom: 2px;
+    }
+    .step-content p {
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    /* Bottom Control Bar */
+    .ci-footer {
+      height: 54px;
+      padding: 0 40px;
+      border-top: 1px solid var(--kp-bluegrey);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FAFAFA;
+      font-size: 0.85rem;
+      color: var(--kp-muted);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    button.ctrl-btn {
+      background: #FFFFFF;
+      border: 1px solid var(--kp-bluegrey);
+      color: var(--kp-navy);
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button.ctrl-btn:hover {
+      background: var(--kp-navy);
+      color: #FFFFFF;
+      border-color: var(--kp-navy);
+    }
+
+    /* Notes Drawer */
+    #notes {
+      position: absolute;
+      bottom: 54px;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      color: #E2E8F0;
+      padding: 20px 40px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      border-top: 2px solid var(--kp-textred);
+      display: none;
+      backdrop-filter: blur(8px);
+      max-height: 35%;
+      overflow-y: auto;
+    }
+
+    #notes.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="deck">
+    <!-- Header -->
+    <header class="ci-header">
+      <div class="brand">
+        <div class="flag-bar">
+          <div></div><div></div><div></div>
+        </div>
+        <div class="brand-title">Kompetent <span>· Digitaler Bürgerassistent 2030</span></div>
+      </div>
+      <div class="meta-tag">Digitale Assistenten: Evolution bis 2030</div>
+    </header>
+
+    <!-- Slide 1: Title -->
+    <section class="slide active" data-notes="Intro: Begrüßung der Jury. Österreich bietet hervorragende Verwaltungsleistungen, doch die Bürger-Interaktion leidet unter fragmentierten Portalen und komplexer Behördensprache. Mit Kompetent präsentieren wir den universellen, rechtssicheren Bürgerassistenten für 2030.">
+      <div style="max-width: 900px;">
+        <span class="card-tag" style="font-size: 0.9rem; margin-bottom: 8px; display: inline-block;">Öffentlicher Sektor 2030</span>
+        <h1>Vom Behörden-Dschungel zur empathischen Bürgerbegleitung</h1>
+        <p class="lead">Der universelle, barrierefreie KI-Bürgerassistent der Republik Österreich. Versteht Alltagssprache, schützt Privatsphäre und garantiert rechtskonforme, quellenbasierte Unterstützung.</p>
+        <div style="display: flex; gap: 16px; align-items: center; margin-top: 10px;">
+          <span class="badge verified" style="font-size: 0.9rem; padding: 6px 14px;">✓ Live-Prototyp online</span>
+          <span style="font-weight: 600; color: var(--kp-textred); font-size: 0.95rem;">competent.shiv.ovh</span>
+          <span style="color: var(--kp-muted);">&bull;</span>
+          <span style="color: var(--kp-muted); font-size: 0.9rem;">152 automatisierte Tests (100% grün)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: The Problem -->
+    <section class="slide" data-notes="Problem: Bürger müssen heute zwischen 10+ Ministeriums-Portalen springen. Unstrukturierte Bürgeranfragen prallen auf starre Formulare. Fehlende Quellen erzeugen Halluzinationsrisiken bei Standard-KIs.">
+      <h2>Die Bürgerschnittstelle im Jahr 2026: Die 4 Hürden</h2>
+      <div class="grid-2">
+        <div class="card">
+          <span class="card-tag">Hürde 1 · Fragmentierung</span>
+          <h3>10+ getrennte Portale</h3>
+          <p>Bürger müssen selbst wissen, ob ihr Anliegen auf <i>oesterreich.gv.at</i>, <i>bmi.gv.at</i>, <i>migration.gv.at</i> oder <i>bmf.gv.at</i> liegt.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Hürde 2 · Juristische Fachsprache</span>
+          <h3>Komplexe Bürokratiebegriffe</h3>
+          <p>Begriffe wie <i>„Unterkunftgeberbestätigung“</i>, <i>„NAG“</i> oder <i>„Arbeitnehmerveranlagung“</i> überfordern viele Bürger und Neuzugewanderte.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Hürde 3 · Halluzination & Vertrauen</span>
+          <h3>Fehlende rechtliche Verlässlichkeit</h3>
+          <p>Standard-KIs erfinden Fristen, Gebühren oder Gesetze. Im öffentlichen Dienst ist das haftungsrechtlich inakzeptabel.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Hürde 4 · Überlastete Ämter</span>
+          <h3>70% Standard-Anfragen</h3>
+          <p>Sachbearbeiter am Schalter und Telefon verbringen den Großteil ihrer Zeit mit der Beantwortung repetitiver Auskünfte.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: The Vision 2030 -->
+    <section class="slide" data-notes="Vision: Ein einziger universeller Dialog. Empathisch, multilingual und absolut rechtssicher.">
+      <h2>Vision 2030: Ein einziger, verlässlicher Bürgerdialog</h2>
+      <div class="grid-3" style="margin-top: 10px;">
+        <div class="card highlight">
+          <div class="card-tag">1. Empathisch & Klar</div>
+          <h3>Alltagssprache verstehen</h3>
+          <p>Bürger schildern ihr Leben in eigenen Worten. Kompetent filtert PII, erkennt Anliegen und antwortet in einfacher, aktiver Sprache.</p>
+        </div>
+        <div class="card highlight">
+          <div class="card-tag">2. Null Halluzination</div>
+          <h3>100% Gesetzlich Verankert</h3>
+          <p>Jede Frist, jede Gebühr und jedes Dokument basiert auf geprüften Gesetzesgrundlagen (PassG, MeldeG, NAG, EStG) mit Quellenlinks.</p>
+        </div>
+        <div class="card highlight">
+          <div class="card-tag">3. Civic Handover</div>
+          <h3>Nahtlose Sachbearbeiter-Übergabe</h3>
+          <p>Keine Sackgassen: Bei komplexen Fällen generiert das System ein Sachbearbeiter-Dossier und übergibt nahtlos an den Schalter.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: Personas -->
+    <section class="slide" data-notes="Personas: Wir haben das System an echten Profilen getestet – Seniorin Erika (Accessibility & Urgency), Tariq (Neuzuwanderer auf Englisch) und Mutter Elena (Familienleistungen & Meldefristen).">
+      <h2>Bürger-Personas: Für jede Bevölkerungsgruppe</h2>
+      <div class="grid-3">
+        <div class="card">
+          <span class="card-tag">Persona 1 · Seniorin</span>
+          <h3>Erika (68, Linz)</h3>
+          <p><strong>Bedarf:</strong> Muss ihren Pass vor dem Urlaub erneuern, hat Sehschwäche und Scheu vor Formularen.</p>
+          <p><strong>Lösung:</strong> <i>Hoher Kontrast & 200% Zoom</i>; Express-Gebührenrechner (€75,90 vs €100) und druckbare Checkliste.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Persona 2 · Fachkraft</span>
+          <h3>Tariq (29, Wien)</h3>
+          <p><strong>Bedarf:</strong> Software-Entwickler aus Ägypten. Spricht Englisch, versteht RWR-Karte und AMS-Erklärung nicht.</p>
+          <p><strong>Lösung:</strong> Dialog in Englisch, deutsche Rechtsbegriffe in Klammern, direkter PDF-Download der BMI-Formulare.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Persona 3 · Familie</span>
+          <h3>Elena (34, Graz)</h3>
+          <p><strong>Bedarf:</strong> Umzug mit 2 Kindern. Mehrteilige Frage zu Wohnsitz, Schule und Familienbeihilfe.</p>
+          <p><strong>Lösung:</strong> Intent-Zerlegung, automatische Warnung vor der gesetzlichen 3-Tage-Meldefrist (§ 1 MeldeG).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Innovation 1 - Two-Phase Pattern -->
+    <section class="slide" data-notes="Innovation: Der 2-Phasen CI Antwort-Ablauf. Erst verstehen [CLARIFY] mit Bestätigungschips ('Ja, genau' / 'Nicht ganz'). Dann strukturierte Antwort mit Wo, Frist, Dokumente und geprüften Quellen.">
+      <h2>Innovation 1: Der Zwei-Phasen CI-Antwortablauf</h2>
+      <div class="grid-2">
+        <div>
+          <div class="flow-step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Phase 1: Rückfrage & Verständnisabsicherung [CLARIFY]</h4>
+              <p>Die KI rät nicht! Sie fasst zusammen: <i>„Habe ich Ihr Anliegen richtig verstanden?“</i> mit interaktiven Chips <b>„Ja, genau“</b> und <b>„Nicht ganz“</b>.</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Phase 2: Strukturierte Bürgerschritte [ANSWER]</h4>
+              <p>Strikte Gliederung nach <b>Wo</b>, <b>Frist</b> und <b>Dokumente</b>. Immer mit klickbaren nächsten Schritten.</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Privacy Firewall (SVNr-Erkennung)</h4>
+              <p>Österreichische Sozialversicherungsnummern werden automatisch maskiert, bevor sie an die KI übermittelt werden.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="background: #FFFFFF; border: 1px solid var(--kp-navy);">
+          <span class="card-tag">Beispiel Antwort-Schema</span>
+          <div style="font-size: 0.85rem; background: var(--kp-sand-60); padding: 12px; border-radius: 6px; font-family: monospace;">
+            <b>1. Reisepass beantragen [1]</b><br>
+            • Wo: Passbehörde / Magistrat<br>
+            • Frist: vor Ablauf gültig<br>
+            • Dokumente: Passfoto (35x45mm); Geburtsurkunde<br><br>
+            <span style="color: var(--kp-textred); text-decoration: underline;">[1] oesterreich.gv.at · Passgesetz 1992</span><br>
+            <span style="color: var(--kp-verified); font-weight: bold;">✓ Geprüfte Angabe</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Innovation 2 - Universal Scope & Live Forms -->
+    <section class="slide" data-notes="Innovation: Universalität. Nicht nur ein Use-Case, sondern Hunderte über RAG und den Dynamic Form Resolver, der das gefürchtete PDF-Link-Rot-Problem von Behörden löst.">
+      <h2>Innovation 2: Universalität & Der Dynamic Form Resolver</h2>
+      <div class="grid-2">
+        <div>
+          <p class="lead" style="font-size: 1.05rem; margin-bottom: 20px;">Österreich hat tausende amtliche Formulare. Statische PDF-Links veralten ständig. Unser <b>Hybrid Form Resolver</b> löst das Link-Rot-Problem an der Wurzel:</p>
+          <div class="flow-step">
+            <div class="step-num">A</div>
+            <div class="step-content">
+              <h4>Direkte Formular-Auflösung (Tier 1)</h4>
+              <p>Erkennt Formular-Absichten und bindet den live geprüften Original-Download ein (z. B. <i>BMI Formular B für RWR-Karte</i>, <i>AMS Arbeitgebererklärung</i>, <i>Meldezettel</i>).</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">B</div>
+            <div class="step-content">
+              <h4>Verzeichnis-Fallback (Tier 2)</h4>
+              <p>Fallback auf das zentrale Formularservice oder das jeweilige Ministeriumsportal, falls kein Einzelfile existiert.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="card-tag">Universelle Fachbereiche</span>
+          <div class="badges" style="margin-top: 8px;">
+            <span class="badge verified">Reisepass & Ausweise</span>
+            <span class="badge verified">Wohnsitz & Meldewesen</span>
+            <span class="badge verified">Rot-Weiß-Rot & Zuwanderung</span>
+            <span class="badge verified">Arbeitnehmerveranlagung (L1)</span>
+            <span class="badge verified">Familienbeihilfe & KBG</span>
+            <span class="badge verified">e-card & Krankenversicherung</span>
+            <span class="badge verified">Führerschein & Kfz (§ 57a)</span>
+            <span class="badge verified">ID Austria & Digitales Amt</span>
+          </div>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 12px;">Alle Bereiche sind über semantische Knowledge Nuggets und autorisierte Gesetzesgrundlagen abgedeckt.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Innovation 3 - Inclusivity -->
+    <section class="slide" data-notes="Accessibility: Barrierefreiheit nach WCAG 2.2 AA. 8 Sprachen inklusive echtem Arabisch mit RTL-Spiegelung, Leichte Sprache für Menschen mit Leseschwäche, Schriftgrößen-Zoom bis 200%.">
+      <h2>Innovation 3: 100% Inklusiv & WCAG 2.2 AA Barrierefrei</h2>
+      <div class="grid-3">
+        <div class="card">
+          <span class="card-tag">Sprachliche Teilhabe</span>
+          <h3>8 Sprachen & RTL</h3>
+          <p>Deutsch, Englisch, <b>Leichte Sprache</b>, Arabisch (mit nativem RTL-Layout), Türkisch, Ukrainisch, Rumänisch und Bosnisch/Kroatisch/Serbisch.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Visuelle Barrierefreiheit</span>
+          <h3>Kontrast & Schriftzoom</h3>
+          <p>Umschaltbarer <b>High-Contrast-Modus</b> und nativer Schriftgrößen-Zoom (100% / 150% / 200%) für sehbehinderte Bürgerinnen und Bürger.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">Screenreader & Motorik</span>
+          <h3>ARIA Live Regions</h3>
+          <p>Vollständig tastaturbedienbar, Mindestklickflächen von 44×44px, dynamische Sprachausgabe neuer Antworten via <code>aria-live="polite"</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Innovation 4 - Human Handover -->
+    <section class="slide" data-notes="Handover: 'Mit einer Person sprechen' ist immer verfügbar. Das System generiert automatisch ein strukturiertes Behörden-Dossier. Im Schalter-Portal (/portal) sehen Beamte den Fall und übernehmen live.">
+      <h2>Innovation 4: Civic Handover & Das Beamten-Portal</h2>
+      <div class="grid-2">
+        <div class="card highlight">
+          <span class="card-tag">Automatisches Bürger-Dossier</span>
+          <h3>Keine doppelten Fragen am Schalter</h3>
+          <p>Beim Klick auf <i>„Mit einer Person sprechen“</i> erzeugt Kompetent ein amtliches Dossier auf Deutsch mit allen erhobenen Fakten, Fristen und offenen Dokumenten.</p>
+          <div style="font-size: 0.82rem; background: var(--kp-sand-60); padding: 10px; border-left: 3px solid var(--kp-navy); font-family: monospace;">
+            <b>FALL-DOSSIER #2401</b><br>
+            • Anliegen: Erstantrag Rot-Weiß-Rot Karte<br>
+            • Status: Arbeitgebererklärung fehlt noch<br>
+            • Frist: Keine offene Frist
+          </div>
+        </div>
+        <div class="card">
+          <span class="card-tag">Live-Mitarbeiterportal (/portal)</span>
+          <h3>Echtzeit-Übernahme durch Beamte</h3>
+          <p>Sachbearbeiter sehen die priorisierte Warteschlange, können Fälle übernehmen und sich direkt in den Bürger-Chat einklinken.</p>
+          <span class="badge verified" style="align-self: flex-start; margin-top: 8px;">🏛️ Schalter-Status: Live aktiv</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Architecture & Reliability -->
+    <section class="slide" data-notes="Technologie: Moderner Laravel 12 + Livewire 3 Stack. Keine überladene SPA, sondern extrem schnelle Server-Renderings. Multi-Model-Fallback garantiert Ausfallsicherheit.">
+      <h2>Souveräne Technologie & Ausfallsicherheit</h2>
+      <div class="grid-4" style="margin-top: 10px;">
+        <div class="stat-box">
+          <div class="stat-number">152</div>
+          <div class="stat-desc">Automatisierte Tests (Pest Suite 100% grün)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">0.3s</div>
+          <div class="stat-desc">Livewire Reaktionszeit ohne SPA-Overhead</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">100%</div>
+          <div class="stat-desc">Offizielle Behördenquellen (.gv.at & ams.at)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">2-Tier</div>
+          <div class="stat-desc">Multi-Model LLM Fallback + Offline-Knowledge</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <p style="font-size: 0.9rem; line-height: 1.5; color: #334155;">
+          <strong>Tech-Stack:</strong> PHP 8.4 · Laravel 12 · Livewire 3 · Tailwind CSS mit amtlichen Kompetent CI-Farbtokens (<code>kp-flag</code>, <code>kp-navy</code>, <code>kp-verified</code>) · Pint Code Formatter · Grounded RAG mit <code>KnowledgeNugget</code> & <code>AdministrativeForm</code>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Slide 10: Value & Impact by 2030 -->
+    <section class="slide" data-notes="Impact: 70-80% Entlastung bei Standardanfragen, 5-10 Minuten Ersparnis pro Fall am Schalter durch Dossiers, und 100% Bürgervertrauen durch quellenbasierte Transparenz.">
+      <h2>Der Mehrwert für Österreich bis 2030 (ROI)</h2>
+      <div class="grid-3" style="margin-top: 10px;">
+        <div class="card highlight">
+          <div class="stat-number" style="color: var(--kp-textred);">75%</div>
+          <h3 style="margin-top: 8px;">Entlastung der Bürgerschalter</h3>
+          <p>Standardfragen zu Passverlängerungen, Meldezetteln und Steuerausgleichen werden sofort fallabschließend geklärt.</p>
+        </div>
+        <div class="card highlight">
+          <div class="stat-number" style="color: var(--kp-navy);">5–10 min</div>
+          <h3 style="margin-top: 8px;">Zeitersparnis pro Einzelfall</h3>
+          <p>Sachbearbeiter erhalten strukturierte Dossiers statt unübersichtlicher Freitext-E-Mails.</p>
+        </div>
+        <div class="card highlight">
+          <div class="stat-number" style="color: var(--kp-verified);">100%</div>
+          <h3 style="margin-top: 8px;">Rechtssicherheit & Vertrauen</h3>
+          <p>Keine KI-Erfindungen. Alle Angaben verweisen nachweisbar auf Gesetzestexte und amtliche Formulare.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: Call to Action / Live Demo -->
+    <section class="slide" data-notes="Abschluss: Vielen Dank! Wir laden Sie ein, das System jetzt live unter competent.shiv.ovh auszuprobieren.">
+      <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+        <div class="flag-bar" style="width: 36px; height: 24px; margin: 0 auto 16px;">
+          <div></div><div></div><div></div>
+        </div>
+        <h1>Erleben Sie Kompetent live</h1>
+        <p class="lead" style="margin: 0 auto 30px;">Besuchen Sie jetzt den Live-Prototyp und testen Sie jede beliebige Bürgerfrage auf Deutsch, Englisch oder in Leichter Sprache.</p>
+        
+        <div style="display: inline-flex; flex-direction: column; gap: 12px; background: var(--kp-sand-60); padding: 24px 36px; border-radius: 10px; border: 1px solid var(--kp-bluegrey);">
+          <div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--kp-muted); text-transform: uppercase;">Bürger-Assistent</span><br>
+            <a href="https://competent.shiv.ovh" target="_blank" style="font-size: 1.35rem; font-weight: 800; color: var(--kp-textred); text-decoration: none;">competent.shiv.ovh</a>
+          </div>
+          <div style="border-top: 1px solid var(--kp-bluegrey); padding-top: 10px;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--kp-muted); text-transform: uppercase;">Mitarbeiter-Portal</span><br>
+            <a href="https://competent.shiv.ovh/portal" target="_blank" style="font-size: 1.15rem; font-weight: 700; color: var(--kp-navy); text-decoration: none;">competent.shiv.ovh/portal</a>
+          </div>
+        </div>
+
+        <p style="margin-top: 28px; font-weight: 600; color: var(--kp-navy);">Vielen Dank! Wir freuen uns auf Ihre Fragen.</p>
+      </div>
+    </section>
+
+    <!-- Notes Drawer -->
+    <div id="notes"></div>
+
+    <!-- Footer Controls -->
+    <footer class="ci-footer">
+      <div>
+        <span id="slide-counter">Folie 1 von 11</span>
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="toggleNotes()" title="Sprechernotizen anzeigen [Taste N]">
+          📝 Notizen (N)
+        </button>
+        <button class="ctrl-btn" onclick="prevSlide()" title="Vorherige Folie [Pfeil Links]">
+          ← Zurück
+        </button>
+        <button class="ctrl-btn" onclick="nextSlide()" title="Nächste Folie [Pfeil Rechts / Leertaste]">
+          Weiter →
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slide-counter');
+    const notesEl = document.getElementById('notes');
+    let currentIdx = 0;
+
+    function updateSlide(idx) {
+      if (idx < 0 || idx >= slides.length) return;
+      slides[currentIdx].classList.remove('active');
+      currentIdx = idx;
+      slides[currentIdx].classList.add('active');
+      counter.textContent = `Folie ${currentIdx + 1} von ${slides.length}`;
+      notesEl.textContent = slides[currentIdx].getAttribute('data-notes') || 'Keine Sprechernotizen vorhanden.';
+    }
+
+    function nextSlide() { updateSlide(currentIdx + 1); }
+    function prevSlide() { updateSlide(currentIdx - 1); }
+    function toggleNotes() { notesEl.classList.toggle('active'); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'n') {
+        toggleNotes();
+      }
+    });
+
+    updateSlide(0);
+  </script>
+</body>
+</html>

@@ -18,6 +18,7 @@ Austrian public administration delivers world-class services, but citizens often
 
 - **Live Prototype**: [https://competent.shiv.ovh](https://competent.shiv.ovh)
 - **Employee Handover Portal**: [https://competent.shiv.ovh/portal](https://competent.shiv.ovh/portal)
+- **Interactive Pitch Deck (16:9 Slides)**: [Open docs/presentation.html](docs/presentation.html) · [Markdown Deck (docs/PRESENTATION.md)](docs/PRESENTATION.md)
 - **Demo Video (1–2 min)**: [Watch Demo Video (YouTube / Loom)](#-demo-video--walkthrough)
 
 ---
