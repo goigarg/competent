@@ -187,7 +187,8 @@ Access the assistant at `http://localhost:8000` and the caseworker portal at `ht
 
 ## 🎥 Demo Video & Walkthrough
 
-> **1–2 Minute Video Link**: [Watch Video on YouTube/Loom](https://competent.shiv.ovh) *(or embed demo recording)*
+> **1–2 Minute Video Link**: [Watch Video on YouTube/Loom](https://competent.shiv.ovh) *(or embed demo recording)*  
+> **Full Recording Script & Storyboard**: [docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md) (English & German)
 
 ### Walkthrough Highlights
 1. **0:00 – 0:25**: Colloquial citizen query understanding and Phase 1 clarification confirmation.
