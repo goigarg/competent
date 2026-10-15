@@ -14,6 +14,10 @@ Route::get('/presentation/download', function () {
     return response()->download(public_path('presentation.pptx'), 'Kompetent-Buergerassistent-2030.pptx');
 })->name('presentation.download');
 
+Route::get('/video', function () {
+    return response()->file(public_path('video.html'));
+})->name('video');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/portal', EmployeePortal::class)->name('portal.cases');
     Route::get('/portal/cases/{conversationId?}', EmployeePortal::class)->name('portal.case.show');

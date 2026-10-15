@@ -187,14 +187,20 @@ Access the assistant at `http://localhost:8000` and the caseworker portal at `ht
 
 ## 🎥 Demo Video & Walkthrough
 
-> **1–2 Minute Video Link**: [Watch Video on YouTube/Loom](https://competent.shiv.ovh) *(or embed demo recording)*  
+> **Interactive Video Player**: [Open docs/video.html](docs/video.html) · [Live on Server (/video)](https://competent.shiv.ovh/video)  
+> **Animated Walkthrough (1–2 min)**: [docs/demo-walkthrough.webp](docs/demo-walkthrough.webp) · [docs/demo-walkthrough.gif](docs/demo-walkthrough.gif)  
 > **Full Recording Script & Storyboard**: [docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md) (English & German)
 
+![Kompetent Demo Walkthrough](docs/demo-walkthrough.webp)
+
 ### Walkthrough Highlights
-1. **0:00 – 0:25**: Colloquial citizen query understanding and Phase 1 clarification confirmation.
-2. **0:25 – 0:50**: Universal guidance across services, statutory deadline alerts, and direct form downloads.
-3. **0:50 – 1:15**: Accessibility features (Leichte Sprache, Arabic RTL, High-Contrast mode).
-4. **1:15 – 1:45**: Handover to human caseworker, Case Dossier inspection, and live portal takeover.
+1. **0:00 – 0:18**: Introduction & The 2026 Problem (10+ portals, legalese, hallucination risk).
+2. **0:18 – 0:35**: Citizen-Centric Interface & Official Austrian CI Tokens.
+3. **0:35 – 0:52**: Natural Language Inquiry & Instant Streaming Dialog.
+4. **0:52 – 1:12**: Zero Hallucination & Verified Government BMI Application Forms.
+5. **1:12 – 1:30**: Seamless Caseworker Handover & Automated Case Dossier.
+6. **1:30 – 1:45**: Roadmap 2030 (WhatsApp API, Automated ZMR Submission, ID Austria).
+7. **1:45 – 1:55**: Live Demo Links & Team Attribution.
 
 ---
 

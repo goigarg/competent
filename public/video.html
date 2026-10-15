@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kompetent · Live Demo Video & Storyboard (Public Sector 2030)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --kp-flag: #E1320F;
+      --kp-textred: #B92B06;
+      --kp-navy: #002D66;
+      --kp-darkblue: #001E44;
+      --kp-bluegrey: #E5E9F0;
+      --kp-sand: #F7F5F0;
+      --kp-sand-60: #FAF9F6;
+      --kp-verified: #15803d;
+      --kp-black: #0F172A;
+      --kp-muted: #64748B;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0B1120;
+      color: #F8FAFC;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 1200px;
+      background: #1E293B;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #334155;
+    }
+
+    /* Top Ribbon */
+    .video-header {
+      padding: 16px 24px;
+      background: #0F172A;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flag-bar {
+      width: 24px;
+      height: 16px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .flag-bar div:nth-child(1), .flag-bar div:nth-child(3) { background: var(--kp-flag); flex: 1; }
+    .flag-bar div:nth-child(2) { background: #FFFFFF; flex: 1; }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #FFFFFF;
+    }
+    .brand-title span {
+      color: #94A3B8;
+      font-weight: 400;
+      font-size: 0.9rem;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: #334155;
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--kp-navy);
+      color: #FFFFFF;
+    }
+
+    /* Stage */
+    .viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .viewport img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Subtitle Banner */
+    .subtitle-banner {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 70%, transparent);
+      padding: 24px 32px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .scene-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #F87171;
+    }
+
+    .subtitle-text {
+      font-size: 1.05rem;
+      line-height: 1.45;
+      color: #F8FAFC;
+      font-weight: 500;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      padding: 16px 24px;
+      background: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-top: 1px solid #334155;
+    }
+
+    .btn-play {
+      background: var(--kp-flag);
+      border: none;
+      color: #FFF;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-play:hover { background: #C52709; }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: #334155;
+      border-radius: 3px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--kp-flag);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .time-label {
+      font-size: 0.85rem;
+      font-family: monospace;
+      color: #94A3B8;
+      white-space: nowrap;
+    }
+
+    .btn-ctrl {
+      background: #334155;
+      border: none;
+      color: #F8FAFC;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-ctrl:hover { background: #475569; }
+
+    /* Scene Thumbnails */
+    .scenes-tray {
+      padding: 14px 24px;
+      background: #1E293B;
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      border-top: 1px solid #334155;
+    }
+
+    .thumb-card {
+      flex: 0 0 130px;
+      height: 75px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      position: relative;
+      opacity: 0.65;
+      transition: all 0.2s;
+    }
+    .thumb-card.active {
+      border-color: var(--kp-flag);
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    .thumb-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .thumb-num {
+      position: absolute;
+      bottom: 2px;
+      left: 4px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #FFF;
+      font-size: 0.7rem;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    /* Links Footer */
+    .links-footer {
+      margin-top: 18px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      font-size: 0.88rem;
+    }
+    .links-footer a {
+      color: #38BDF8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .links-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <div class="video-container" id="player">
+    <div class="video-header">
+      <div class="brand-group">
+        <div class="flag-bar">
+          <div></div><div></div><div></div>
+        </div>
+        <div class="brand-title">Kompetent <span>· Video Walkthrough (1–2 Min)</span></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 0.8rem; color: #94A3B8;">Team: Goi Garg · Cajetan Perwein · Jeet Gupta · Reyan Zein</span>
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" id="btn-de" onclick="setLang('de')">DE</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="viewport">
+      <img id="stage-img" src="screenshots/01-intro-title.png" alt="Demo frame">
+      <div class="subtitle-banner">
+        <div class="scene-tag" id="scene-tag">Scene 01 · 0:00</div>
+        <div class="subtitle-text" id="subtitle-text">Meet Kompetent—Austria’s universal, legally grounded AI citizen assistant for 2030.</div>
+      </div>
+    </div>
+
+    <div class="controls-bar">
+      <button class="btn-play" id="btn-play" onclick="togglePlay()">▶ Play</button>
+      <div class="progress-track" id="progress-track" onclick="seek(event)">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="time-label" id="time-label">0:00 / 1:45</div>
+      <button class="btn-ctrl" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    </div>
+
+    <div class="scenes-tray" id="scenes-tray">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <div class="links-footer">
+    <a href="demo-walkthrough.webp" download>⬇ Download Animated WebP (937 KB)</a>
+    <span style="color: #64748B;">•</span>
+    <a href="demo-walkthrough.gif" download>⬇ Download Animated GIF (1.4 MB)</a>
+    <span style="color: #64748B;">•</span>
+    <a href="https://competent.shiv.ovh" target="_blank">🌐 Live Citizen Chat</a>
+    <span style="color: #64748B;">•</span>
+    <a href="https://competent.shiv.ovh/portal" target="_blank">🏛️ Caseworker Portal</a>
+    <span style="color: #64748B;">•</span>
+    <a href="https://competent.shiv.ovh/presentation" target="_blank">📊 16:9 Pitch Deck</a>
+  </div>
+
+  <script>
+    const scenes = [
+      {
+        id: 1,
+        time: "0:00 – 0:18",
+        duration: 18,
+        src: "screenshots/01-intro-title.png",
+        tag: { en: "Scene 01 · Introduction & The 2026 Problem", de: "Szene 01 · Einleitung & Das Problem 2026" },
+        text: {
+          en: "Austria provides world-class public services, but citizens face 10+ fragmented portals and complex legalese. Generic AI hallucinates deadlines. Kompetent provides universal, legally grounded guidance.",
+          de: "Österreich bietet erstklassige Verwaltung, doch Bürger scheitern an 10+ getrennten Portalen und Behördensprache. Standard-KIs halluzinieren gefährlich. Kompetent schafft rechtssichere Abhilfe."
+        }
+      },
+      {
+        id: 2,
+        time: "0:18 – 0:35",
+        duration: 17,
+        src: "screenshots/02-citizen-home.png",
+        tag: { en: "Scene 02 · Citizen-Centric Interface & Design Tokens", de: "Szene 02 · Bürgernahe Oberfläche & Amtliche CI" },
+        text: {
+          en: "The interface adheres strictly to the official Kompetent Design Guidelines and WCAG 2.2 AA accessibility. Instant entry without cumbersome registration.",
+          de: "Entwickelt nach den amtlichen Kompetent CI-Richtlinien und barrierefrei nach WCAG 2.2 AA. Direkter Einstieg für alle Bürger ohne bürokratische Hürden."
+        }
+      },
+      {
+        id: 3,
+        time: "0:35 – 0:52",
+        duration: 17,
+        src: "screenshots/03-ai-query-stream.png",
+        tag: { en: "Scene 03 · Natural Language Inquiry & Instant Streaming", de: "Szene 03 · Bürgerfrage & Streaming-Dialog" },
+        text: {
+          en: "Citizen asks colloquially about relocating to Vienna and the Red-White-Red Card. The assistant explains administrative concepts in plain language and keeps official terms in brackets.",
+          de: "Der Bürger fragt in Alltagssprache nach Zuzug und Rot-Weiß-Rot-Karte. Der Assistent erklärt Fristen verständlich und behält offizielle Fachbegriffe in Klammern bei."
+        }
+      },
+      {
+        id: 4,
+        time: "0:52 – 1:12",
+        duration: 20,
+        src: "screenshots/04-verified-citations.png",
+        tag: { en: "Scene 04 · Zero Hallucination & Verified Government Forms", de: "Szene 04 · Geprüfte Angaben & Offizielle Formulare" },
+        text: {
+          en: "Every claim carries the green 'Geprüfte Angabe' badge. Verified citations link directly to live BMI application PDFs (Antragsformular B) and official legal statutes.",
+          de: "Jede Information trägt das grüne Siegel 'Geprüfte Angabe'. Quellenangaben verlinken direkt auf aktuelle Antragsformulare des Innenministeriums (BMI Formular B)."
+        }
+      },
+      {
+        id: 5,
+        time: "1:12 – 1:30",
+        duration: 18,
+        src: "screenshots/05-caseworker-portal.png",
+        tag: { en: "Scene 05 · Seamless Caseworker Handover & Automated Dossier", de: "Szene 05 · Beamten-Übergabe & Automatisiertes Dossier" },
+        text: {
+          en: "1-click handover to a human official. The assistant compiles a structured Case Dossier in German with facts and deadlines—saving caseworkers 5–10 minutes per inquiry.",
+          de: "1-Klick-Übergabe an Beamte. Kompetent erstellt automatisch ein strukturiertes Sachbearbeiter-Dossier mit allen Bürgerfakten – das spart 5–10 Minuten pro Fall."
+        }
+      },
+      {
+        id: 6,
+        time: "1:30 – 1:45",
+        duration: 15,
+        src: "screenshots/06-roadmap-2030.png",
+        tag: { en: "Scene 06 · Roadmap 2030: WhatsApp API & Automated Submissions", de: "Szene 06 · Roadmap 2030: WhatsApp & ZMR-Einreichung" },
+        text: {
+          en: "Roadmap 2030: Omnichannel access via WhatsApp, conversational form-filling with direct submission to BMI/ZMR registers, and ID Austria qualified signatures.",
+          de: "Ausblick 2030: Bürgernähe über WhatsApp & Telegram, automatische Antragsbefüllung & Einreichung direkt an ZMR/BMI sowie ID Austria Signatur."
+        }
+      },
+      {
+        id: 7,
+        time: "1:45 – 1:55",
+        duration: 10,
+        src: "screenshots/07-live-demo-links.png",
+        tag: { en: "Scene 07 · Experience Kompetent Live", de: "Szene 07 · Jetzt live testen" },
+        text: {
+          en: "Experience the working prototype live at competent.shiv.ovh. Team: Goi Garg, Cajetan Perwein, Jeet Gupta, Reyan Zein.",
+          de: "Testen Sie den Prototyp jetzt live auf competent.shiv.ovh. Team: Goi Garg, Cajetan Perwein, Jeet Gupta, Reyan Zein."
+        }
+      }
+    ];
+
+    let currentLang = 'en';
+    let currentSceneIdx = 0;
+    let isPlaying = false;
+    let timer = null;
+    let sceneStartTime = 0;
+    const totalDuration = scenes.reduce((acc, s) => acc + s.duration, 0);
+
+    const stageImg = document.getElementById('stage-img');
+    const sceneTag = document.getElementById('scene-tag');
+    const subtitleText = document.getElementById('subtitle-text');
+    const btnPlay = document.getElementById('btn-play');
+    const progressFill = document.getElementById('progress-fill');
+    const timeLabel = document.getElementById('time-label');
+    const tray = document.getElementById('scenes-tray');
+
+    function initTray() {
+      tray.innerHTML = scenes.map((s, idx) => `
+        <div class="thumb-card ${idx === 0 ? 'active' : ''}" onclick="goToScene(${idx})">
+          <img src="${s.src}" alt="Scene ${s.id}">
+          <div class="thumb-num">${s.id}</div>
+        </div>
+      `).join('');
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+      renderScene(currentSceneIdx);
+    }
+
+    function renderScene(idx) {
+      currentSceneIdx = idx;
+      const s = scenes[idx];
+      stageImg.src = s.src;
+      sceneTag.textContent = s.tag[currentLang];
+      subtitleText.textContent = s.text[currentLang];
+
+      const cards = tray.querySelectorAll('.thumb-card');
+      cards.forEach((c, i) => c.classList.toggle('active', i === idx));
+
+      // Calculate elapsed time
+      let elapsed = 0;
+      for (let i = 0; i < idx; i++) elapsed += scenes[i].duration;
+      const pct = (elapsed / totalDuration) * 100;
+      progressFill.style.width = `${pct}%`;
+
+      const m = Math.floor(elapsed / 60);
+      const sec = elapsed % 60;
+      const totM = Math.floor(totalDuration / 60);
+      const totSec = totalDuration % 60;
+      timeLabel.textContent = `${m}:${sec < 10 ? '0' : ''}${sec} / ${totM}:${totSec < 10 ? '0' : ''}${totSec}`;
+    }
+
+    function goToScene(idx) {
+      renderScene(idx);
+      if (isPlaying) {
+        clearTimeout(timer);
+        scheduleNext();
+      }
+    }
+
+    function scheduleNext() {
+      if (currentSceneIdx < scenes.length - 1) {
+        timer = setTimeout(() => {
+          renderScene(currentSceneIdx + 1);
+          scheduleNext();
+        }, scenes[currentSceneIdx].duration * 1000);
+      } else {
+        isPlaying = false;
+        btnPlay.textContent = '▶ Play';
+      }
+    }
+
+    function togglePlay() {
+      if (!isPlaying) {
+        if (currentSceneIdx >= scenes.length - 1) renderScene(0);
+        isPlaying = true;
+        btnPlay.textContent = '⏸ Pause';
+        scheduleNext();
+      } else {
+        isPlaying = false;
+        btnPlay.textContent = '▶ Play';
+        clearTimeout(timer);
+      }
+    }
+
+    function toggleFullscreen() {
+      const el = document.getElementById('player');
+      if (!document.fullscreenElement) {
+        el.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    initTray();
+    renderScene(0);
+  </script>
+</body>
+</html>
